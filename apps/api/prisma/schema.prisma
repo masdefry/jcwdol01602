@@ -10,12 +10,88 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Account {
+  id             String    @id @default(uuid())
+  roles          Role      @relation(fields: [roleId], references: [id])
+  roleId         String
+  email          String    @unique
+  password       String
+  isVerified     Boolean   @default(false)
+  name           String
+  gender         Gender?
+  birthDate      DateTime?
+  education      String?
+  address        String?
+  phoneNumber    String?
+  profilePicture String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  User           User[]
+  Company        Company[]
+}
 
-  @@map("samples") // if you want to use snake_case format
+model Role {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  accounts Account[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model SubscriptionCat {
+  id              String   @id @default(uuid())
+  name            String
+  price           Int      @default(0)
+  cvGenerator     Boolean  @default(false)
+  skillAssessment Boolean  @default(false)
+  priority        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  User            User[]
+}
+
+model User {
+  id                String          @id @default(uuid())
+  accounts          Account         @relation(fields: [accountId], references: [id])
+  accountId         String
+  subscription      SubscriptionCat @relation(fields: [subscriptionCatId], references: [id])
+  subscriptionCatId String
+  startDate         DateTime?
+  endDate           DateTime?
+  isSubActive       Boolean         @default(false)
+  cvPath            String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  accounts    Account  @relation(fields: [accountId], references: [id])
+  accountId   String
+  name        String   @unique
+  email       String   @unique
+  phone       String
+  address     String
+  website     String?
+  description String?
+  logo        String?
+  socialMedia String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  jobs        Job[]
+}
+
+model Job {
+  id          String   @id @default(uuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  title       String
+  description String
+  category    String
+  location    String
+  salaryRange String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
