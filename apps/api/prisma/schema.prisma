@@ -37,6 +37,7 @@ model Account {
   updatedAt      DateTime  @updatedAt
   User           User[]
   Company        Company[]
+  Admin Admin[]
 }
 
 model Role {
@@ -73,6 +74,8 @@ model User {
   cvPath            String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+
+  Applicant Applicant[]
 }
 
 model Company {
@@ -90,6 +93,18 @@ model Company {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   jobs        Job[]
+
+  Admin Admin[]
+}
+
+model Admin {
+  id                String          @id @default(uuid())
+  accounts          Account         @relation(fields: [accountId], references: [id])
+  accountId         String
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }
 
 model Job {
@@ -101,6 +116,20 @@ model Job {
   category    String
   location    String
   salaryRange String?
+  deadline    DateTime?
+  isPublished Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  applicants  Applicant[]
+}
+
+model Applicant {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id])
+  appliedAt DateTime @default(now())
+
+  @@unique([userId, jobId])
 }
