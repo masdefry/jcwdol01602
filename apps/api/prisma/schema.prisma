@@ -20,28 +20,37 @@ model Sample {
 }
 
 model Account {
-  id             String    @id @default(uuid())
-  roles          Role      @relation(fields: [roleId], references: [id])
-  roleId         String
+  id             String    @id
+  role          Role      @relation(fields: [roleId], references: [id])
+  roleId         Int
   email          String    @unique
   password       String
   isVerified     Boolean   @default(false)
   name           String
-  gender         Gender?
-  birthDate      DateTime?
-  education      String?
-  address        String?
-  phoneNumber    String?
-  profilePicture String?
+  avatar         String
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   User           User[]
   Company        Company[]
-  Admin Admin[]
+  Admin         Admin[]
+  Profile       Profile[]
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  accountId    String
+  account    Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+   gender         Gender?
+  birthDate      DateTime?
+  education      String?
+  address        String?
+  phoneNumber    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model Role {
-  id       String    @id @default(uuid())
+  id       Int    @id @default(autoincrement())
   name     String    @unique
   accounts Account[]
 }

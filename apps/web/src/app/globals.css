@@ -2,26 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.formik-input {
+  @apply block bg-gray-100 border text-black border-gray-300 focus:border-gray-300 placeholder-slate-400 w-full rounded-lg p-2 text-base my-1;
 }
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.formik-label {
+  @apply text-base mt-0 text-black;
 }
