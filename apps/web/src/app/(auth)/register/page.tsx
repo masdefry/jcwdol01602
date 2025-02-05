@@ -21,10 +21,7 @@ export default function Register() {
   const onSubmit = async (values: IRegister) => {
     try {
       setLoading(true);
-      const { data } = await axiosInstance.post(
-        '/api/account/register',
-        values,
-      );
+      const { data } = await axiosInstance.post('/api/account/newUser', values);
       //   console.log(values);
       //   toast.success('We did it');
       toast.success(data.message);

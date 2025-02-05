@@ -1,4 +1,4 @@
-export type User = {
+export type Account = {
   email: string;
   name: string;
   role: string;
@@ -7,7 +7,7 @@ export type User = {
 declare global {
   namespace Express {
     export interface Request {
-      user?: User;
+      account?: Account;
     }
   }
 }

@@ -1,5 +1,4 @@
 import { AccountController } from '@/controllers/account.controller';
-import { RegisterController } from '@/controllers/register.controller';
 import {
   LoginValidation,
   RegisterValidation,
@@ -9,34 +8,41 @@ import { Router } from 'express';
 
 export class AccountRouter {
   private router: Router;
-  private registerController: RegisterController;
-  private accountController: AccountController;
+  private AccountController: AccountController;
 
   constructor() {
-    this.registerController = new RegisterController();
-    this.accountController = new AccountController();
+    this.AccountController = new AccountController();
     this.router = Router();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
-    this.router.get('/image', this.registerController.cloudImg);
     this.router.post(
-      '/register',
+      '/newUser',
       RegisterValidation,
-      this.registerController.createUserAccount,
+      this.AccountController.createUserAccount,
+    );
+    this.router.post(
+      '/newAdmin',
+      RegisterValidation,
+      this.AccountController.createAdminAccount,
+    );
+    this.router.post(
+      '/newDev',
+      RegisterValidation,
+      this.AccountController.createDevAccount,
     );
     this.router.post(
       '/login',
       LoginValidation,
-      this.accountController.loginAccount,
+      this.AccountController.loginAccount,
     );
     this.router.get(
       '/verify',
       verifyToken,
-      this.registerController.verifyAccount,
+      this.AccountController.verifyAccount,
     );
-    this.router.delete('/:id', this.registerController.deleteAccount);
+    this.router.delete('/:id', this.AccountController.deleteAccount);
   }
 
   getRouter(): Router {
