@@ -5,6 +5,7 @@ import { Account } from '@/custom';
 
 async function verifyToken(req: Request, res: Response, next: NextFunction) {
   try {
+    console.log(`verifying token for path ${req.path}`);
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) throw new Error('Unauthorized');
     const account = verify(token, SECRET_KEY as string);
@@ -13,7 +14,7 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
     req.account = account as Account;
     next();
   } catch (error) {
-    next(error);
+    res.status(401).send({ message: 'Unauthorized' });
   }
 }
 

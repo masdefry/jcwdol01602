@@ -52,9 +52,9 @@ export default class App {
         if (req.path.includes('/api/')) {
           // console.error('Error : ', err.stack);
           if (err.message !== null) {
-            res.status(400).send({ message: err.message });
+            return res.status(400).send({ message: err.message });
           }
-          res.status(500).send('Error !');
+          return res.status(500).send('Error !');
         } else {
           next();
         }

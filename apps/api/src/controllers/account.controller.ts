@@ -113,6 +113,8 @@ export class AccountController {
   async deleteAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+      // const account = req.account as Account;
+
       // check if id not available
       if (!id) {
         throw new Error('Id not available');
@@ -122,6 +124,9 @@ export class AccountController {
         where: { id },
       });
       if (!findAccount) throw new Error('Account not found');
+
+      // Check if id Token match with account
+      // if (account.id !== findAccount.id) throw new Error('Unauthorized');
 
       // Delete avatar from cloudinary
       const publicIdMatch = findAccount.avatar.match(
@@ -138,6 +143,42 @@ export class AccountController {
       });
       return res.status(201).send({
         message: `${findAccount.name} deleted successfully`,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAccountById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      // check if id not available
+      if (!id) {
+        throw new Error('Id not available');
+      }
+      // Check if account exist
+      const findAccount = await prisma.account.findUnique({
+        where: { id },
+      });
+      if (!findAccount) throw new Error('Account not found');
+      return res.status(200).send({
+        message: 'Account retreived successfully',
+        account: findAccount,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAccounts(req: Request, res: Response, next: NextFunction) {
+    try {
+      console.log('getAccounts called');
+      const accounts = await prisma.account.findMany({
+        select: { id: true, name: true, email: true, avatar: true },
+      });
+      return res.status(200).send({
+        message: 'Accounts retreived successfully',
+        accounts: accounts,
       });
     } catch (error) {
       next(error);
