@@ -43,7 +43,6 @@ export class AccountRouter {
     );
     // get all accounts
     this.router.get('/getAllAccounts', this.AccountController.getAccounts);
-
     // verify account
     this.router.post(
       '/verify',
