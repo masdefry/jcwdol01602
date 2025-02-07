@@ -39,7 +39,7 @@ export default function Login() {
       const { data } = await axiosInstance.post('/api/account/login', values);
       await handleLogin();
       toast.success(data.message);
-      router.push('/');
+      router.push('/tes');
     } catch (error: any) {
       const errorMessage = error.response?.data?.message;
       toast.error(errorMessage);
