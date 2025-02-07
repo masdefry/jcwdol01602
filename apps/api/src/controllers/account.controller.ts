@@ -1,6 +1,6 @@
 import prisma from '@/prisma';
 import { NextFunction, Request, Response } from 'express';
-import { cloudinary, SECRET_KEY, WEB_URL } from '@/config';
+import { cloudinary, SECRET_KEY } from '@/config';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { Account } from '@/custom';
@@ -141,7 +141,7 @@ export class AccountController {
       await prisma.account.delete({
         where: { id },
       });
-      return res.status(201).send({
+      return res.status(200).send({
         message: `${findAccount.name} deleted successfully`,
       });
     } catch (error) {
@@ -176,6 +176,9 @@ export class AccountController {
       const accounts = await prisma.account.findMany({
         select: { id: true, name: true, email: true, avatar: true },
       });
+      if (accounts.length === 0) {
+        return res.status(200).send({ message: 'No data' });
+      }
       return res.status(200).send({
         message: 'Accounts retreived successfully',
         accounts: accounts,

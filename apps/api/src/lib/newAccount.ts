@@ -1,6 +1,6 @@
 import prisma from '@/prisma';
 import { cloudinary, SECRET_KEY, WEB_URL } from '@/config';
-import { AccountIdMaker } from './customId';
+import { AccountIdMaker, SubsDataIdMaker } from './customId';
 import { genSalt, hash } from 'bcrypt';
 import { transporter } from './mail';
 import path from 'path';
@@ -47,13 +47,17 @@ const createNewAccount = async (
     }
 
     // Make Custom Id
-    const customId = await AccountIdMaker({ id: role.id, name: role.name });
+    const userId = await AccountIdMaker({ id: role.id, name: role.name });
+
+    // Variable to store subsData if the role is 'user'
+    let subsData = null;
 
     // Create Account in DB
-    const newAccount = await prisma.$transaction(async (primsa) => {
+    const newAccount = await prisma.$transaction(async (prisma) => {
+      // 1. Create account first
       const account = await prisma.account.create({
         data: {
-          id: customId,
+          id: userId,
           name,
           email,
           password: hashPassword,
@@ -61,6 +65,28 @@ const createNewAccount = async (
           roleId: role.id,
         },
       });
+
+      // 2. Create Subs data if role is 'user
+      if (role.name === 'user') {
+        // Get Subscription Category
+        const subCtg = await prisma.subsCtg.findFirst({
+          where: { name: 'free' },
+        });
+        if (!subCtg)
+          throw new Error(
+            'No subscription category found, please check your database.',
+          );
+        //  Create SubsData Id
+        const subsDataId = await SubsDataIdMaker(userId);
+        // Input user data into Subs Data
+        subsData = await prisma.subsData.create({
+          data: {
+            id: subsDataId,
+            accountId: account.id,
+            subsCtgId: subCtg.id,
+          },
+        });
+      }
       return account;
     });
 
@@ -95,7 +121,8 @@ const createNewAccount = async (
       html,
     });
 
-    return newAccount;
+    // return base on role
+    return role.name === 'user' ? { newAccount, subsData } : newAccount;
   } catch (error) {
     throw error;
   }

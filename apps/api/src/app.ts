@@ -14,6 +14,8 @@ import { SampleRouter } from './routers/sample.router';
 import { TestingRouter } from './routers/testing.router';
 import { AccountRouter } from './routers/account.router';
 import { RoleRouter } from './routers/role.router';
+import { SubsRouter } from './routers/subs.router';
+import { PaymentRouter } from './routers/payment.router';
 
 export default class App {
   private app: Express;
@@ -67,6 +69,8 @@ export default class App {
     const testingRouter = new TestingRouter();
     const roleRouter = new RoleRouter();
     const accountRouter = new AccountRouter();
+    const subsRouter = new SubsRouter();
+    const paymentRouter = new PaymentRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -78,6 +82,8 @@ export default class App {
 
     this.app.use('/api/role', roleRouter.getRouter());
     this.app.use('/api/account', accountRouter.getRouter());
+    this.app.use('/api/subscription', subsRouter.getRouter());
+    this.app.use('/api/payment', paymentRouter.getRouter());
   }
 
   public start(): void {

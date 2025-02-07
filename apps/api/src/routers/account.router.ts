@@ -3,7 +3,7 @@ import {
   LoginValidation,
   RegisterValidation,
 } from '@/middlewares/account.validation';
-import { verifyToken } from '@/validations/auth.middleware';
+import { verifyToken } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class AccountRouter {
@@ -43,7 +43,6 @@ export class AccountRouter {
     );
     // get all accounts
     this.router.get('/getAllAccounts', this.AccountController.getAccounts);
-
     // verify account
     this.router.post(
       '/verify',
