@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 
-interface IRegistMessage {
+interface IValidateMessage {
   name: {
     notEmpty: string;
     length: string;
@@ -16,7 +16,7 @@ interface IRegistMessage {
   };
 }
 
-const ValidationMessage: IRegistMessage = {
+const ValidationMessage: IValidateMessage = {
   name: {
     notEmpty: 'Name is required',
     length: 'Name must be 3 characters minimum and 30 characters maximum',

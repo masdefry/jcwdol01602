@@ -30,7 +30,7 @@ model Account {
   avatar         String
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  User           User[]
+  User           SubsData[]
   Company        Company[]
   Admin         Admin[]
   Profile       Profile[]
@@ -60,29 +60,30 @@ enum Gender {
   FEMALE
 }
 
-model SubscriptionCat {
-  id              String   @id @default(uuid())
+model SubsCtg {
+  id              String   @id
   name            String
   price           Int      @default(0)
   cvGenerator     Boolean  @default(false)
   skillAssessment Boolean  @default(false)
   priority        Boolean  @default(false)
   createdAt       DateTime @default(now())
-  User            User[]
+  User            SubsData[]
 }
 
-model User {
-  id                String          @id @default(uuid())
-  accounts          Account         @relation(fields: [accountId], references: [id])
+model SubsData {
+  id                String          @id
+  accounts          Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId         String
-  subscription      SubscriptionCat @relation(fields: [subscriptionCatId], references: [id])
-  subscriptionCatId String
+  subscription      SubsCtg         @relation(fields: [subsCtgId], references: [id])
+  subsCtgId         String
   startDate         DateTime?
   endDate           DateTime?
   isSubActive       Boolean         @default(false)
   cvPath            String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+  payment           Payment[]
 
   Applicant Applicant[]
 }
@@ -135,10 +136,26 @@ model Job {
 model Applicant {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      SubsData     @relation(fields: [userId], references: [id])
   jobId     String
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())
 
   @@unique([userId, jobId])
+}
+
+model Payment {
+  id           String   @id
+  subsDataId   String
+  subsData     SubsData @relation(fields: [subsDataId], references: [id])
+  method       paymentMethod?
+  proof        String?
+  isApproved   Boolean @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum paymentMethod {
+  transfer
+  midtrans
 }

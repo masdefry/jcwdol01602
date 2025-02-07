@@ -3,7 +3,7 @@ import {
   LoginValidation,
   RegisterValidation,
 } from '@/middlewares/account.validation';
-import { verifyToken } from '@/validations/auth.middleware';
+import { verifyToken } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class AccountRouter {
