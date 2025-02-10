@@ -25,7 +25,9 @@ const Navbar = () => {
       <div className="flex justify-between items-center">
         {/* Left Section */}
         <div className="flex items-center space-x-6">
+          <Link href={'/'}>
           <h1 className="text-xl font-bold">Dream Job!</h1>
+          </Link>
           <ul className="hidden md:flex space-x-6">
             <li className="hover:underline cursor-pointer">
               <Link href="/loker">Loker</Link>

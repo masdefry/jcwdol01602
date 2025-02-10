@@ -48,7 +48,7 @@ const Footer = (): JSX.Element => {
             </div>
           </div>
           {/* Perusahaan Links */}
-          <div className="flex w-1/2 flex-col gap-3 lg:w-[160px] lg:gap-6">
+          <div className="flex w-1/2 flex-col gap-3 lg:w-[125px] lg:gap-6">
             <h3 className="text-xs font-bold leading-none text-tertiary-violet-90">
               Untuk Perusahaan
             </h3>
@@ -63,7 +63,7 @@ const Footer = (): JSX.Element => {
                 href="/dashboard-hr"
                 className="text-[11px] font-normal leading-[14.30px] text-zinc-900"
               >
-                Dashboard HR
+                Dashboard untuk HR
               </Link>
             </div>
           </div>
@@ -102,7 +102,7 @@ const Footer = (): JSX.Element => {
       </div>
       {/* Copyright Section */}
       <div className="flex h-10 w-full items-center border-t border-neutral-20 bg-neutral-10 px-4 text-[11px] font-medium leading-none text-zinc-900 lg:h-12 lg:px-8 lg:text-xs">
-        © 2025 Dream Job!. All rights reserved
+        © 2025 Dream Job. All rights reserved
       </div>
     </footer>
   );
