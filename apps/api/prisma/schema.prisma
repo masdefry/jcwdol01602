@@ -21,8 +21,7 @@ model Sample {
 
 model Account {
   id             String    @id
-  role          Role      @relation(fields: [roleId], references: [id])
-  roleId         Int
+  role           Role      
   email          String    @unique
   password       String
   isVerified     Boolean   @default(false)
@@ -49,10 +48,10 @@ model Profile {
   updatedAt      DateTime  @updatedAt
 }
 
-model Role {
-  id       Int    @id @default(autoincrement())
-  name     String    @unique
-  accounts Account[]
+enum Role {
+  admin
+  developer
+  user
 }
 
 enum Gender {

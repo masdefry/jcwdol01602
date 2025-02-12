@@ -1,11 +1,11 @@
+import { Role } from '@prisma/client';
 import prisma from '../prisma';
 
 interface IAccountIdMaker {
-  id: number;
-  name: string;
+  name: Role;
 }
 
-const AccountIdMaker = async ({ id, name }: IAccountIdMaker) => {
+const AccountIdMaker = async ({ name }: IAccountIdMaker) => {
   // Make account created date in format YYMMDD
   const today = new Date();
   const yy = today.getFullYear().toString().slice(2, 4);
@@ -16,8 +16,11 @@ const AccountIdMaker = async ({ id, name }: IAccountIdMaker) => {
   // Get the sequence base on role
   const accountCount = await prisma.account.count({
     where: {
-      roleId: id,
-      createdAt: { gte: new Date(today.setHours(0, 0, 0, 0)) },
+      role: name,
+      createdAt: {
+        gte: new Date(today.setHours(0, 0, 0, 0)),
+        lt: new Date(today.setHours(23, 59, 59, 999)),
+      },
     },
   });
 

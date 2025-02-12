@@ -7,10 +7,13 @@ import path from 'path';
 import handlebars from 'handlebars';
 import fs from 'fs';
 import { sign } from 'jsonwebtoken';
+import { Role } from '@prisma/client';
 
-const findRole = async (name: string) => {
-  const role = await prisma.role.findFirst({ where: { name } });
-  return role;
+const findRole = (name: string): Role => {
+  if (!Object.values(Role).includes(name as Role)) {
+    throw new Error(`Role not found`);
+  }
+  return name as Role;
 };
 
 const avatarUrl = cloudinary.url(
@@ -24,9 +27,15 @@ const createNewAccount = async (
   name: string,
   email: string,
   password: string,
+  retypePass: string,
   roleName: string,
 ) => {
   try {
+    // Check if password is the same as retypePass
+    if (password !== retypePass) {
+      throw new Error('Passwords do not match');
+    }
+
     // Check if email already exist
     const findAccount = await prisma.account.findUnique({
       where: { email },
@@ -41,13 +50,10 @@ const createNewAccount = async (
     const hashPassword = await hash(password, salt);
 
     // Get User Roles
-    const role = await findRole(roleName);
-    if (role === null) {
-      throw new Error('Role not found');
-    }
+    const role = findRole(roleName);
 
     // Make Custom Id
-    const userId = await AccountIdMaker({ id: role.id, name: role.name });
+    const userId = await AccountIdMaker({ name: role });
 
     // Variable to store subsData if the role is 'user'
     let subsData = null;
@@ -62,12 +68,12 @@ const createNewAccount = async (
           email,
           password: hashPassword,
           avatar: avatarUrl,
-          roleId: role.id,
+          role: role,
         },
       });
 
       // 2. Create Subs data if role is 'user
-      if (role.name === 'user') {
+      if (role === Role.user) {
         // Get Subscription Category
         const subCtg = await prisma.subsCtg.findFirst({
           where: { name: 'free' },
@@ -122,7 +128,7 @@ const createNewAccount = async (
     });
 
     // return base on role
-    return role.name === 'user' ? { newAccount, subsData } : newAccount;
+    return role === Role.user ? { newAccount, subsData } : newAccount;
   } catch (error) {
     throw error;
   }

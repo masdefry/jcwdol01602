@@ -9,10 +9,16 @@ import createNewAccount from '@/lib/newAccount';
 export class AccountController {
   async createUserAccount(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password, retypePass } = req.body;
 
       // use function createNewAccount to shorten the code
-      const newUser = await createNewAccount(name, email, password, 'user');
+      const newUser = await createNewAccount(
+        name,
+        email,
+        password,
+        retypePass,
+        'user',
+      );
 
       return res.status(201).send({
         message: 'User account created successfully',
@@ -25,8 +31,14 @@ export class AccountController {
 
   async createAdminAccount(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, email, password } = req.body;
-      const newAdmin = await createNewAccount(name, email, password, 'admin');
+      const { name, email, password, retypePass } = req.body;
+      const newAdmin = await createNewAccount(
+        name,
+        email,
+        password,
+        retypePass,
+        'admin',
+      );
 
       return res.status(201).send({
         message: 'Admin account created successfully',
@@ -39,8 +51,14 @@ export class AccountController {
 
   async createDevAccount(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, email, password } = req.body;
-      const newDev = await createNewAccount(name, email, password, 'developer');
+      const { name, email, password, retypePass } = req.body;
+      const newDev = await createNewAccount(
+        name,
+        email,
+        password,
+        retypePass,
+        'developer',
+      );
 
       return res.status(201).send({
         message: 'Developer account created successfully',
@@ -58,13 +76,6 @@ export class AccountController {
       // Check if email exist in database and verified
       const findAccount = await prisma.account.findUnique({
         where: { email },
-        include: {
-          role: {
-            select: {
-              name: true,
-            },
-          },
-        },
       });
       if (!findAccount) throw new Error('Invalid email!');
       if (!findAccount.isVerified)
@@ -79,7 +90,7 @@ export class AccountController {
         email,
         id: findAccount.id,
         name: findAccount.name,
-        role: findAccount.role.name,
+        role: findAccount.role,
         avatar: findAccount.avatar,
       };
       const token = sign(payload, SECRET_KEY as string, { expiresIn: '1h' });

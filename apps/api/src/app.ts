@@ -13,7 +13,6 @@ import { PORT, WEB_URL } from './config';
 import { SampleRouter } from './routers/sample.router';
 import { TestingRouter } from './routers/testing.router';
 import { AccountRouter } from './routers/account.router';
-import { RoleRouter } from './routers/role.router';
 import { SubsRouter } from './routers/subs.router';
 import { PaymentRouter } from './routers/payment.router';
 
@@ -67,7 +66,6 @@ export default class App {
   private routes(): void {
     const sampleRouter = new SampleRouter();
     const testingRouter = new TestingRouter();
-    const roleRouter = new RoleRouter();
     const accountRouter = new AccountRouter();
     const subsRouter = new SubsRouter();
     const paymentRouter = new PaymentRouter();
@@ -80,7 +78,6 @@ export default class App {
 
     this.app.use('/api/testing', testingRouter.getRouter());
 
-    this.app.use('/api/role', roleRouter.getRouter());
     this.app.use('/api/account', accountRouter.getRouter());
     this.app.use('/api/subscription', subsRouter.getRouter());
     this.app.use('/api/payment', paymentRouter.getRouter());

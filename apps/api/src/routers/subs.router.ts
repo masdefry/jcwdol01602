@@ -21,9 +21,6 @@ export class SubsRouter {
   }
 
   private initializeRoutes(): void {
-    // Get All Subs Category
-    this.router.get('/allSubsCtg', this.subsCtgController.getAllSubsCtg);
-
     // New Subs Category
     this.router.post(
       '/new',
@@ -65,6 +62,9 @@ export class SubsRouter {
       userDevGuard,
       this.subsDataController.updateSubscription,
     );
+
+    // Get All Subs Category
+    this.router.get('/allSubsCtg', this.subsCtgController.getAllSubsCtg); //subs-categories, untuk endpoint jangan pakai camel case, tapi pakai "-"
   }
   getRouter(): Router {
     return this.router;
