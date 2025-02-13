@@ -64,7 +64,7 @@ export class SubsRouter {
     );
 
     // Get All Subs Category
-    this.router.get('/allSubsCtg', this.subsCtgController.getAllSubsCtg); //subs-categories, untuk endpoint jangan pakai camel case, tapi pakai "-"
+    this.router.get('/categories', this.subsCtgController.getAllSubsCtg); //subs-categories, untuk endpoint jangan pakai camel case, tapi pakai "-"
   }
   getRouter(): Router {
     return this.router;

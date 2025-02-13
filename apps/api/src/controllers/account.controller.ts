@@ -5,6 +5,7 @@ import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { Account } from '@/custom';
 import createNewAccount from '@/lib/newAccount';
+import { login } from '@/services/accountHandler';
 
 export class AccountController {
   async createUserAccount(req: Request, res: Response, next: NextFunction) {
@@ -73,27 +74,8 @@ export class AccountController {
     try {
       const { email, password } = req.body;
 
-      // Check if email exist in database and verified
-      const findAccount = await prisma.account.findUnique({
-        where: { email },
-      });
-      if (!findAccount) throw new Error('Invalid email!');
-      if (!findAccount.isVerified)
-        throw new Error('Please verify your account first');
-
-      // Compare password with salt and check if password is valid
-      const validPassword = await compare(password, findAccount.password);
-      if (!validPassword) throw new Error('Invalid password!');
-
-      // Use JWT
-      const payload = {
-        email,
-        id: findAccount.id,
-        name: findAccount.name,
-        role: findAccount.role,
-        avatar: findAccount.avatar,
-      };
-      const token = sign(payload, SECRET_KEY as string, { expiresIn: '1h' });
+      // Get token from login
+      const token = await login(email, password);
 
       return res.status(200).cookie('access_token', token).send({
         message: 'Login success',
@@ -163,7 +145,6 @@ export class AccountController {
   async getAccountById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      // check if id not available
       if (!id) {
         throw new Error('Id not available');
       }
@@ -183,12 +164,11 @@ export class AccountController {
 
   async getAccounts(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log('getAccounts called');
       const accounts = await prisma.account.findMany({
         select: { id: true, name: true, email: true, avatar: true },
       });
       if (accounts.length === 0) {
-        return res.status(200).send({ message: 'No data' });
+        return res.status(200).send({ message: 'No data', accounts });
       }
       return res.status(200).send({
         message: 'Accounts retreived successfully',
