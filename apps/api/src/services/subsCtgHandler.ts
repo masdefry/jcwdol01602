@@ -1,7 +1,7 @@
 import { SubsCtgIdMaker } from '@/lib/customId';
 import prisma from '@/prisma';
 
-export const getCategories = async () => {
+export const getSubsCats = async () => {
   try {
     let categories = null;
     categories = await prisma.subsCtg.findMany({
@@ -23,7 +23,7 @@ export const getCategories = async () => {
   }
 };
 
-export const getCategoryByName = async (name: string) => {
+export const getSubsCatByName = async (name: string) => {
   try {
     const data = await prisma.subsCtg.findFirst({
       where: { name },
@@ -34,7 +34,7 @@ export const getCategoryByName = async (name: string) => {
   }
 };
 
-export const getCategoryById = async (id: string) => {
+export const getSubsCatById = async (id: string) => {
   try {
     const data = await prisma.subsCtg.findUnique({
       where: { id },
@@ -45,7 +45,7 @@ export const getCategoryById = async (id: string) => {
   }
 };
 
-export const addCategory = async (
+export const addSubsCatHandler = async (
   name: string,
   price: number,
   cv: boolean,
@@ -70,7 +70,7 @@ export const addCategory = async (
   }
 };
 
-export const deleteCategory = async (id: string) => {
+export const delSubsCatHandler = async (id: string) => {
   try {
     await prisma.subsCtg.delete({
       where: { id },
@@ -80,7 +80,7 @@ export const deleteCategory = async (id: string) => {
   }
 };
 
-export const updateCategory = async (
+export const editSubsCatHandler = async (
   id: string,
   name: string,
   price: number,

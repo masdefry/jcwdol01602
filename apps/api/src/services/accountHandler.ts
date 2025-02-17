@@ -3,7 +3,7 @@ import prisma from '@/prisma';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 
-export const login = async (email: string, password: string) => {
+export const loginAccHandler = async (email: string, password: string) => {
   try {
     // Check if email exist in database and verified
     const findAccount = await prisma.account.findUnique({
@@ -30,7 +30,7 @@ export const login = async (email: string, password: string) => {
   }
 };
 
-export const verify = async (email: string) => {
+export const verifyAccHandler = async (email: string) => {
   try {
     const account = await prisma.account.update({
       where: { email },
@@ -44,7 +44,7 @@ export const verify = async (email: string) => {
   }
 };
 
-export const getAccount = async (id: string) => {
+export const getAccById = async (id: string) => {
   try {
     const account = await prisma.account.findUnique({
       where: { id },
@@ -55,7 +55,7 @@ export const getAccount = async (id: string) => {
   }
 };
 
-export const deleteAccount = async (id: string) => {
+export const delAccHandler = async (id: string) => {
   try {
     await prisma.account.delete({
       where: { id },
@@ -65,11 +65,19 @@ export const deleteAccount = async (id: string) => {
   }
 };
 
-export const getAccounts = async () => {
+export const getAccAllHandler = async () => {
   try {
     let accounts = null;
     accounts = await prisma.account.findMany({
-      select: { id: true, name: true, email: true, avatar: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+        isVerified: true,
+        role: true,
+        createdAt: true,
+      },
     });
     if (accounts.length === 0) {
       return (accounts = 'No data');

@@ -1,6 +1,6 @@
 import prisma from '@/prisma';
 import { cloudinary, SECRET_KEY, WEB_URL } from '@/config';
-import { AccountIdMaker, SubsDataIdMaker } from '../lib/customId';
+import { AccountIdMaker } from '../lib/customId';
 import { genSalt, hash } from 'bcrypt';
 import { transporter } from '../lib/mail';
 import path from 'path';
@@ -8,6 +8,8 @@ import handlebars from 'handlebars';
 import fs from 'fs';
 import { sign } from 'jsonwebtoken';
 import { Role } from '@prisma/client';
+import { getSubsCatByName } from './subsCtgHandler';
+import { addSubsData } from './subsDataHandler';
 
 const findRole = (name: string): Role => {
   if (!Object.values(Role).includes(name as Role)) {
@@ -23,7 +25,7 @@ const avatarUrl = cloudinary.url(
   },
 );
 
-const createNewAccount = async (
+const addAccHandler = async (
   name: string,
   email: string,
   password: string,
@@ -53,7 +55,7 @@ const createNewAccount = async (
     const role = findRole(roleName);
 
     // Make Custom Id
-    const userId = await AccountIdMaker({ name: role });
+    const accountId = await AccountIdMaker({ name: role });
 
     // Variable to store subsData if the role is 'user'
     let subsData = null;
@@ -63,7 +65,7 @@ const createNewAccount = async (
       // 1. Create account first
       const account = await prisma.account.create({
         data: {
-          id: userId,
+          id: accountId,
           name,
           email,
           password: hashPassword,
@@ -75,23 +77,13 @@ const createNewAccount = async (
       // 2. Create Subs data if role is 'user
       if (role === Role.user) {
         // Get Subscription Category
-        const subCtg = await prisma.subsCtg.findFirst({
-          where: { name: 'free' },
-        });
+        const subCtg = await getSubsCatByName('free');
         if (!subCtg)
           throw new Error(
             'No subscription category found, please check your database.',
           );
-        //  Create SubsData Id
-        const subsDataId = await SubsDataIdMaker(userId);
         // Input user data into Subs Data
-        subsData = await prisma.subsData.create({
-          data: {
-            id: subsDataId,
-            accountId: account.id,
-            subsCtgId: subCtg.id,
-          },
-        });
+        subsData = await addSubsData(account.id, subCtg.id);
       }
       return account;
     });
@@ -138,4 +130,4 @@ const createNewAccount = async (
   }
 };
 
-export default createNewAccount;
+export default addAccHandler;

@@ -5,7 +5,7 @@ interface IAccountIdMaker {
   name: Role;
 }
 
-const AccountIdMaker = async ({ name }: IAccountIdMaker) => {
+export const AccountIdMaker = async ({ name }: IAccountIdMaker) => {
   // Make account created date in format YYMMDD
   const today = new Date();
   const yy = today.getFullYear().toString().slice(2, 4);
@@ -33,7 +33,7 @@ const AccountIdMaker = async ({ name }: IAccountIdMaker) => {
   return customId;
 };
 
-const SubsCtgIdMaker = async () => {
+export const SubsCtgIdMaker = async () => {
   // Generate custom ID based on today's date
   const today = new Date();
   const YYMMDD = today.toISOString().slice(2, 10).replace(/-/g, '');
@@ -63,7 +63,7 @@ const SubsCtgIdMaker = async () => {
   return customId;
 };
 
-const SubsDataIdMaker = async (userId: string) => {
+export const SubsDataIdMaker = async (userId: string) => {
   // Generate custom ID based on today's date
   const today = new Date();
   const YYMMDD = today.toISOString().slice(2, 10).replace(/-/g, '');
@@ -95,7 +95,8 @@ const SubsDataIdMaker = async (userId: string) => {
   return customId;
 };
 
-const PaymentIdMaker = async () => {
+export const PaymentIdMaker = async () => {
+  // console.log('PaymentIdMaker: called');
   // Make payment created date in format YYMMDD
   const today = new Date();
   const YYMMDD = today.toISOString().slice(2, 10).replace(/-/g, '');
@@ -127,4 +128,9 @@ const PaymentIdMaker = async () => {
   return customId;
 };
 
-export { AccountIdMaker, SubsCtgIdMaker, SubsDataIdMaker, PaymentIdMaker };
+export const paymentProofIdMaker = async (paymentId: string) => {
+  const date = new Date();
+  const formattedDate = date.toISOString().slice(2, 10).replace(/-/g, '');
+  const fileName = `pp${formattedDate}-${paymentId}`.trim();
+  return fileName;
+};

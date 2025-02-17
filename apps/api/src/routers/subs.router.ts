@@ -21,50 +21,46 @@ export class SubsRouter {
   }
 
   private initializeRoutes(): void {
-    // New Subs Category
+    this.router.get('/categories', this.subsCtgController.allSubsCategory);
+
     this.router.post(
-      '/new',
+      '/category/new',
       verifyToken,
       devGuard,
       NewSubsCtgValidation,
-      this.subsCtgController.createSubsCtg,
+      this.subsCtgController.newSubsCategory,
     );
 
-    // Edit Subs Category
     this.router.patch(
       '/category/:id',
       verifyToken,
       devGuard,
       NewSubsCtgValidation,
-      this.subsCtgController.editSubsCtg,
+      this.subsCtgController.editSubsCategory,
     );
 
-    // Delete Subs Category
     this.router.delete(
-      '/:id',
+      '/category/:id',
       verifyToken,
       devGuard,
-      this.subsCtgController.delSubsCtg,
+      this.subsCtgController.deleteSubsCategory,
     );
 
     // Get All Subs Datas
     this.router.get(
-      '/allSubsDatas',
+      '/datas',
       verifyToken,
       devGuard,
-      this.subsDataController.getAllSubsDatas,
+      this.subsDataController.allSubsData,
     );
 
     // Update user subscription category
     this.router.patch(
-      '/user/:subsCtgId',
+      '/data/:ctg',
       verifyToken,
       userDevGuard,
-      this.subsDataController.updateSubscription,
+      this.subsDataController.updateSubsData,
     );
-
-    // Get All Subs Category
-    this.router.get('/categories', this.subsCtgController.getAllSubsCtg); //subs-categories, untuk endpoint jangan pakai camel case, tapi pakai "-"
   }
   getRouter(): Router {
     return this.router;

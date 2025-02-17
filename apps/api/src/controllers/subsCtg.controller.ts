@@ -1,17 +1,17 @@
 import {
-  getCategories,
-  addCategory,
-  getCategoryByName,
-  getCategoryById,
-  deleteCategory,
-  updateCategory,
+  addSubsCatHandler,
+  delSubsCatHandler,
+  editSubsCatHandler,
+  getSubsCatById,
+  getSubsCatByName,
+  getSubsCats,
 } from '@/services/subsCtgHandler';
 import { NextFunction, Request, Response } from 'express';
 
 export class SubsCtgController {
-  async getAllSubsCtg(req: Request, res: Response, next: NextFunction) {
+  async allSubsCategory(req: Request, res: Response, next: NextFunction) {
     try {
-      const allSubsCtg = await getCategories();
+      const allSubsCtg = await getSubsCats();
       if (allSubsCtg.length === 0) {
         return res
           .status(200)
@@ -27,14 +27,14 @@ export class SubsCtgController {
     }
   }
 
-  async createSubsCtg(req: Request, res: Response, next: NextFunction) {
+  async newSubsCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, price, cv, skill, priority } = req.body;
 
-      const findSubsCtg = await getCategoryByName(name);
+      const findSubsCtg = await getSubsCatByName(name);
       if (findSubsCtg) throw new Error('Subscription category already exist');
 
-      const newData = await addCategory(name, price, cv, skill, priority);
+      const newData = await addSubsCatHandler(name, price, cv, skill, priority);
       return res.status(201).send({
         message: 'Subscription category created successfully',
         subsCtg: newData,
@@ -44,19 +44,19 @@ export class SubsCtgController {
     }
   }
 
-  async delSubsCtg(req: Request, res: Response, next: NextFunction) {
+  async deleteSubsCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       if (!id) {
         throw new Error('Id not available');
       }
 
-      const findSubsCtg = await getCategoryById(id);
+      const findSubsCtg = await getSubsCatById(id);
       if (!findSubsCtg) {
         throw new Error('Subscription category not found');
       }
 
-      await deleteCategory(id);
+      await delSubsCatHandler(id);
       return res.status(200).send({
         message: `${findSubsCtg.name} subscription category deleted successfully`,
       });
@@ -65,22 +65,22 @@ export class SubsCtgController {
     }
   }
 
-  async editSubsCtg(req: Request, res: Response, next: NextFunction) {
+  async editSubsCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       if (!id) {
         throw new Error('Id not available');
       }
 
-      const findSubsCtg = await getCategoryById(id);
+      const findSubsCtg = await getSubsCatById(id);
       if (!findSubsCtg) throw new Error('Subscription category not found');
 
       const { name, price, cv, skill, priority } = req.body;
       // Check if name already exist
-      const findCtgName = await getCategoryByName(name);
+      const findCtgName = await getSubsCatByName(name);
       if (findCtgName) throw new Error('Subscription category already exist');
 
-      const updatedData = await updateCategory(
+      const updatedData = await editSubsCatHandler(
         id,
         name,
         price,

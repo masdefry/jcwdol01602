@@ -19,21 +19,21 @@ export class AccountRouter {
   private initializeRoutes(): void {
     // New user account
     this.router.post(
-      '/newUser',
+      '/new-user',
       RegisterValidation,
-      this.AccountController.createUserAccount,
+      this.AccountController.newUser,
     );
     // New admin account
     this.router.post(
-      '/newAdmin',
+      '/new-admin',
       RegisterValidation,
-      this.AccountController.createAdminAccount,
+      this.AccountController.newAdmin,
     );
     // New dev account
     this.router.post(
-      '/newDev',
+      '/new-dev',
       RegisterValidation,
-      this.AccountController.createDevAccount,
+      this.AccountController.newDev,
     );
     // login
     this.router.post(
@@ -42,7 +42,7 @@ export class AccountRouter {
       this.AccountController.loginAccount,
     );
     // get all accounts
-    this.router.get('/getAllAccounts', this.AccountController.getAccounts);
+    this.router.get('/all-accounts', this.AccountController.allAccount);
     // verify account
     this.router.post(
       '/verify',
@@ -52,7 +52,7 @@ export class AccountRouter {
     // delete account
     this.router.delete('/:id', this.AccountController.deleteAccount);
     // get account by Id
-    this.router.get('/:id', verifyToken, this.AccountController.getAccountById);
+    this.router.get('/:id', verifyToken, this.AccountController.findAccount);
   }
 
   getRouter(): Router {

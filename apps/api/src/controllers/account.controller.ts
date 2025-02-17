@@ -1,19 +1,22 @@
-import prisma from '@/prisma';
 import { NextFunction, Request, Response } from 'express';
-import { cloudinary, SECRET_KEY } from '@/config';
-import { compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import {
+  delAccHandler,
+  getAccAllHandler,
+  getAccById,
+  loginAccHandler,
+  verifyAccHandler,
+} from '@/services/accountHandler';
+import { delCldAvatar } from '@/services/cloudinary';
+import addAccHandler from '@/services/newAccount';
 import { Account } from '@/custom';
-import createNewAccount from '@/lib/newAccount';
-import { login } from '@/services/accountHandler';
 
 export class AccountController {
-  async createUserAccount(req: Request, res: Response, next: NextFunction) {
+  async newUser(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, email, password, retypePass } = req.body;
 
       // use function createNewAccount to shorten the code
-      const newUser = await createNewAccount(
+      const newUser = await addAccHandler(
         name,
         email,
         password,
@@ -30,10 +33,10 @@ export class AccountController {
     }
   }
 
-  async createAdminAccount(req: Request, res: Response, next: NextFunction) {
+  async newAdmin(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, email, password, retypePass } = req.body;
-      const newAdmin = await createNewAccount(
+      const newAdmin = await addAccHandler(
         name,
         email,
         password,
@@ -50,10 +53,10 @@ export class AccountController {
     }
   }
 
-  async createDevAccount(req: Request, res: Response, next: NextFunction) {
+  async newDev(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, email, password, retypePass } = req.body;
-      const newDev = await createNewAccount(
+      const newDev = await addAccHandler(
         name,
         email,
         password,
@@ -75,7 +78,7 @@ export class AccountController {
       const { email, password } = req.body;
 
       // Get token from login
-      const token = await login(email, password);
+      const token = await loginAccHandler(email, password);
 
       return res.status(200).cookie('access_token', token).send({
         message: 'Login success',
@@ -88,13 +91,7 @@ export class AccountController {
   async verifyAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = req.account as Account;
-
-      await prisma.account.update({
-        where: { email },
-        data: {
-          isVerified: true,
-        },
-      });
+      await verifyAccHandler(email);
       res.status(200).send({
         message: 'Verification Success',
       });
@@ -108,32 +105,18 @@ export class AccountController {
       const { id } = req.params;
       // const account = req.account as Account;
 
-      // check if id not available
       if (!id) {
         throw new Error('Id not available');
       }
-      // Check if account exist
-      const findAccount = await prisma.account.findUnique({
-        where: { id },
-      });
+      const findAccount = await getAccById(id);
       if (!findAccount) throw new Error('Account not found');
 
       // Check if id Token match with account
       // if (account.id !== findAccount.id) throw new Error('Unauthorized');
 
-      // Delete avatar from cloudinary
-      const publicIdMatch = findAccount.avatar.match(
-        /final-project\/avatar\/(.+)\.[a-z]+$/,
-      );
-      if (publicIdMatch) {
-        const publicId = `final-project/avatar/${publicIdMatch[1]}`;
-        await cloudinary.uploader.destroy(publicId);
-      }
+      await delCldAvatar(findAccount.avatar);
+      await delAccHandler(id);
 
-      // Delete account
-      await prisma.account.delete({
-        where: { id },
-      });
       return res.status(200).send({
         message: `${findAccount.name} deleted successfully`,
       });
@@ -142,37 +125,32 @@ export class AccountController {
     }
   }
 
-  async getAccountById(req: Request, res: Response, next: NextFunction) {
+  async findAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       if (!id) {
         throw new Error('Id not available');
       }
-      // Check if account exist
-      const findAccount = await prisma.account.findUnique({
-        where: { id },
-      });
-      if (!findAccount) throw new Error('Account not found');
+      const getAccount = await getAccById(id);
+      if (!getAccount) throw new Error('Account not found');
       return res.status(200).send({
         message: 'Account retreived successfully',
-        account: findAccount,
+        account: getAccount,
       });
     } catch (error) {
       next(error);
     }
   }
 
-  async getAccounts(req: Request, res: Response, next: NextFunction) {
+  async allAccount(req: Request, res: Response, next: NextFunction) {
     try {
-      const accounts = await prisma.account.findMany({
-        select: { id: true, name: true, email: true, avatar: true },
-      });
-      if (accounts.length === 0) {
-        return res.status(200).send({ message: 'No data', accounts });
+      const datas = await getAccAllHandler();
+      if (datas.length === 0) {
+        return res.status(200).send({ message: 'No data', accounts: datas });
       }
       return res.status(200).send({
         message: 'Accounts retreived successfully',
-        accounts: accounts,
+        accounts: datas,
       });
     } catch (error) {
       next(error);
