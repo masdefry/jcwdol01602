@@ -50,7 +50,11 @@ export class AccountRouter {
       this.AccountController.verifyAccount,
     );
     // delete account
-    this.router.delete('/:id', this.AccountController.deleteAccount);
+    this.router.delete(
+      '/delete',
+      verifyToken,
+      this.AccountController.deleteAccount,
+    );
     // get account by Id
     this.router.get('/:id', verifyToken, this.AccountController.findAccount);
   }

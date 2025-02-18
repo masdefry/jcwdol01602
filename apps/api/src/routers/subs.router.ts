@@ -56,7 +56,7 @@ export class SubsRouter {
 
     // Update user subscription category
     this.router.patch(
-      '/data/:ctg',
+      '/update/:ctgId',
       verifyToken,
       userDevGuard,
       this.subsDataController.updateSubsData,

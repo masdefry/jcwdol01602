@@ -102,23 +102,13 @@ export class AccountController {
 
   async deleteAccount(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      // const account = req.account as Account;
+      const account = req.account as Account;
 
-      if (!id) {
-        throw new Error('Id not available');
-      }
-      const findAccount = await getAccById(id);
-      if (!findAccount) throw new Error('Account not found');
-
-      // Check if id Token match with account
-      // if (account.id !== findAccount.id) throw new Error('Unauthorized');
-
-      await delCldAvatar(findAccount.avatar);
-      await delAccHandler(id);
+      const deletedAccount = await delAccHandler(account.id);
 
       return res.status(200).send({
-        message: `${findAccount.name} deleted successfully`,
+        message: `your account deleted successfully`,
+        deletedAccount,
       });
     } catch (error) {
       next(error);

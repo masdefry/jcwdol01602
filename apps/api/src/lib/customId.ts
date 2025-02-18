@@ -96,7 +96,7 @@ export const SubsDataIdMaker = async (userId: string) => {
 };
 
 export const PaymentIdMaker = async () => {
-  // console.log('PaymentIdMaker: called');
+  console.log('PaymentIdMaker: called');
   // Make payment created date in format YYMMDD
   const today = new Date();
   const YYMMDD = today.toISOString().slice(2, 10).replace(/-/g, '');
@@ -118,13 +118,13 @@ export const PaymentIdMaker = async () => {
   let nextIdNumber = 1;
   if (lastPayment) {
     // Extract the last sequence number using regex
-    const match = lastPayment.id.match(/-(\d+)-/);
+    const match = lastPayment.id.match(/-(\d+)$/);
     if (match) {
-      nextIdNumber = parseInt(match[1], 10 + 1);
+      nextIdNumber = parseInt(match[1], 10) + 1;
     }
   }
   // Format the customId
-  const customId = `${customIdPrefix}-${nextIdNumber.toString().padStart(3, '0')} `;
+  const customId = `${customIdPrefix}-${nextIdNumber.toString().padStart(3, '0')}`;
   return customId;
 };
 

@@ -68,6 +68,7 @@ model SubsCtg {
   priority        Boolean  @default(false)
   createdAt       DateTime @default(now())
   User            SubsData[]
+  Payment         Payment[]
 }
 
 model SubsData {
@@ -146,10 +147,12 @@ model Applicant {
 model Payment {
   id           String   @id
   subsDataId   String
-  subsData     SubsData @relation(fields: [subsDataId], references: [id])
+  subsData     SubsData @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
+  subsCtgId    String
+  subsCtg      SubsCtg @relation(fields: [subsCtgId], references: [id])
   method       paymentMethod?
   proof        String?
-  isApproved   Boolean @default(false)
+  isApproved   Boolean? 
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   approvalById  String?

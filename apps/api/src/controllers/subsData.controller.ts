@@ -3,7 +3,6 @@ import prisma from '@/prisma';
 import {
   editSubsDataCtg,
   getSubsDataAll,
-  getSubsDataById,
   getSubsDataByUser,
 } from '@/services/subsDataHandler';
 import { Response, Request, NextFunction } from 'express';
@@ -26,36 +25,14 @@ export class SubsDataController {
   async updateSubsData(req: Request, res: Response, next: NextFunction) {
     try {
       // Get the SubsCategoryId
-      const { ctg } = req.params;
-      if (!ctg) throw new Error('Please choose your subscription first');
+      const { ctgId } = req.params;
+      if (!ctgId) throw new Error('Please choose your subscription first');
 
       // Get the user account
       const user = req.account as Account;
 
-      // find subsData with user id
-      const subsData = await getSubsDataByUser(user.id);
-      if (!subsData)
-        throw new Error('No subscription data found for this user');
-
-      //   Check if user has unpaid payment
-      const unPaidPayment = subsData.payment.find((payment) => !payment.proof);
-      if (unPaidPayment)
-        throw new Error(
-          'You have an unpaid payment, please proceed your previous payment first',
-        );
-
-      // Only for development
-      // Check if user has paid payment but not yet approved
-      const unApprovePayment = subsData.payment.find(
-        (payment) => payment.isApproved === false,
-      );
-      if (unApprovePayment)
-        throw new Error(
-          'Your previous payment is not yet approved by our admin, please try again later',
-        );
-
       // update category id in subsData and create new payment data
-      const update = await editSubsDataCtg(subsData.id, ctg);
+      const update = await editSubsDataCtg(user.id, ctgId);
 
       return res.status(200).send({
         message: `Your subscription is updated`,

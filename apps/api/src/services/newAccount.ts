@@ -60,41 +60,38 @@ const addAccHandler = async (
     // Variable to store subsData if the role is 'user'
     let subsData = null;
 
-    // Create Account in DB
-    const newAccount = await prisma.$transaction(async (prisma) => {
-      // 1. Create account first
-      const account = await prisma.account.create({
-        data: {
-          id: accountId,
-          name,
-          email,
-          password: hashPassword,
-          avatar: avatarUrl,
-          role: role,
-        },
-      });
-
-      // 2. Create Subs data if role is 'user
-      if (role === Role.user) {
-        // Get Subscription Category
-        const subCtg = await getSubsCatByName('free');
-        if (!subCtg)
-          throw new Error(
-            'No subscription category found, please check your database.',
-          );
-        // Input user data into Subs Data
-        subsData = await addSubsData(account.id, subCtg.id);
-      }
-      return account;
+    // Create account in db
+    // 1. Create account first
+    const account = await prisma.account.create({
+      data: {
+        id: accountId,
+        name,
+        email,
+        password: hashPassword,
+        avatar: avatarUrl,
+        role: role,
+      },
     });
+
+    // 2. Create Subs data if role is 'user
+    if (role === Role.user) {
+      // Get Subscription Category
+      const subCtg = await getSubsCatByName('free');
+      if (!subCtg)
+        throw new Error(
+          'No subscription category found, please check your database.',
+        );
+      // Input user data into Subs Data
+      subsData = await addSubsData(account.id, subCtg.id);
+    }
 
     // Making payload for verification
     const payload = {
       email,
-      id: newAccount.id,
-      name: newAccount.name,
-      role: newAccount.role,
-      avatar: newAccount.avatar,
+      id: account.id,
+      name: account.name,
+      role: account.role,
+      avatar: account.avatar,
     };
     const token = sign(payload, SECRET_KEY as string, {
       expiresIn: '1h',
@@ -124,7 +121,7 @@ const addAccHandler = async (
     });
 
     // return base on role
-    return role === Role.user ? { newAccount, subsData } : newAccount;
+    return role === Role.user ? { account, subsData } : account;
   } catch (error) {
     throw error;
   }

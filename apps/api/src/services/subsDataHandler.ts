@@ -1,7 +1,7 @@
 import { SubsDataIdMaker } from '@/lib/customId';
 import prisma from '@/prisma';
 import { newPay } from './paymentHandler';
-import { getSubsCatById } from './subsCtgHandler';
+import { getSubsCatById, getSubsCatByName } from './subsCtgHandler';
 
 export const addSubsData = async (userId: string, subsCtgId: string) => {
   const subsDataId = await SubsDataIdMaker(userId);
@@ -57,26 +57,63 @@ export const getSubsDataByUser = async (id: string) => {
   }
 };
 
-export const editSubsDataCtg = async (id: string, ctgId: string) => {
+export const editSubsDataCtg = async (
+  userId: string,
+  ctgId?: string,
+  ctgName?: string,
+) => {
   try {
-    const subsCategory = await getSubsCatById(ctgId);
-    if (!subsCategory) throw new Error('Invalid subscription category ID');
+    // find subsData by user
+    const subsData = await getSubsDataByUser(userId);
+    if (!subsData) throw new Error('No subscription data found for this user');
+
+    // Check if user has unpaid payment
+    const unPaidPayment = subsData.payment.find((payment) => !payment.proof);
+    if (unPaidPayment)
+      throw new Error(
+        'You have an unpaid payment, please proceed your previous payment first',
+      );
+    // Check if user has paid payment but not yet approved
+    const noApprovePayment = subsData.payment.find(
+      (payment) => payment.isApproved === null,
+    );
+    if (noApprovePayment)
+      throw new Error(
+        'Your previous payment is waiting for our admin approval, please try again later',
+      );
+
+    // Check if user has paid payment but not approved
+    const unApprovePayment = subsData.payment.find(
+      (payment) => payment.isApproved === false,
+    );
+    if (unApprovePayment)
+      throw new Error(
+        'Your previous payment is not approved, please fix your previous payment first',
+      );
+
+    let subsCtg = null;
+    if (ctgId) {
+      subsCtg = await getSubsCatById(ctgId);
+      if (!subsCtg) throw new Error('Invalid subscription category ID');
+    } else if (ctgName) {
+      subsCtg = await getSubsCatByName(ctgName);
+    } else {
+      throw new Error('Invalid subsCtg input while updating subsData');
+    }
+    if (!subsCtg) throw new Error('Subscription category not found!');
     let result = null;
     const updateData = await prisma.subsData.update({
-      where: { id },
+      where: { id: subsData.id },
       data: {
-        subsCtgId: subsCategory.id,
+        subsCtgId: subsCtg.id,
         startDate: null,
         endDate: null,
         isSubActive: false,
       },
     });
     let payment = null;
-    if (
-      subsCategory.name === 'standard' ||
-      subsCategory.name === 'professional'
-    ) {
-      payment = await newPay(updateData.id);
+    if (subsCtg.name === 'standard' || subsCtg.name === 'professional') {
+      payment = await newPay(subsData.id, subsCtg.id);
       return (result = { updateData, payment });
     } else {
       result = updateData;
@@ -84,7 +121,10 @@ export const editSubsDataCtg = async (id: string, ctgId: string) => {
 
     return result;
   } catch (error: any) {
-    throw new Error('Failed to update subscription data : ' + error.message);
+    if (error.message) {
+      throw new Error(error.message);
+    }
+    throw new Error('Unexpected error occured :' + error);
   }
 };
 

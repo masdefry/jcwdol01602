@@ -2,6 +2,9 @@ import { SECRET_KEY } from '@/config';
 import prisma from '@/prisma';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { getSubsDataByUser } from './subsDataHandler';
+import { getPayBySubsData } from './paymentHandler';
+import { delCldAvatar, delCldPayProof } from './cloudinary';
 
 export const loginAccHandler = async (email: string, password: string) => {
   try {
@@ -44,10 +47,10 @@ export const verifyAccHandler = async (email: string) => {
   }
 };
 
-export const getAccById = async (id: string) => {
+export const getAccById = async (userId: string) => {
   try {
     const account = await prisma.account.findUnique({
-      where: { id },
+      where: { id: userId },
     });
     return account;
   } catch (error) {
@@ -55,13 +58,36 @@ export const getAccById = async (id: string) => {
   }
 };
 
-export const delAccHandler = async (id: string) => {
+export const delAccHandler = async (accountId: string) => {
   try {
+    const findAccount = await getAccById(accountId);
+    if (!findAccount) throw new Error('Account not found');
+
+    let subsData = null;
+
+    if (findAccount.role === 'user') {
+      // get subsData by user Id
+      subsData = await getSubsDataByUser(accountId);
+      if (!subsData) throw new Error('No subsData: Invalid userId');
+
+      // delete payment proof in cloudinary
+      for (const payment of subsData.payment) {
+        if (payment.proof) {
+          await delCldPayProof(payment.proof);
+        }
+      }
+    }
+    await delCldAvatar(findAccount.avatar);
+
     await prisma.account.delete({
-      where: { id },
+      where: { id: findAccount.id },
     });
-  } catch (error) {
-    throw error;
+    return findAccount.role === 'user'
+      ? { findAccount, subsData }
+      : findAccount;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error while deleting account' + error);
   }
 };
 

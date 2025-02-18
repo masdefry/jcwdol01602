@@ -20,7 +20,7 @@ export class PaymentRouter {
   private initializeRoutes(): void {
     // Cancel payment
     this.router.delete(
-      '/:id',
+      '/:paymentId',
       verifyToken,
       userDevGuard,
       this.paymentController.deletePayment,
@@ -28,7 +28,7 @@ export class PaymentRouter {
 
     // Add payment method
     this.router.patch(
-      '/method/:id',
+      '/method/:paymentId',
       verifyToken,
       userDevGuard,
       this.paymentController.methodPayment,
@@ -44,18 +44,18 @@ export class PaymentRouter {
 
     // Upload payment proof
     this.router.patch(
-      '/proof/:id',
-      // verifyToken,
-      // userDevGuard,
+      '/proof/:paymentId',
+      verifyToken,
+      userDevGuard,
       uploadImage,
       this.paymentController.uploadPaymentProof,
     );
 
     // Update payment approval
     this.router.patch(
-      '/approval/:id',
-      // verifyToken,
-      // userDevGuard,
+      '/approval/:paymentId',
+      verifyToken,
+      devGuard,
       this.paymentController.approvalPayment,
     );
   }
