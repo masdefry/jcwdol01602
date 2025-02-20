@@ -21,7 +21,7 @@ export const getSubsDataAll = async () => {
     datas = await prisma.subsData.findMany({
       include: {
         accounts: true,
-        subscription: true,
+        subsCtg: true,
         payment: true,
       },
     });
@@ -48,6 +48,7 @@ export const getSubsDataByUser = async (id: string) => {
     const data = await prisma.subsData.findFirst({
       where: { accountId: id },
       include: {
+        subsCtg: true,
         payment: true,
       },
     });

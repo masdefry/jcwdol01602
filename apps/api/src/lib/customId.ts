@@ -169,3 +169,25 @@ export const questImgNameMaker = async (sQuestId: string) => {
   const customId = `sqi${createDate}-${sQuestId}`;
   return customId;
 };
+
+export const sScoreIdMaker = async () => {
+  const customIdPrefix = `scr${createDate}`;
+
+  // Check if the ID already exist for today's date
+  const lastScore = await prisma.skillScore.findFirst({
+    where: { id: { startsWith: customIdPrefix } },
+    orderBy: { id: 'desc' },
+  });
+
+  // Create the next increment for the ID
+  let nextIdNumber = 1;
+  if (lastScore) {
+    // Extract the last sequence number using regex
+    const match = lastScore.id.match(/-(\d+)$/);
+    if (match) {
+      nextIdNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  const customId = `${customIdPrefix}-${nextIdNumber.toString().padStart(3, '0')}`;
+  return customId;
+};

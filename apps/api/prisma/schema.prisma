@@ -33,7 +33,6 @@ model Account {
   Company        Company[]
   Admin         Admin[]
   Profile       Profile[]
-  SkillScore    SkillScore[]
 }
 
 model Profile {
@@ -76,7 +75,7 @@ model SubsData {
   id                String          @id
   accounts          Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId         String
-  subscription      SubsCtg         @relation(fields: [subsCtgId], references: [id])
+  subsCtg           SubsCtg         @relation(fields: [subsCtgId], references: [id])
   subsCtgId         String
   startDate         DateTime?
   endDate           DateTime?
@@ -87,6 +86,7 @@ model SubsData {
   payment           Payment[]
 
   Applicant Applicant[]
+  skillScore         SkillScore[]
 }
 
 model Company {
@@ -188,8 +188,8 @@ model SkillQuestion {
 
 model SkillScore {
   id           String  @id
-  userId       String
-  User         Account @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subsDataId   String
+  subsData     SubsData @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
   skillId      String
   Skill        Skill   @relation(fields: [skillId], references: [id])
   score        Int

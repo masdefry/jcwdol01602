@@ -1,5 +1,10 @@
 import { SkillController } from '@/controllers/skill.controller';
-import { devGuard, verifyToken } from '@/middlewares/auth.middleware';
+import { SkillScoreController } from '@/controllers/skillScore.controller';
+import {
+  devGuard,
+  userDevGuard,
+  verifyToken,
+} from '@/middlewares/auth.middleware';
 import { uploadImage } from '@/middlewares/multer';
 import {
   skillQuestValidation,
@@ -10,9 +15,11 @@ import { Router } from 'express';
 export class SkillRouter {
   private router: Router;
   private skillController: SkillController;
+  private skillScoreController: SkillScoreController;
 
   constructor() {
     this.skillController = new SkillController();
+    this.skillScoreController = new SkillScoreController();
     this.router = Router();
     this.initializeRoutes();
   }
@@ -53,6 +60,22 @@ export class SkillRouter {
       uploadImage,
       updateSkillQuestValidation,
       this.skillController.updateSkillQuest,
+    );
+
+    this.router.get(
+      '/all-question/:skillId',
+      this.skillController.allSkillQuestBySkill,
+    );
+
+    this.router.post(
+      '/submit-assestment/:skillId',
+      verifyToken,
+      userDevGuard,
+      this.skillScoreController.addSkillScore,
+    );
+    this.router.delete(
+      '/delete-score/:sScoreId',
+      this.skillScoreController.deleteSkillScore,
     );
   }
   getRouter(): Router {

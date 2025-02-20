@@ -3,6 +3,7 @@ import { skillIdMaker, sQuestIdMaker } from '@/lib/customId';
 import { validate64Image } from '@/lib/validateImage';
 import prisma from '@/prisma';
 import { addCldQuestImage, delCldSQuestImage } from '@/services/cloudinary';
+import { getSkillById } from '@/services/skillHandler';
 import {
   addSkillQuest,
   delSkillQuest,
@@ -129,6 +130,25 @@ export class SkillController {
     }
   }
 
+  async allSkillQuestBySkill(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { skillId } = req.params;
+      if (!skillId) throw new Error(`Skill id required`);
+      const skill = await getSkillById(skillId);
+      if (!skill) throw new Error(`Skill doesn't exist`);
+      let allSkillQuest = null;
+      allSkillQuest = await getAllSQuestBySkill(skill.id);
+      if (allSkillQuest.length === null) {
+        allSkillQuest = 'No data';
+      }
+      return res.status(200).send({
+        message: `Skill questions by ${skill.name} skill retrieved successfully`,
+        allSkillQuest,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
   async deleteSkillQuest(req: Request, res: Response, next: NextFunction) {
     try {
       const { sQuestId } = req.params;
