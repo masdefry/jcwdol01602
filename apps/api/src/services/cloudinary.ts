@@ -1,5 +1,5 @@
 import { cloudinary } from '@/config';
-import { paymentProofIdMaker } from '@/lib/customId';
+import { paymentProofIdMaker, questImgNameMaker } from '@/lib/customId';
 
 // Delete Avatar
 export const delCldAvatar = async (url: string) => {
@@ -50,6 +50,44 @@ export const delCldPayProof = async (url: string) => {
       const publicId = `final-project/payment-proof/${publicIdMatch[1]}`;
       await cloudinary.uploader.destroy(publicId);
     }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addCldQuestImage = async (
+  image: Express.Multer.File,
+  sQuestId: string,
+) => {
+  try {
+    const imageName = await questImgNameMaker(sQuestId);
+    // convert to buffer
+    const base64Image = `data:${image.mimetype};base64,${image.buffer.toString('base64')}`;
+    const imageUrl = await cloudinary.uploader.upload(base64Image, {
+      folder: 'final-project/skill-question',
+      public_id: imageName,
+      overwrite: true,
+    });
+    if (!imageUrl || !imageUrl.secure_url)
+      throw new Error(
+        'Unexpected error while upload payment proof, please try again later',
+      );
+    return imageUrl.secure_url;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const delCldSQuestImage = async (url: string) => {
+  try {
+    const publicIdMatch = url.match(
+      /final-project\/skill-question\/(.+)\.[a-z]+$/,
+    );
+    if (!publicIdMatch) {
+      throw new Error('Invalid image URL format');
+    }
+    const publicId = `final-project/skill-question/${publicIdMatch[1]}`;
+    await cloudinary.uploader.destroy(publicId);
   } catch (error) {
     throw error;
   }

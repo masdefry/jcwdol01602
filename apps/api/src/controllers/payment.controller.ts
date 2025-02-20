@@ -5,12 +5,7 @@ import {
   editPayMethod,
   editPayProof,
   getPayAll,
-  getPayById,
 } from '@/services/paymentHandler';
-import {
-  editSubsDataApproval,
-  getSubsDataById,
-} from '@/services/subsDataHandler';
 import { Request, Response, NextFunction } from 'express';
 
 export class PaymentController {

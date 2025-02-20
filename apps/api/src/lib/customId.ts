@@ -5,14 +5,11 @@ interface IAccountIdMaker {
   name: Role;
 }
 
-export const AccountIdMaker = async ({ name }: IAccountIdMaker) => {
-  // Make account created date in format YYMMDD
-  const today = new Date();
-  const yy = today.getFullYear().toString().slice(2, 4);
-  const mm = (today.getMonth() + 1).toString().padStart(2, '0');
-  const dd = today.getDate().toString().padStart(2, '0');
-  const createdDate = `${yy}${mm}${dd}`;
+const today = new Date();
+// create date with format YYMMDD
+const createDate = today.toISOString().slice(2, 10).replace(/-/g, '');
 
+export const AccountIdMaker = async ({ name }: IAccountIdMaker) => {
   // Get the sequence base on role
   const accountCount = await prisma.account.count({
     where: {
@@ -28,16 +25,14 @@ export const AccountIdMaker = async ({ name }: IAccountIdMaker) => {
   const accountNumber = (accountCount + 1).toString().padStart(3, '0');
 
   // Make customId
-  const customId = `${name.charAt(0).toLowerCase()}${createdDate}-${accountNumber}`;
+  const customId = `${name.charAt(0).toLowerCase()}${createDate}-${accountNumber}`;
 
   return customId;
 };
 
 export const SubsCtgIdMaker = async () => {
   // Generate custom ID based on today's date
-  const today = new Date();
-  const YYMMDD = today.toISOString().slice(2, 10).replace(/-/g, '');
-  const customIdPrefix = `sc${YYMMDD}`;
+  const customIdPrefix = `sc${createDate}`;
 
   // Check if the ID already exists for today's date
   const lastSubsCtg = await prisma.subsCtg.findFirst({
@@ -64,10 +59,7 @@ export const SubsCtgIdMaker = async () => {
 };
 
 export const SubsDataIdMaker = async (userId: string) => {
-  // Generate custom ID based on today's date
-  const today = new Date();
-  const YYMMDD = today.toISOString().slice(2, 10).replace(/-/g, '');
-  const customIdPrefix = `sd${YYMMDD}`;
+  const customIdPrefix = `sd${createDate}`;
 
   //  Check if the ID already exist for today's date
   const lastSubsData = await prisma.subsData.findFirst({
@@ -96,13 +88,9 @@ export const SubsDataIdMaker = async (userId: string) => {
 };
 
 export const PaymentIdMaker = async () => {
-  console.log('PaymentIdMaker: called');
-  // Make payment created date in format YYMMDD
-  const today = new Date();
-  const YYMMDD = today.toISOString().slice(2, 10).replace(/-/g, '');
-  const customIdPrefix = `inv${YYMMDD}`;
+  const customIdPrefix = `inv${createDate}`;
 
-  // Chech if the ID laready exist for today's date
+  // Chech if the ID already exist for today's date
   const lastPayment = await prisma.payment.findFirst({
     where: {
       id: {
@@ -129,8 +117,55 @@ export const PaymentIdMaker = async () => {
 };
 
 export const paymentProofIdMaker = async (paymentId: string) => {
-  const date = new Date();
-  const formattedDate = date.toISOString().slice(2, 10).replace(/-/g, '');
-  const fileName = `pp${formattedDate}-${paymentId}`.trim();
+  const fileName = `pp${createDate}-${paymentId}`.trim();
   return fileName;
+};
+
+export const skillIdMaker = async () => {
+  const customIdPrefix = `sk${createDate}`;
+
+  // Check if the ID already exist for today's date
+  const lastSkill = await prisma.skill.findFirst({
+    where: { id: { startsWith: customIdPrefix } },
+    orderBy: { id: 'desc' },
+  });
+
+  // Create the next increment for the ID
+  let nextIdNumber = 1;
+  if (lastSkill) {
+    // Extract the last sequence number using regex
+    const match = lastSkill.id.match(/-(\d+)$/);
+    if (match) {
+      nextIdNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  const customId = `${customIdPrefix}-${nextIdNumber.toString().padStart(3, '0')}`;
+  return customId;
+};
+
+export const sQuestIdMaker = async () => {
+  const customIdPrefix = `sq${createDate}`;
+
+  // Check if the ID already exist for today's date
+  const lastQuestion = await prisma.skillQuestion.findFirst({
+    where: { id: { startsWith: customIdPrefix } },
+    orderBy: { id: 'desc' },
+  });
+
+  // Create the next increment for the ID
+  let nextIdNumber = 1;
+  if (lastQuestion) {
+    // Extract the last sequence number using regex
+    const match = lastQuestion.id.match(/-(\d+)$/);
+    if (match) {
+      nextIdNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  const customId = `${customIdPrefix}-${nextIdNumber.toString().padStart(3, '0')}`;
+  return customId;
+};
+
+export const questImgNameMaker = async (sQuestId: string) => {
+  const customId = `sqi${createDate}-${sQuestId}`;
+  return customId;
 };
