@@ -141,9 +141,14 @@ model Applicant {
   jobId     String
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())
+  expectedSalary Int?
+  education   String?
+  cvFile      String?
 
   @@unique([userId, jobId])
 }
+
+
 
 model Payment {
   id           String   @id
@@ -194,3 +199,4 @@ model SkillScore {
   Skill        Skill   @relation(fields: [skillId], references: [id])
   score        Int
 }
+
