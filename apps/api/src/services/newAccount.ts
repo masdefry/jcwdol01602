@@ -1,16 +1,21 @@
 import prisma from '@/prisma';
 import { cloudinary, SECRET_KEY, WEB_URL } from '@/config';
-import { AccountIdMaker, SubsDataIdMaker } from './customId';
+import { AccountIdMaker } from '../lib/customId';
 import { genSalt, hash } from 'bcrypt';
-import { transporter } from './mail';
+import { transporter } from '../lib/mail';
 import path from 'path';
 import handlebars from 'handlebars';
 import fs from 'fs';
 import { sign } from 'jsonwebtoken';
+import { Role } from '@prisma/client';
+import { getSubsCatByName } from './subsCtgHandler';
+import { addSubsData } from './subsDataHandler';
 
-const findRole = async (name: string) => {
-  const role = await prisma.role.findFirst({ where: { name } });
-  return role;
+const findRole = (name: string): Role => {
+  if (!Object.values(Role).includes(name as Role)) {
+    throw new Error(`Role not found`);
+  }
+  return name as Role;
 };
 
 const avatarUrl = cloudinary.url(
@@ -20,13 +25,19 @@ const avatarUrl = cloudinary.url(
   },
 );
 
-const createNewAccount = async (
+const addAccHandler = async (
   name: string,
   email: string,
   password: string,
+  retypePass: string,
   roleName: string,
 ) => {
   try {
+    // Check if password is the same as retypePass
+    if (password !== retypePass) {
+      throw new Error('Passwords do not match');
+    }
+
     // Check if email already exist
     const findAccount = await prisma.account.findUnique({
       where: { email },
@@ -41,58 +52,46 @@ const createNewAccount = async (
     const hashPassword = await hash(password, salt);
 
     // Get User Roles
-    const role = await findRole(roleName);
-    if (role === null) {
-      throw new Error('Role not found');
-    }
+    const role = findRole(roleName);
 
     // Make Custom Id
-    const userId = await AccountIdMaker({ id: role.id, name: role.name });
+    const accountId = await AccountIdMaker({ name: role });
 
     // Variable to store subsData if the role is 'user'
     let subsData = null;
 
-    // Create Account in DB
-    const newAccount = await prisma.$transaction(async (prisma) => {
-      // 1. Create account first
-      const account = await prisma.account.create({
-        data: {
-          id: userId,
-          name,
-          email,
-          password: hashPassword,
-          avatar: avatarUrl,
-          roleId: role.id,
-        },
-      });
-
-      // 2. Create Subs data if role is 'user
-      if (role.name === 'user') {
-        // Get Subscription Category
-        const subCtg = await prisma.subsCtg.findFirst({
-          where: { name: 'free' },
-        });
-        if (!subCtg)
-          throw new Error(
-            'No subscription category found, please check your database.',
-          );
-        //  Create SubsData Id
-        const subsDataId = await SubsDataIdMaker(userId);
-        // Input user data into Subs Data
-        subsData = await prisma.subsData.create({
-          data: {
-            id: subsDataId,
-            accountId: account.id,
-            subsCtgId: subCtg.id,
-          },
-        });
-      }
-      return account;
+    // Create account in db
+    // 1. Create account first
+    const account = await prisma.account.create({
+      data: {
+        id: accountId,
+        name,
+        email,
+        password: hashPassword,
+        avatar: avatarUrl,
+        role: role,
+      },
     });
+
+    // 2. Create Subs data if role is 'user
+    if (role === Role.user) {
+      // Get Subscription Category
+      const subCtg = await getSubsCatByName('free');
+      if (!subCtg)
+        throw new Error(
+          'No subscription category found, please check your database.',
+        );
+      // Input user data into Subs Data
+      subsData = await addSubsData(account.id, subCtg.id);
+    }
 
     // Making payload for verification
     const payload = {
       email,
+      id: account.id,
+      name: account.name,
+      role: account.role,
+      avatar: account.avatar,
     };
     const token = sign(payload, SECRET_KEY as string, {
       expiresIn: '1h',
@@ -122,10 +121,10 @@ const createNewAccount = async (
     });
 
     // return base on role
-    return role.name === 'user' ? { newAccount, subsData } : newAccount;
+    return role === Role.user ? { account, subsData } : account;
   } catch (error) {
     throw error;
   }
 };
 
-export default createNewAccount;
+export default addAccHandler;

@@ -21,49 +21,45 @@ export class SubsRouter {
   }
 
   private initializeRoutes(): void {
-    // Get All Subs Category
-    this.router.get('/allSubsCtg', this.subsCtgController.getAllSubsCtg);
+    this.router.get('/categories', this.subsCtgController.allSubsCategory);
 
-    // New Subs Category
     this.router.post(
-      '/new',
+      '/category/new',
       verifyToken,
       devGuard,
       NewSubsCtgValidation,
-      this.subsCtgController.createSubsCtg,
+      this.subsCtgController.newSubsCategory,
     );
 
-    // Edit Subs Category
     this.router.patch(
       '/category/:id',
       verifyToken,
       devGuard,
       NewSubsCtgValidation,
-      this.subsCtgController.editSubsCtg,
+      this.subsCtgController.editSubsCategory,
     );
 
-    // Delete Subs Category
     this.router.delete(
-      '/:id',
+      '/category/:id',
       verifyToken,
       devGuard,
-      this.subsCtgController.delSubsCtg,
+      this.subsCtgController.deleteSubsCategory,
     );
 
     // Get All Subs Datas
     this.router.get(
-      '/allSubsDatas',
+      '/datas',
       verifyToken,
       devGuard,
-      this.subsDataController.getAllSubsDatas,
+      this.subsDataController.allSubsData,
     );
 
     // Update user subscription category
     this.router.patch(
-      '/user/:subsCtgId',
+      '/update/:ctgId',
       verifyToken,
       userDevGuard,
-      this.subsDataController.updateSubscription,
+      this.subsDataController.updateSubsData,
     );
   }
   getRouter(): Router {
