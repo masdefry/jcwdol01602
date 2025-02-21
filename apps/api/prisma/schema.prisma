@@ -127,6 +127,7 @@ model Job {
   category    String
   location    String
   salaryRange String?
+  tags        String
   deadline    DateTime?
   isPublished Boolean
   createdAt   DateTime @default(now())
@@ -144,8 +145,16 @@ model Applicant {
   expectedSalary Int?
   education   String?
   cvFile      String?
-
+  status        ApplicantStatus @default(PENDING)
   @@unique([userId, jobId])
+}
+
+
+enum ApplicantStatus {
+  PENDING
+  INTERVIEW
+  ACCEPTED
+  REJECTED
 }
 
 
