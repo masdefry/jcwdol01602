@@ -15,10 +15,8 @@ export class JobController {
           salaryRange,
           tags,
           deadline,
-          isPublished: false,
-          company: {
-            connect: { id: companyId },
-          },
+          companyId,
+          isPublished: false
         },
       });
       return res.status(201).json({ message: 'Job created successfully', job });

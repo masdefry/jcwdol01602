@@ -21,7 +21,7 @@ model Sample {
 
 model Account {
   id             String    @id
-  role           Role      
+  role           Role
   email          String    @unique
   password       String
   isVerified     Boolean   @default(false)
@@ -31,7 +31,6 @@ model Account {
   updatedAt      DateTime  @updatedAt
   User           SubsData[]
   Company        Company[]
-  Admin         Admin[]
   Profile       Profile[]
 }
 
@@ -105,18 +104,8 @@ model Company {
   updatedAt   DateTime @updatedAt
   jobs        Job[]
 
-  Admin Admin[]
 }
 
-model Admin {
-  id                String          @id @default(uuid())
-  accounts          Account         @relation(fields: [accountId], references: [id])
-  accountId         String
-  companyId   String
-  company     Company  @relation(fields: [companyId], references: [id])
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-}
 
 model Job {
   id          String   @id @default(uuid())
@@ -137,16 +126,14 @@ model Job {
 
 model Applicant {
   id        String   @id @default(uuid())
-  userId    String
-  user      SubsData     @relation(fields: [userId], references: [id])
+  subsDataId    String
+  subsData      SubsData     @relation(fields: [subsDataId], references: [id])
   jobId     String
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())
   expectedSalary Int?
   education   String?
-  cvFile      String?
-  status        ApplicantStatus @default(PENDING)
-  @@unique([userId, jobId])
+  status      ApplicantStatus @default(PENDING)
 }
 
 
@@ -167,7 +154,7 @@ model Payment {
   subsCtg      SubsCtg @relation(fields: [subsCtgId], references: [id])
   method       paymentMethod?
   proof        String?
-  isApproved   Boolean? 
+  isApproved   Boolean?
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   approvalById  String?
@@ -181,7 +168,7 @@ enum paymentMethod {
 model Skill {
   id            String @id
   name          String @unique
-  createdById   String   
+  createdById   String
   createdAt     DateTime @default(now())
   question      SkillQuestion[]
   SkillScore    SkillScore[]
@@ -189,7 +176,7 @@ model Skill {
 
 model SkillQuestion {
   id            String @id
-  skillId       String 
+  skillId       String
   skill         Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
   question      String
   imageUrl      String?
@@ -208,4 +195,3 @@ model SkillScore {
   Skill        Skill   @relation(fields: [skillId], references: [id])
   score        Int
 }
-
