@@ -71,11 +71,22 @@ export class SkillRouter {
       '/submit-assestment/:skillId',
       verifyToken,
       userDevGuard,
-      this.skillScoreController.addSkillScore,
+      this.skillScoreController.newSkillScore,
     );
     this.router.delete(
       '/delete-score/:sScoreId',
       this.skillScoreController.deleteSkillScore,
+    );
+    this.router.get(
+      '/all-scores',
+      verifyToken,
+      devGuard,
+      this.skillScoreController.allSkillScore,
+    );
+    this.router.get(
+      '/user-scores/:subsDataId',
+      verifyToken,
+      this.skillScoreController.subsDataSkillScore,
     );
   }
   getRouter(): Router {
