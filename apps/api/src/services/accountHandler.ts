@@ -68,12 +68,13 @@ export const delAccHandler = async (accountId: string) => {
     if (findAccount.role === 'user') {
       // get subsData by user Id
       subsData = await getSubsDataByUser(accountId);
-      if (!subsData) throw new Error('No subsData: Invalid userId');
 
       // delete payment proof in cloudinary
-      for (const payment of subsData.payment) {
-        if (payment.proof) {
-          await delCldPayProof(payment.proof);
+      if (subsData) {
+        for (const payment of subsData.payment) {
+          if (payment.proof) {
+            await delCldPayProof(payment.proof);
+          }
         }
       }
     }

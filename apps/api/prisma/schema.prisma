@@ -31,21 +31,7 @@ model Account {
   updatedAt      DateTime  @updatedAt
   User           SubsData[]
   Company        Company[]
-  Admin         Admin[]
-  Profile       Profile[]
-}
-
-model Profile {
-  id        Int      @id @default(autoincrement())
-  accountId    String
-  account    Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
-   gender         Gender?
-  birthDate      DateTime?
-  education      String?
-  address        String?
-  phoneNumber    String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  Admin          Admin[]
 }
 
 enum Role {
@@ -54,10 +40,46 @@ enum Role {
   user
 }
 
-enum Gender {
-  MALE
-  FEMALE
+model UserProfile {
+  id             String      @id 
+  subsDataid     String
+  SubsData       SubsData @relation(fields: [subsDataid], references: [id], onDelete: Cascade)
+  gender         Gender?
+  pob            String
+  dob            DateTime
+  address        String
+  phoneNumber    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
+
+enum Gender {
+  male
+  female
+}
+
+model UserEdu {
+  id             String @id
+  subsDataId     String
+  subsData       SubsData @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
+  level          EduLevel
+  school         String
+  discipline     String
+  startDate      DateTime
+  endDate        DateTime?
+  description    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+enum EduLevel {
+  doctorate
+  master
+  bachelor
+  highschool
+}
+
+
 
 model SubsCtg {
   id              String   @id
@@ -85,8 +107,10 @@ model SubsData {
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
 
-  Applicant Applicant[]
-  skillScore         SkillScore[]
+  Applicant         Applicant[]
+  skillScore        SkillScore[]
+  userProfilie      UserProfile[]
+  userEdu           UserEdu[]
 }
 
 model Company {
