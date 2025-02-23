@@ -143,7 +143,7 @@ export const delSkillScore = async (userId: string, sScoreId: string) => {
     const sScore = await getSkillScoreById(sScoreId);
     if (!sScore) throw new Error(`Score data doesn't exist`);
     const userSkillIdsSet = new Set(
-      subsData.UserSkill.map((userSkill) => userSkill.id),
+      subsData.userSkill.map((userSkill) => userSkill.id),
     );
     console.log(userSkillIdsSet);
     if (!userSkillIdsSet.has(sScore.userSkillId))

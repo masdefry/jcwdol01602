@@ -89,8 +89,8 @@ model SubsCtg {
   skillAssessment Boolean  @default(false)
   priority        Boolean  @default(false)
   createdAt       DateTime @default(now())
-  User            SubsData[]
-  Payment         Payment[]
+  user            SubsData[]
+  payment         Payment[]
 }
 
 model SubsData {
@@ -107,8 +107,8 @@ model SubsData {
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
 
-  Applicant         Applicant[]
-  UserSkill         UserSkill[]
+  applicant         Applicant[]
+  userSkill         UserSkill[]
   userProfilie      UserProfile[]
   userEdu           UserEdu[]
 }
@@ -129,7 +129,7 @@ model Company {
   updatedAt   DateTime @updatedAt
   jobs        Job[]
 
-  Admin Admin[]
+  admin Admin[]
 }
 
 model Admin {
