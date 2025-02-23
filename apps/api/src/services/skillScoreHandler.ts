@@ -4,17 +4,37 @@ import { getAllSQuestBySkill } from './skillQuestHandler';
 import { getSubsDataById, getSubsDataByUser } from './subsDataHandler';
 import { getSubsCatById } from './subsCtgHandler';
 import { sScoreIdMaker } from '@/lib/customId';
+import { getUserSkillById } from './userSkillHandler';
 export const addSkillScore = async (
   userId: string,
+  uSkillId: string,
   skillId: string,
   answers: any,
 ) => {
   try {
+    const subsData = await getSubsDataByUser(userId);
+    if (!subsData) {
+      throw new Error(`No subscription data exist`);
+    }
+    if (
+      subsData.isSubActive &&
+      subsData.subsCtg.name !== 'standard' &&
+      subsData.subsCtg.name !== 'professional'
+    )
+      throw new Error('Please update your subscription');
+
+    const subsCtg = await getSubsCatById(subsData.subsCtgId);
+    if (!subsCtg) throw new Error('No subscription category exist');
+
+    let scoreData = null;
     if (!Array.isArray(answers)) {
       throw new Error('Invalid request data');
     }
     const skill = await getSkillById(skillId);
     if (!skill) throw new Error("Skill doesn't exist");
+
+    const userSkill = await getUserSkillById(uSkillId);
+    if (!userSkill) throw new Error(`User skill doesn't exist`);
     const sQuestions = await getAllSQuestBySkill(skill.id);
     if (!sQuestions)
       throw new Error(`No questions available for skill ${skill.name}`);
@@ -30,21 +50,20 @@ export const addSkillScore = async (
         correctCount++;
       }
     });
-    const subsData = await getSubsDataByUser(userId);
-    if (!subsData) {
-      throw new Error(`No subscription data exist`);
-    }
-    const subsCtg = await getSubsCatById(subsData.subsCtgId);
-    if (!subsCtg) throw new Error('No subscription category exist');
-    let scoreData = null;
+
     const skillScoreId = await sScoreIdMaker();
     if (subsData.subsCtg.skillAssessment === true) {
       // Check subsCtg standard
       if (subsData.subsCtg.name === 'standard') {
         const assestTime = await prisma.skillScore.findMany({
-          where: { subsDataId: subsData.id },
+          where: {
+            userSkillId: {
+              endsWith: `-${subsData.accountId}`,
+            },
+          },
         });
-        if (assestTime.length > 2) {
+        console.log(assestTime);
+        if (assestTime.length >= 2) {
           throw new Error(
             'You have reach your assessment limit, please upgrade your subscription',
           );
@@ -53,8 +72,8 @@ export const addSkillScore = async (
         scoreData = await prisma.skillScore.create({
           data: {
             id: skillScoreId,
+            userSkillId: userSkill.id,
             skillId: skill.id,
-            subsDataId: subsData.id,
             score: correctCount,
           },
         });
@@ -62,8 +81,8 @@ export const addSkillScore = async (
         scoreData = await prisma.skillScore.create({
           data: {
             id: skillScoreId,
+            userSkillId: userSkill.id,
             skillId: skill.id,
-            subsDataId: subsData.id,
             score: correctCount,
           },
         });
@@ -82,6 +101,9 @@ export const getSkillScoreById = async (sScoreId: string) => {
   try {
     const data = await prisma.skillScore.findUnique({
       where: { id: sScoreId },
+      include: {
+        userSkill: true,
+      },
     });
     return data;
   } catch (error: any) {
@@ -100,12 +122,12 @@ export const getSkillScoreAll = async () => {
   }
 };
 
-export const getSkillScoreBySubsData = async (subsDataId: string) => {
+export const allSkillScoreByUserSkill = async (uSkillId: string) => {
   try {
-    const subsData = await getSubsDataById(subsDataId);
-    if (!subsData) throw new Error(`Subscription data doesn't exist`);
+    const userSkill = await getUserSkillById(uSkillId);
+    if (!userSkill) throw new Error(`User skill doesn't exist`);
     const data = await prisma.skillScore.findMany({
-      where: { subsDataId: subsData.id },
+      where: { userSkillId: userSkill.id },
     });
     return data;
   } catch (error: any) {
@@ -114,10 +136,18 @@ export const getSkillScoreBySubsData = async (subsDataId: string) => {
   }
 };
 
-export const delSkillScore = async (sScoreId: string) => {
+export const delSkillScore = async (userId: string, sScoreId: string) => {
   try {
-    const sScore = await getSkillById(sScoreId);
-    if (!sScore) throw new Error(`Score data does't exist`);
+    const subsData = await getSubsDataByUser(userId);
+    if (!subsData) throw new Error(`Subscription data doesn't exist`);
+    const sScore = await getSkillScoreById(sScoreId);
+    if (!sScore) throw new Error(`Score data doesn't exist`);
+    const userSkillIdsSet = new Set(
+      subsData.UserSkill.map((userSkill) => userSkill.id),
+    );
+    console.log(userSkillIdsSet);
+    if (!userSkillIdsSet.has(sScore.userSkillId))
+      throw new Error(`Unauthorized`);
     await prisma.skillScore.delete({
       where: { id: sScore.id },
     });

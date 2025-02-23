@@ -54,13 +54,13 @@ export const addUserEdu = async (
 
 export const getUserEduById = async (userEduId: string) => {
   try {
-    const data = await prisma.userEdu.findUnique({
+    const userEdu = await prisma.userEdu.findUnique({
       where: { id: userEduId },
       include: {
         subsData: true,
       },
     });
-    return data;
+    return userEdu;
   } catch (error: any) {
     if (error.message) {
       throw new Error(error.message);

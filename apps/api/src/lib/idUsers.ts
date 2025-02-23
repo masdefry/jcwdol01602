@@ -50,3 +50,27 @@ export const userEduIdMaker = async () => {
   const customId = `${customIdPrefix}-${nextIdNumber.toString().padStart(3, '0')}`;
   return customId;
 };
+
+export const userSkillIdMaker = async (userId: string) => {
+  const customIdPrefix = `usk`;
+  const lastUserSkill = await prisma.userSkill.findFirst({
+    where: {
+      id: {
+        startsWith: `${customIdPrefix}`,
+        endsWith: `-${userId}`,
+      },
+    },
+    orderBy: {
+      id: 'desc',
+    },
+  });
+  let nextIdNumber = 1;
+  if (lastUserSkill) {
+    const match = lastUserSkill.id.match(/usk(\d+)-/);
+    if (match) {
+      nextIdNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  const customId = `${customIdPrefix}${nextIdNumber.toString().padStart(3, '0')}-${userId}`;
+  return customId;
+};

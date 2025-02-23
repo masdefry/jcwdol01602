@@ -108,7 +108,7 @@ model SubsData {
   payment           Payment[]
 
   Applicant         Applicant[]
-  skillScore        SkillScore[]
+  UserSkill         UserSkill[]
   userProfilie      UserProfile[]
   userEdu           UserEdu[]
 }
@@ -194,7 +194,8 @@ model Skill {
   createdById   String   
   createdAt     DateTime @default(now())
   question      SkillQuestion[]
-  SkillScore    SkillScore[]
+  skillScore    SkillScore[]
+  userSkill     UserSkill[]
 }
 
 model SkillQuestion {
@@ -211,10 +212,19 @@ model SkillQuestion {
 }
 
 model SkillScore {
-  id           String  @id
-  subsDataId   String
-  subsData     SubsData @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
-  skillId      String
-  Skill        Skill   @relation(fields: [skillId], references: [id])
-  score        Int
+  id              String      @id
+  userSkillId     String
+  userSkill       UserSkill   @relation(fields: [userSkillId], references: [id], onDelete: Cascade)
+  skillId         String
+  skill           Skill       @relation(fields: [skillId], references: [id])
+  score           Int
+}
+
+model UserSkill {
+  id            String        @id
+  subsDataId    String
+  subsData      SubsData      @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
+  skillId       String
+  skill         Skill         @relation(fields: [skillId], references: [id])
+  skillScore    SkillScore[]
 }
