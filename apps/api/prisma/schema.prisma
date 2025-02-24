@@ -103,7 +103,7 @@ model SubsData {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
-  
+  applicant         Applicant[]
   userSkill         UserSkill[]
   userProfilie      UserProfile[]
   userEdu           UserEdu[]
@@ -120,6 +120,7 @@ model Company {
   logo        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  jobs        Job[]
 }
 
 
