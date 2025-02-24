@@ -1,6 +1,6 @@
-import { Router } from 'express';
 import { ApplicantController } from '@/controllers/applicant.controller';
-import { adminDevGuard } from '@/middlewares/auth.middleware';
+import { verifyToken } from '@/middlewares/auth.middleware';
+import { Router } from 'express';
 
 export class ApplicantRouter {
   private router: Router;
@@ -13,9 +13,10 @@ export class ApplicantRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/:jobId', adminDevGuard, this.applicantController.getApplicantsByJob);
-    this.router.get('/details/:applicantId', adminDevGuard, this.applicantController.getApplicantDetails);
-    this.router.patch('/:applicantId/status', adminDevGuard, this.applicantController.updateApplicantStatus);
+    this.router.get('/job/:jobId', verifyToken, this.applicantController.getApplicantsByJob);
+    this.router.get('/:applicantId', verifyToken, this.applicantController.getApplicantDetails);
+    this.router.patch('/:applicantId', verifyToken, this.applicantController.updateApplicantStatus);
+
   }
 
   getRouter(): Router {

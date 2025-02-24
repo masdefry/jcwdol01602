@@ -5,12 +5,23 @@ export class JobController {
   // Create a new job
   async createJob(req: Request, res: Response) {
     try {
-      const { title, description, banner, category, location, salary, tags, deadline } = req.body;
+      const { title, description, category, location, salaryRange, tags, deadline, companyId } = req.body;
       const job = await prisma.job.create({
-        data: { title, description, banner, category, location, salary, tags, deadline, isPublished: false },
+        data: {
+          title,
+          description,
+          category,
+          location,
+          salaryRange,
+          tags,
+          deadline,
+          companyId,
+          isPublished: false
+        },
       });
       return res.status(201).json({ message: 'Job created successfully', job });
     } catch (error) {
+      console.error(error);
       return res.status(500).json({ error: 'Failed to create job' });
     }
   }
@@ -19,9 +30,16 @@ export class JobController {
   async updateJob(req: Request, res: Response) {
     try {
       const { id } = req.params;
+      const data = req.body;
+
+      // Check if companyId is being updated:
+      if (data.companyId) {
+        data.company = { connect: { id: data.companyId } };
+        delete data.companyId;
+      }
       const updatedJob = await prisma.job.update({
         where: { id },
-        data: req.body,
+        data: data,
       });
       return res.json({ message: 'Job updated successfully', updatedJob });
     } catch (error) {
