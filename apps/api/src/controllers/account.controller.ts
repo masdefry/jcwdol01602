@@ -133,7 +133,8 @@ export class AccountController {
         message: `your account deleted successfully`,
         deletedAccount,
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message) return res.status(404).send(error.message);
       next(error);
     }
   }
