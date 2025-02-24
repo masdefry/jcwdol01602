@@ -51,8 +51,8 @@ export class AccountRouter {
     );
     // delete account
     this.router.delete(
-      '/delete',
-      verifyToken,
+      '/delete/:accountId',
+      // verifyToken,
       this.AccountController.deleteAccount,
     );
     // get account by Id

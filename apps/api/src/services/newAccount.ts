@@ -10,6 +10,9 @@ import { sign } from 'jsonwebtoken';
 import { Role } from '@prisma/client';
 import { getSubsCatByName } from './subsCtgHandler';
 import { addSubsData } from './subsDataHandler';
+import { addUserProf } from './userProfileHandler';
+import { addUserEdu } from './userEduHandler';
+import { delAccHandler } from './accountHandler';
 
 const findRole = (name: string): Role => {
   if (!Object.values(Role).includes(name as Role)) {
@@ -31,11 +34,39 @@ const addAccHandler = async (
   password: string,
   retypePass: string,
   roleName: string,
+  pob?: string,
+  dobString?: string,
+  genderName?: string,
+  address?: string,
+  eduLevelName?: string,
+  school?: string,
+  discipline?: string,
+  beginDate?: string,
+  finishDate?: string | null,
 ) => {
   try {
     // Check if password is the same as retypePass
     if (password !== retypePass) {
       throw new Error('Passwords do not match');
+    }
+
+    // Check account Roles
+    const role = findRole(roleName);
+
+    // Check the input for user
+    if (role === Role.user) {
+      if (
+        !pob ||
+        !dobString ||
+        !genderName ||
+        !address ||
+        !eduLevelName ||
+        !school ||
+        !discipline ||
+        !beginDate
+      ) {
+        throw new Error('Please complete your data');
+      }
     }
 
     // Check if email already exist
@@ -51,14 +82,13 @@ const addAccHandler = async (
     const salt = await genSalt(10);
     const hashPassword = await hash(password, salt);
 
-    // Get User Roles
-    const role = findRole(roleName);
-
     // Make Custom Id
     const accountId = await AccountIdMaker({ name: role });
 
-    // Variable to store subsData if the role is 'user'
+    // Variable to store subsData, userProfile and userEdu if the role is 'user'
     let subsData = null;
+    let userProfile = null;
+    let userEdu = null;
 
     // Create account in db
     // 1. Create account first
@@ -73,8 +103,21 @@ const addAccHandler = async (
       },
     });
 
-    // 2. Create Subs data if role is 'user
+    // 2. Create Subs data if role is 'user'
     if (role === Role.user) {
+      if (
+        !pob ||
+        !dobString ||
+        !genderName ||
+        !address ||
+        !eduLevelName ||
+        !school ||
+        !discipline ||
+        !beginDate
+      ) {
+        await delAccHandler(account.id);
+        throw new Error('User data incomplete');
+      }
       // Get Subscription Category
       const subCtg = await getSubsCatByName('free');
       if (!subCtg)
@@ -83,6 +126,21 @@ const addAccHandler = async (
         );
       // Input user data into Subs Data
       subsData = await addSubsData(account.id, subCtg.id);
+      userProfile = await addUserProf(
+        subsData.id,
+        genderName,
+        pob,
+        dobString,
+        address,
+      );
+      userEdu = await addUserEdu(
+        subsData.id,
+        eduLevelName,
+        school,
+        discipline,
+        beginDate,
+        finishDate,
+      );
     }
 
     // Making payload for verification
@@ -121,7 +179,9 @@ const addAccHandler = async (
     });
 
     // return base on role
-    return role === Role.user ? { account, subsData } : account;
+    return role === Role.user
+      ? { account, subsData, userProfile, userEdu }
+      : account;
   } catch (error) {
     throw error;
   }

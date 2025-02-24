@@ -16,6 +16,7 @@ import { AccountRouter } from './routers/account.router';
 import { SubsRouter } from './routers/subs.router';
 import { PaymentRouter } from './routers/payment.router';
 import { SkillRouter } from './routers/skill.router';
+import { EduRouter } from './routers/education.router';
 import { JobRouter } from './routers/job.router';
 import { CompanyRouter } from './routers/company.router';
 import { ApplicantRouter } from './routers/applicant.router';
@@ -75,6 +76,7 @@ export default class App {
     const subsRouter = new SubsRouter();
     const paymentRouter = new PaymentRouter();
     const skillRouter = new SkillRouter();
+    const eduRouter = new EduRouter();
     const jobRouter = new JobRouter();
     const companyRouter = new CompanyRouter();
     const applicantRouter = new ApplicantRouter()
@@ -92,10 +94,10 @@ export default class App {
     this.app.use('/api/subscription', subsRouter.getRouter());
     this.app.use('/api/payment', paymentRouter.getRouter());
     this.app.use('/api/skill', skillRouter.getRouter());
+    this.app.use('/api/education', eduRouter.getRouter());
     this.app.use('/api/job', jobRouter.getRouter());
     this.app.use('/api/company', companyRouter.getRouter());
     this.app.use('/api/applicant', applicantRouter.getRouter());
-
   }
 
   public start(): void {
