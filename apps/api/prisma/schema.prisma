@@ -31,7 +31,6 @@ model Account {
   updatedAt      DateTime  @updatedAt
   User           SubsData[]
   Company        Company[]
-  Admin          Admin[]
 }
 
 enum Role {
@@ -44,7 +43,7 @@ model UserProfile {
   id             String      @id 
   subsDataid     String
   SubsData       SubsData @relation(fields: [subsDataid], references: [id], onDelete: Cascade)
-  gender         Gender?
+  gender         Gender
   pob            String
   dob            DateTime
   address        String
@@ -56,6 +55,7 @@ model UserProfile {
 enum Gender {
   male
   female
+}
 
 model UserEdu {
   id             String @id
@@ -104,7 +104,6 @@ model SubsData {
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
   
-  applicant         Applicant[]
   userSkill         UserSkill[]
   userProfilie      UserProfile[]
   userEdu           UserEdu[]
@@ -114,59 +113,14 @@ model Company {
   id          String   @id @default(uuid())
   accounts    Account  @relation(fields: [accountId], references: [id])
   accountId   String
-  name        String   @unique
-  email       String   @unique
   phone       String
-  address     String
+  address     String?
   website     String?
   description String?
-  logo        String?
-  socialMedia String?
+  logo        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  jobs        Job[]
-
-  admin Admin[]
 }
-
-
-model Job {
-  id          String   @id @default(uuid())
-  companyId   String
-  company     Company  @relation(fields: [companyId], references: [id])
-  title       String
-  description String
-  category    String
-  location    String
-  salaryRange String?
-  tags        String
-  deadline    DateTime?
-  isPublished Boolean
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  applicants  Applicant[]
-}
-
-model Applicant {
-  id        String   @id @default(uuid())
-  subsDataId    String
-  subsData      SubsData     @relation(fields: [subsDataId], references: [id])
-  jobId     String
-  job       Job      @relation(fields: [jobId], references: [id])
-  appliedAt DateTime @default(now())
-  expectedSalary Int?
-  education   String?
-  status      ApplicantStatus @default(PENDING)
-}
-
-
-enum ApplicantStatus {
-  PENDING
-  INTERVIEW
-  ACCEPTED
-  REJECTED
-}
-
 
 
 model Payment {
