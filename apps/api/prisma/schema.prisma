@@ -32,6 +32,8 @@ model Account {
   User           SubsData[]
   Company        Company[]
   Profile       Profile[]
+
+  InterviewSchedule InterviewSchedule[]
 }
 
 model Profile {
@@ -134,6 +136,8 @@ model Applicant {
   expectedSalary Int?
   education   String?
   status      ApplicantStatus @default(PENDING)
+
+  InterviewSchedule InterviewSchedule[]
 }
 
 
@@ -144,7 +148,19 @@ enum ApplicantStatus {
   REJECTED
 }
 
-
+model InterviewSchedule {
+  id          String    @id @default(uuid())
+  applicantId String
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  adminId     String
+  admin       Account   @relation(fields: [adminId], references: [id])
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
 
 model Payment {
   id           String   @id
