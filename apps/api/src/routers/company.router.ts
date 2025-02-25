@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { CompanyController } from '@/controllers/company.controller';
-import { verifyToken } from '@/middlewares/auth.middleware';
-
+import { adminDevGuard, verifyToken } from '@/middlewares/auth.middleware';
 
 export class CompanyRouter {
   private router: Router;
@@ -14,11 +13,11 @@ export class CompanyRouter {
   }
 
   private initializeRoutes(): void {
-
-    this.router.post(
-      '/create-company',
+    this.router.patch(
+      '/edit',
       verifyToken,
-      this.companyController.createCompany,
+      adminDevGuard,
+      this.companyController.editCompany,
     );
   }
 

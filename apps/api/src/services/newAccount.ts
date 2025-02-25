@@ -13,6 +13,7 @@ import { addSubsData } from './subsDataHandler';
 import { addUserProf } from './userProfileHandler';
 import { addUserEdu } from './userEduHandler';
 import { delAccHandler } from './accountHandler';
+import { newCompany } from './companyHandler';
 
 const findRole = (name: string): Role => {
   if (!Object.values(Role).includes(name as Role)) {
@@ -34,6 +35,7 @@ const addAccHandler = async (
   password: string,
   retypePass: string,
   roleName: string,
+  compPhone?: string,
   pob?: string,
   dobString?: string,
   genderName?: string,
@@ -50,24 +52,9 @@ const addAccHandler = async (
       throw new Error('Passwords do not match');
     }
 
+    console.log(roleName);
     // Check account Roles
     const role = findRole(roleName);
-
-    // Check the input for user
-    if (role === Role.user) {
-      if (
-        !pob ||
-        !dobString ||
-        !genderName ||
-        !address ||
-        !eduLevelName ||
-        !school ||
-        !discipline ||
-        !beginDate
-      ) {
-        throw new Error('Please complete your data');
-      }
-    }
 
     // Check if email already exist
     const findAccount = await prisma.account.findUnique({
@@ -90,8 +77,13 @@ const addAccHandler = async (
     let userProfile = null;
     let userEdu = null;
 
-    // Create account in db
-    // 1. Create account first
+    if (role === Role.admin) {
+      const checkComp = await prisma.account.findFirst({
+        where: { name },
+      });
+      if (checkComp) throw new Error('Company name already exist');
+    }
+
     const account = await prisma.account.create({
       data: {
         id: accountId,
@@ -103,7 +95,6 @@ const addAccHandler = async (
       },
     });
 
-    // 2. Create Subs data if role is 'user'
     if (role === Role.user) {
       if (
         !pob ||
@@ -118,7 +109,6 @@ const addAccHandler = async (
         await delAccHandler(account.id);
         throw new Error('User data incomplete');
       }
-      // Get Subscription Category
       const subCtg = await getSubsCatByName('free');
       if (!subCtg)
         throw new Error(
@@ -141,6 +131,15 @@ const addAccHandler = async (
         beginDate,
         finishDate,
       );
+    }
+
+    let company = null;
+    if (role === Role.admin) {
+      if (!compPhone) {
+        await delAccHandler(account.id);
+        throw new Error('Admin data incomplete');
+      }
+      company = await newCompany(account.id, compPhone);
     }
 
     // Making payload for verification
@@ -179,9 +178,13 @@ const addAccHandler = async (
     });
 
     // return base on role
-    return role === Role.user
-      ? { account, subsData, userProfile, userEdu }
-      : account;
+    if (role === Role.user) {
+      return { account, subsData, userProfile, userEdu };
+    } else if (role == Role.admin) {
+      return { account, company };
+    } else {
+      return { account };
+    }
   } catch (error) {
     throw error;
   }

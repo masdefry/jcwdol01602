@@ -4,7 +4,7 @@ import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { getSubsDataByUser } from './subsDataHandler';
 import { getPayBySubsData } from './paymentHandler';
-import { delCldAvatar, delCldPayProof } from './cloudinary';
+import { addCldAvatar, delCldAvatar, delCldPayProof } from './cloudinary';
 
 export const loginAccHandler = async (email: string, password: string) => {
   try {
@@ -112,5 +112,26 @@ export const getAccAllHandler = async () => {
     return accounts;
   } catch (error) {
     throw error;
+  }
+};
+
+export const addAccAvatar = async (
+  accountId: string,
+  image: Express.Multer.File,
+) => {
+  try {
+    const account = await getAccById(accountId);
+    if (!account) throw new Error(`Account doesn't exist`);
+    const avatarUrl = await addCldAvatar(image, account.id);
+    const updateData = await prisma.account.update({
+      where: { id: account.id },
+      data: {
+        avatar: avatarUrl,
+      },
+    });
+    return updateData;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error(`Unexpected Error addAvatar : ` + error);
   }
 };

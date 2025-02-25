@@ -17,6 +17,7 @@ import { SubsRouter } from './routers/subs.router';
 import { PaymentRouter } from './routers/payment.router';
 import { SkillRouter } from './routers/skill.router';
 import { EduRouter } from './routers/education.router';
+import { CompanyRouter } from './routers/company.router';
 
 export default class App {
   private app: Express;
@@ -73,6 +74,7 @@ export default class App {
     const paymentRouter = new PaymentRouter();
     const skillRouter = new SkillRouter();
     const eduRouter = new EduRouter();
+    const companyRouter = new CompanyRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -87,6 +89,7 @@ export default class App {
     this.app.use('/api/payment', paymentRouter.getRouter());
     this.app.use('/api/skill', skillRouter.getRouter());
     this.app.use('/api/education', eduRouter.getRouter());
+    this.app.use('/api/company', companyRouter.getRouter());
   }
 
   public start(): void {
