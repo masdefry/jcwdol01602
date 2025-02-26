@@ -4,10 +4,12 @@ import {
   addWorkerUser,
   delUserWorker,
   editWorkUser,
-  getAllWorkerByCompany,
-  getAllWorkerByUser,
   verifyUserWorker,
 } from '@/services/workerHandler';
+import {
+  getAllWorkerByCompany,
+  getAllWorkerByUser,
+} from '@/services/workerGet';
 
 export class WorkerController {
   async newWorkerUser(req: Request, res: Response, next: NextFunction) {

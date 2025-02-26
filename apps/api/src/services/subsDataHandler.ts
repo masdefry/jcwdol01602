@@ -51,6 +51,7 @@ export const getSubsDataByUser = async (userId: string) => {
         subsCtg: true,
         payment: true,
         userSkill: true,
+        worker: true,
       },
     });
     return data;

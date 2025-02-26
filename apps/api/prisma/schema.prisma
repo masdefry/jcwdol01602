@@ -122,6 +122,7 @@ model Company {
   updatedAt   DateTime @updatedAt
 
   worker      Worker[]
+  compreview  CompReview[]
 
   @@unique([accountId])
 }
@@ -199,4 +200,19 @@ model Worker {
   endDate       DateTime?
   description   String?     @db.VarChar(200)
   isVerified    Boolean     @default(false)
+  compReview    CompReview[]
+}
+
+model CompReview {
+  id            String    @id
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id])
+  workerId      String
+  worker        Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  salary        Int?
+  culture       Int?
+  wlb           Int?
+  facility      Int?
+  career        Int?
+  description   String?
 }
