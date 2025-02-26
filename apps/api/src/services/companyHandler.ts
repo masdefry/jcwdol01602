@@ -18,3 +18,15 @@ export const newCompany = async (adminId: string, compPhone: string) => {
     throw new Error(error);
   }
 };
+
+export const getCompanyByAdmin = async (adminId: string) => {
+  try {
+    const company = await prisma.company.findUnique({
+      where: { accountId: adminId },
+    });
+    return company;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error(`Unexpected Error - getCompanyByAdmin : ` + error);
+  }
+};

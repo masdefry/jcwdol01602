@@ -43,10 +43,10 @@ export const getSubsDataById = async (subsDataId: string) => {
   }
 };
 
-export const getSubsDataByUser = async (id: string) => {
+export const getSubsDataByUser = async (userId: string) => {
   try {
     const data = await prisma.subsData.findFirst({
-      where: { accountId: id },
+      where: { accountId: userId },
       include: {
         subsCtg: true,
         payment: true,

@@ -107,6 +107,7 @@ model SubsData {
   userSkill         UserSkill[]
   userProfilie      UserProfile[]
   userEdu           UserEdu[]
+  worker            Worker[]
 }
 
 model Company {
@@ -119,6 +120,8 @@ model Company {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  worker      Worker[]
 
   @@unique([accountId])
 }
@@ -182,4 +185,18 @@ model UserSkill {
   skillId       String
   skill         Skill         @relation(fields: [skillId], references: [id])
   skillScore    SkillScore[]
+}
+
+model Worker {
+  id            String      @id
+  subsDataId    String
+  subsData      SubsData    @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
+  companyId     String?
+  company       Company?     @relation(fields: [companyId], references: [id])
+  companyName   String
+  position      String
+  startDate     DateTime
+  endDate       DateTime?
+  description   String?     @db.VarChar(200)
+  isVerified    Boolean     @default(false)
 }
