@@ -14,3 +14,25 @@ body,
 .formik-label {
   @apply text-base mt-0 text-black;
 }
+
+.navbar-overlay {
+  opacity: 0;
+  transition: opacity 0.3 ease-in-out;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+}
+
+.modal-content {
+  transform: translateY(-20px);
+  opacity: 0;
+  transition:
+    transform 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
+}
+
+.modal-content.open {
+  transform: translateY(0);
+  opacity: 1;
+}
