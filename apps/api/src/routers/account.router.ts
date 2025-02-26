@@ -1,8 +1,10 @@
 import { AccountController } from '@/controllers/account.controller';
 import { RegisterController } from '@/controllers/register.controller';
 import {
-  LoginValidation,
-  RegisterValidation,
+  adminRegistValidation,
+  loginValidation,
+  registerValidation,
+  userRegistValidation,
 } from '@/middlewares/account.validation';
 import { verifyToken } from '@/middlewares/auth.middleware';
 import { uploadImage } from '@/middlewares/multer';
@@ -24,25 +26,25 @@ export class AccountRouter {
     // New user account
     this.router.post(
       '/new-user',
-      RegisterValidation,
+      userRegistValidation,
       this.registerController.newUser,
     );
     // New admin account
     this.router.post(
       '/new-admin',
-      RegisterValidation,
+      adminRegistValidation,
       this.registerController.newAdmin,
     );
     // New dev account
     this.router.post(
       '/new-dev',
-      RegisterValidation,
+      registerValidation,
       this.registerController.newDev,
     );
     // login
     this.router.post(
       '/login',
-      LoginValidation,
+      loginValidation,
       this.accountController.loginAccount,
     );
     // get all accounts

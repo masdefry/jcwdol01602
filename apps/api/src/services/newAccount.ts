@@ -52,7 +52,6 @@ const addAccHandler = async (
       throw new Error('Passwords do not match');
     }
 
-    console.log(roleName);
     // Check account Roles
     const role = findRole(roleName);
 

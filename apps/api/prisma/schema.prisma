@@ -66,7 +66,7 @@ model UserEdu {
   discipline     String
   startDate      DateTime
   endDate        DateTime?
-  description    String?
+  description    String?    @db.VarChar(300)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -115,9 +115,9 @@ model Company {
   account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId   String
   phone       String
-  address     String?
+  address     String?   
   website     String?
-  description String?
+  description String?   @db.VarChar(300)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -198,7 +198,7 @@ model Worker {
   position      String
   startDate     DateTime
   endDate       DateTime?
-  description   String?     @db.VarChar(200)
+  description   String?     @db.VarChar(300)
   isVerified    Boolean     @default(false)
   compReview    CompReview[]
 }
@@ -214,5 +214,5 @@ model CompReview {
   wlb           Int?
   facility      Int?
   career        Int?
-  description   String?
+  description   String?   @db.VarChar(300)
 }

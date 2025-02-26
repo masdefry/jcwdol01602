@@ -6,6 +6,7 @@ import {
   verifyToken,
 } from '@/middlewares/auth.middleware';
 import { CompReviewController } from '@/controllers/compReview.controller';
+import { companyValidation } from '@/middlewares/company.validation';
 
 export class CompanyRouter {
   private router: Router;
@@ -22,6 +23,7 @@ export class CompanyRouter {
   private initializeRoutes(): void {
     this.router.patch(
       '/edit',
+      companyValidation,
       verifyToken,
       adminDevGuard,
       this.companyController.editCompany,
