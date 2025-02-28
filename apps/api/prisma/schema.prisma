@@ -66,7 +66,7 @@ model UserEdu {
   discipline     String
   startDate      DateTime
   endDate        DateTime?
-  description    String?
+  description    String?    @db.VarChar(300)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -103,24 +103,27 @@ model SubsData {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
-  applicant         Applicant[]
   userSkill         UserSkill[]
   userProfilie      UserProfile[]
   userEdu           UserEdu[]
+  worker            Worker[]
 }
 
 model Company {
-  id          String   @id @default(uuid())
-  accounts    Account  @relation(fields: [accountId], references: [id])
+  id          String   @id
+  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId   String
   phone       String
-  address     String?
+  address     String?   
   website     String?
-  description String?
-  logo        String
+  description String?   @db.VarChar(300)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  jobs        Job[]
+
+  worker      Worker[]
+  compreview  CompReview[]
+
+  @@unique([accountId])
 }
 
 
@@ -182,4 +185,33 @@ model UserSkill {
   skillId       String
   skill         Skill         @relation(fields: [skillId], references: [id])
   skillScore    SkillScore[]
+}
+
+model Worker {
+  id            String      @id
+  subsDataId    String
+  subsData      SubsData    @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
+  companyId     String?
+  company       Company?     @relation(fields: [companyId], references: [id])
+  companyName   String
+  position      String
+  startDate     DateTime
+  endDate       DateTime?
+  description   String?     @db.VarChar(300)
+  isVerified    Boolean     @default(false)
+  compReview    CompReview[]
+}
+
+model CompReview {
+  id            String    @id
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id])
+  workerId      String
+  worker        Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  salary        Int?
+  culture       Int?
+  wlb           Int?
+  facility      Int?
+  career        Int?
+  description   String?   @db.VarChar(300)
 }

@@ -34,7 +34,7 @@ export default function AuthProvider({
       if (!access_token) {
         clearAuth();
         toast.dismiss();
-        toast.error('Please login first');
+        // toast.error('Please login first');
         // router.push('/login');
         return;
       }

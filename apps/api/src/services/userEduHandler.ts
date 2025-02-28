@@ -16,7 +16,7 @@ export const addUserEdu = async (
   school: string,
   discipline: string,
   beginDate: string,
-  finishDate: string | null | undefined,
+  finishDate: string,
   desc?: string,
 ) => {
   try {
@@ -24,7 +24,7 @@ export const addUserEdu = async (
     const level = await findEduLevel(eduLevelName);
     const startDate = new Date(beginDate);
     let endDate = null;
-    if (finishDate) {
+    if (finishDate !== '') {
       endDate = new Date(finishDate);
     }
     let description = null;

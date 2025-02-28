@@ -1,24 +1,59 @@
 import { Router } from 'express';
 import { CompanyController } from '@/controllers/company.controller';
-import { verifyToken } from '@/middlewares/auth.middleware';
-
+import {
+  adminDevGuard,
+  userDevGuard,
+  verifyToken,
+} from '@/middlewares/auth.middleware';
+import { CompReviewController } from '@/controllers/compReview.controller';
+import { companyValidation } from '@/middlewares/company.validation';
 
 export class CompanyRouter {
   private router: Router;
   private companyController: CompanyController;
+  private compReviewController: CompReviewController;
 
   constructor() {
     this.router = Router();
     this.companyController = new CompanyController();
+    this.compReviewController = new CompReviewController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
+    this.router.patch(
+      '/edit',
+      companyValidation,
+      verifyToken,
+      adminDevGuard,
+      this.companyController.editCompany,
+    );
 
     this.router.post(
-      '/create-company',
+      '/add-review/:companyId',
       verifyToken,
-      this.companyController.createCompany,
+      userDevGuard,
+      this.compReviewController.newCompReview,
+    );
+
+    this.router.patch(
+      '/edit-review/:compReviewId',
+      verifyToken,
+      userDevGuard,
+      this.compReviewController.updateCompReview,
+    );
+
+    this.router.get(
+      '/all-review',
+      verifyToken,
+      adminDevGuard,
+      this.compReviewController.compReviewForCompany,
+    );
+
+    this.router.delete(
+      '/delete-review/:compReviewId',
+      verifyToken,
+      this.compReviewController.deleteCompReview,
     );
   }
 
