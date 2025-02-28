@@ -74,7 +74,8 @@ export class RegisterController {
 
       if (!compPhone) throw new Error(`Please insert company phone`);
       return res.status(201).send({
-        message: 'Admin account created successfully',
+        message:
+          'Company account created successfully. Please check your email to verify your account',
         admin: newAdmin,
       });
     } catch (error) {

@@ -50,7 +50,7 @@ export default function Register() {
       {/* Register Form */}
       <div className="absolute md:p-16 lg:p-28 w-full h-full flex items-center justify-center md:justify-end left z-10">
         <div>
-          <div className="flex flex-row justify-between py-2">
+          <div className="flex flex-row justify-between py-2 gap-4">
             <div>
               <h1 className="font-bold text-2xl">Welcome to</h1>
               <Logo />
@@ -60,8 +60,8 @@ export default function Register() {
             </div>
           </div>
 
-          <div className="border rounded-lg p-8 shadow-md bg-white">
-            <h1 className="font-bold text-xl">Register as new jobseeker</h1>
+          <div className="border rounded-lg p-4 shadow-md bg-white">
+            <h1 className="font-bold text-lg">Register as new jobseeker</h1>
             <Formik
               initialValues={{
                 name: '',
@@ -100,7 +100,7 @@ export default function Register() {
                   >
                     {/* Step 1 - basic info */}
                     {/* Name */}
-                    <div className="py-2">
+                    <div className="">
                       <label htmlFor="name" className="formik-label">
                         Name :
                       </label>
@@ -114,7 +114,7 @@ export default function Register() {
                     </div>
 
                     {/* Email */}
-                    <div className="py-2">
+                    <div className="">
                       <label htmlFor="email" className="formik-label">
                         Email :
                       </label>
@@ -128,7 +128,7 @@ export default function Register() {
                     </div>
 
                     {/* Password */}
-                    <div className="py-2">
+                    <div className="">
                       <label htmlFor="password" className="block text-base">
                         Password :
                       </label>
@@ -142,7 +142,7 @@ export default function Register() {
                     </div>
 
                     {/* Retype Password */}
-                    <div className="py-2">
+                    <div className="">
                       <label htmlFor="retypePass" className="block text-base">
                         Re-type Password :
                       </label>
@@ -156,7 +156,7 @@ export default function Register() {
                     </div>
                     {/* Submit Button */}
                     <button
-                      className="mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                       type="submit"
                       disabled={isSubmitting}
                     >
