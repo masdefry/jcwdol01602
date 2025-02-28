@@ -16,6 +16,8 @@ export class EduRouter {
     this.initializeRoutes();
   }
   private initializeRoutes(): void {
+    this.router.get('/edu-level', this.userEduController.eduLevel);
+
     this.router.post(
       '/new',
       verifyToken,

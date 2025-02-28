@@ -5,7 +5,7 @@ const Logo = () => {
   return (
     <>
       <Link href={'/'}>
-        <h1 className="text-xl font-bold">
+        <h1 className="text-2xl font-bold">
           Dream Jobs<span className="text-yellow-400 font-bold">!</span>
         </h1>
       </Link>

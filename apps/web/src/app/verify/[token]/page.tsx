@@ -12,14 +12,18 @@ export default function VerificationPage({
   const verifyAccount = async () => {
     try {
       const { token } = await params;
-      // console.log(token);
+      console.log(token);
 
       // Token to API
-      const { data } = await axiosInstance.get('/api/account/verify', {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const { data } = await axiosInstance.patch(
+        '/api/account/verify',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
       // console.log(data);
       toast.success(data.message);
       setTimeout(() => router.push('/login'), 1500);

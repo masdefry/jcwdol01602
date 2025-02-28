@@ -1,4 +1,4 @@
-import { object, string, InferType } from 'yup';
+import { object, string, InferType, ref } from 'yup';
 
 interface IValidationMessage {
   accountName: {
@@ -13,6 +13,18 @@ interface IValidationMessage {
     notEmpty: string;
     format: string;
   };
+  retypePass: {
+    notEmpty: string;
+    notMatch: string;
+  };
+  pobRequired: string;
+  dobStringRequired: string;
+  genderNameRequired: string;
+  addressRequired: string;
+  eduLevelNameRequired: string;
+  schoolRequired: string;
+  disciplineRequired: string;
+  beginDateRequired: string;
 }
 
 const validationMessage: IValidationMessage = {
@@ -29,9 +41,21 @@ const validationMessage: IValidationMessage = {
     format:
       'Password need to have atleast 6 characters with 1 Uppercase and 1 Special character',
   },
+  retypePass: {
+    notEmpty: 'Please retype your password',
+    notMatch: "Your retyped password doesn't match with your password",
+  },
+  pobRequired: 'Place of birth is required',
+  dobStringRequired: 'Date of birth is required',
+  genderNameRequired: 'Gender is required',
+  addressRequired: 'Address is required',
+  eduLevelNameRequired: 'Education level is required',
+  schoolRequired: 'School is required',
+  disciplineRequired: 'Discipline is required',
+  beginDateRequired: 'Education begin date is required',
 };
 
-export const RegiserSchema = object({
+export const RegisterSchema = object({
   name: string()
     .required(validationMessage.accountName.notEmpty)
     .min(3, validationMessage.accountName.length)
@@ -45,6 +69,21 @@ export const RegiserSchema = object({
       /^(?=.*[\d])(?=.*[A-Z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6,16}$/,
       validationMessage.password.format,
     ),
+  retypePass: string()
+    .required(validationMessage.retypePass.notEmpty)
+    .oneOf([ref('password')], validationMessage.retypePass.notMatch),
+});
+
+export const UserRegistSchema = object({
+  pob: string().required(validationMessage.pobRequired),
+  dobString: string().required(validationMessage.dobStringRequired),
+  genderName: string().required(validationMessage.genderNameRequired),
+  address: string().required(validationMessage.addressRequired),
+  eduLevelName: string().required(validationMessage.eduLevelNameRequired),
+  school: string().required(validationMessage.schoolRequired),
+  discipline: string().required(validationMessage.disciplineRequired),
+  beginDate: string().required(validationMessage.beginDateRequired),
+  finishDate: string().nullable(),
 });
 
 export const loginSchema = object({

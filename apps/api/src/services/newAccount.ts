@@ -44,7 +44,7 @@ const addAccHandler = async (
   school?: string,
   discipline?: string,
   beginDate?: string,
-  finishDate?: string | null,
+  finishDate?: string,
 ) => {
   try {
     // Check if password is the same as retypePass
@@ -103,7 +103,8 @@ const addAccHandler = async (
         !eduLevelName ||
         !school ||
         !discipline ||
-        !beginDate
+        !beginDate ||
+        typeof finishDate !== 'string'
       ) {
         await delAccHandler(account.id);
         throw new Error('User data incomplete');

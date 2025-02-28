@@ -23,6 +23,9 @@ export class AccountRouter {
   }
 
   private initializeRoutes(): void {
+    // Get all gender
+    this.router.get('/gender', this.accountController.userGender);
+
     // New user account
     this.router.post(
       '/new-user',
@@ -50,7 +53,7 @@ export class AccountRouter {
     // get all accounts
     this.router.get('/all-accounts', this.accountController.allAccount);
     // verify account
-    this.router.post(
+    this.router.patch(
       '/verify',
       verifyToken,
       this.accountController.verifyAccount,

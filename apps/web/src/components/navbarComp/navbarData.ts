@@ -5,7 +5,7 @@ export const logReg = [
   },
   {
     label: 'Register',
-    href: '/company',
+    href: '/user-register',
   },
 ];
 

@@ -9,6 +9,7 @@ import {
 } from '@/services/accountHandler';
 import addAccHandler from '@/services/newAccount';
 import { Account } from '@/custom';
+import { Gender } from '@prisma/client';
 
 export class AccountController {
   async loginAccount(req: Request, res: Response, next: NextFunction) {
@@ -96,6 +97,18 @@ export class AccountController {
       return res.status(200).send({
         message: `Avatar uploaded successfully`,
         updateAccount: upAvatar,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userGender(req: Request, res: Response, next: NextFunction) {
+    try {
+      const gender = Object.values(Gender);
+      return res.status(200).send({
+        message: `Gender retrieved successfully`,
+        gender,
       });
     } catch (error) {
       next(error);
