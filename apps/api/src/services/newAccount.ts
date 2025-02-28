@@ -14,6 +14,8 @@ import { addUserProf } from './userProfileHandler';
 import { addUserEdu } from './userEduHandler';
 import { delAccHandler } from './accountHandler';
 import { newCompany } from './companyHandler';
+import { avatarUrl } from './cloudinary';
+import { registValidMail } from './validationMailPath';
 
 const findRole = (name: string): Role => {
   if (!Object.values(Role).includes(name as Role)) {
@@ -21,13 +23,6 @@ const findRole = (name: string): Role => {
   }
   return name as Role;
 };
-
-const avatarUrl = cloudinary.url(
-  'https://res.cloudinary.com/dnqgu6x1e/image/upload/avatar_default.jpg',
-  {
-    secure: true,
-  },
-);
 
 const addAccHandler = async (
   name: string,
@@ -114,7 +109,6 @@ const addAccHandler = async (
         throw new Error(
           'No subscription category found, please check your database.',
         );
-      // Input user data into Subs Data
       subsData = await addSubsData(account.id, subCtg.id);
       userProfile = await addUserProf(
         subsData.id,
@@ -142,7 +136,6 @@ const addAccHandler = async (
       company = await newCompany(account.id, compPhone);
     }
 
-    // Making payload for verification
     const payload = {
       email,
       id: account.id,
@@ -154,16 +147,10 @@ const addAccHandler = async (
       expiresIn: '1h',
     });
 
-    // // Specify the location of registerMail.hbs
-    const templatePath = path.join(
-      __dirname,
-      '../templates',
-      'registerMail.hbs',
-    );
+    const templatePath = await registValidMail(role);
     const templateSource = await fs.readFileSync(templatePath, 'utf-8');
     const compiledTemplate = handlebars.compile(templateSource);
 
-    // // verification url
     const verificationUrl = WEB_URL + `/verify/${token}`;
     const html = compiledTemplate({
       name,

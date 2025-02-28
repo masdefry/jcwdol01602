@@ -35,6 +35,12 @@ export const loginAccHandler = async (email: string, password: string) => {
 
 export const verifyAccHandler = async (email: string) => {
   try {
+    const checkVerify = await prisma.account.findUnique({
+      where: { email },
+    });
+    if (!checkVerify) throw new Error(`Account doesn't exist`);
+    if (checkVerify.isVerified)
+      throw new Error(`Your account is already verified`);
     const account = await prisma.account.update({
       where: { email },
       data: {

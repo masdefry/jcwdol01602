@@ -84,7 +84,7 @@ const UserData = () => {
   };
 
   return (
-    <div className="p-4 bg-gradient-to-b flex flex-col from-fuchsia-600 to-purple-600">
+    <div className="p-4 bg-gradient-to-b min-h-screen h-full from-fuchsia-600 to-purple-600">
       <div className="mb-2 flex justify-between">
         <div>
           <Logo />

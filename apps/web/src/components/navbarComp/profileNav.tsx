@@ -104,8 +104,3 @@ export const ProfileNav = () => {
     );
   }
 };
-
-/* 
-
-bg-purple-100 text-purple-600 font-medium py-2 px-4 rounded-full hover:text-white hover:bg-purple-600 ease-in-out duration-150"
-*/

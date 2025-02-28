@@ -2,6 +2,13 @@ import { cloudinary } from '@/config';
 import { avatarIdMaker } from '@/lib/cldIdHandler';
 import { paymentProofIdMaker, questImgNameMaker } from '@/lib/customId';
 
+export const avatarUrl = cloudinary.url(
+  'https://res.cloudinary.com/dnqgu6x1e/image/upload/avatar_default.jpg',
+  {
+    secure: true,
+  },
+);
+
 // Delete Avatar
 export const delCldAvatar = async (url: string) => {
   try {

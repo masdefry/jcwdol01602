@@ -51,6 +51,12 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+  const showValidationErrors = (errors: Record<string, string>) => {
+    Object.values(errors).forEach((error) => {
+      toast.error(error);
+    });
+  };
   return (
     <div className="relative flex h-screen bg-gradient-to-b  from-yellow-400 to-orange-400 overflow-hidden">
       {/* Left Section (Image) */}
@@ -91,9 +97,21 @@ const LoginPage = () => {
               }}
             >
               {(props: FormikProps<ILogin>) => {
-                const { values, errors, touched, handleChange } = props;
+                const { values, errors, touched, validateForm, handleSubmit } =
+                  props;
                 return (
-                  <Form>
+                  <Form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      validateForm().then((errors) => {
+                        if (Object.keys(errors).length > 0) {
+                          showValidationErrors(errors);
+                        } else {
+                          handleSubmit();
+                        }
+                      });
+                    }}
+                  >
                     {/* email */}
                     <div className="py-2">
                       <label htmlFor="email" className="formik-label">
@@ -104,7 +122,6 @@ const LoginPage = () => {
                           className="formik-input"
                           type="text"
                           name="email"
-                          onChange={handleChange}
                           value={values.email}
                         />
                       </div>
@@ -120,7 +137,6 @@ const LoginPage = () => {
                           className="formik-input"
                           type="password"
                           name="password"
-                          onChange={handleChange}
                           value={values.password}
                         />
                       </div>
