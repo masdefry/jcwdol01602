@@ -6,6 +6,7 @@ import {
   delUserEdu,
   editUserEdu,
 } from '@/services/userEduHandler';
+import { EduLevel } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 
 export class UserEduController {
@@ -117,6 +118,18 @@ export class UserEduController {
       return res.status(200).send({
         message: `All user education retrieved successfully`,
         allUserEdu,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async eduLevel(req: Request, res: Response, next: NextFunction) {
+    try {
+      const eduLevel = Object.values(EduLevel);
+      return res.status(200).send({
+        message: `Education level retreived successfully`,
+        eduLevel,
       });
     } catch (error) {
       next(error);

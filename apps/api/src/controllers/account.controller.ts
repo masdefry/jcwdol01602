@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import {
+  addAccAvatar,
   delAccHandler,
   getAccAllHandler,
   getAccById,
@@ -8,93 +9,9 @@ import {
 } from '@/services/accountHandler';
 import addAccHandler from '@/services/newAccount';
 import { Account } from '@/custom';
+import { Gender } from '@prisma/client';
 
 export class AccountController {
-  async newUser(req: Request, res: Response, next: NextFunction) {
-    try {
-      const {
-        name,
-        email,
-        password,
-        retypePass,
-        pob,
-        dobString,
-        genderName,
-        address,
-        eduLevelName,
-        school,
-        discipline,
-        beginDate,
-        finishDate,
-      } = req.body;
-
-      // use function createNewAccount to shorten the code
-      const newUser = await addAccHandler(
-        name,
-        email,
-        password,
-        retypePass,
-        'user',
-        pob,
-        dobString,
-        genderName,
-        address,
-        eduLevelName,
-        school,
-        discipline,
-        beginDate,
-        finishDate,
-      );
-
-      return res.status(201).send({
-        message: 'User account created successfully',
-        user: newUser,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async newAdmin(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { name, email, password, retypePass } = req.body;
-      const newAdmin = await addAccHandler(
-        name,
-        email,
-        password,
-        retypePass,
-        'admin',
-      );
-
-      return res.status(201).send({
-        message: 'Admin account created successfully',
-        user: newAdmin,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async newDev(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { name, email, password, retypePass } = req.body;
-      const newDev = await addAccHandler(
-        name,
-        email,
-        password,
-        retypePass,
-        'developer',
-      );
-
-      return res.status(201).send({
-        message: 'Developer account created successfully',
-        user: newDev,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async loginAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
@@ -165,6 +82,33 @@ export class AccountController {
       return res.status(200).send({
         message: 'Accounts retreived successfully',
         accounts: datas,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async uploadAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      const account = req.account as Account;
+      const image = req.file;
+      if (!image) throw new Error(`Image required`);
+      const upAvatar = await addAccAvatar(account.id, image);
+      return res.status(200).send({
+        message: `Avatar uploaded successfully`,
+        updateAccount: upAvatar,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userGender(req: Request, res: Response, next: NextFunction) {
+    try {
+      const gender = Object.values(Gender);
+      return res.status(200).send({
+        message: `Gender retrieved successfully`,
+        gender,
       });
     } catch (error) {
       next(error);

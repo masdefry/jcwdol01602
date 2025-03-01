@@ -1,62 +1,79 @@
 import { AccountController } from '@/controllers/account.controller';
+import { RegisterController } from '@/controllers/register.controller';
 import {
-  LoginValidation,
-  RegisterValidation,
+  adminRegistValidation,
+  loginValidation,
+  registerValidation,
+  userRegistValidation,
 } from '@/middlewares/account.validation';
 import { verifyToken } from '@/middlewares/auth.middleware';
+import { uploadImage } from '@/middlewares/multer';
 import { Router } from 'express';
 
 export class AccountRouter {
   private router: Router;
-  private AccountController: AccountController;
+  private accountController: AccountController;
+  private registerController: RegisterController;
 
   constructor() {
-    this.AccountController = new AccountController();
+    this.accountController = new AccountController();
+    this.registerController = new RegisterController();
     this.router = Router();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
+    // Get all gender
+    this.router.get('/gender', this.accountController.userGender);
+
     // New user account
     this.router.post(
       '/new-user',
-      RegisterValidation,
-      this.AccountController.newUser,
+      userRegistValidation,
+      this.registerController.newUser,
     );
     // New admin account
     this.router.post(
       '/new-admin',
-      RegisterValidation,
-      this.AccountController.newAdmin,
+      adminRegistValidation,
+      this.registerController.newAdmin,
     );
     // New dev account
     this.router.post(
       '/new-dev',
-      RegisterValidation,
-      this.AccountController.newDev,
+      registerValidation,
+      this.registerController.newDev,
     );
     // login
     this.router.post(
       '/login',
-      LoginValidation,
-      this.AccountController.loginAccount,
+      loginValidation,
+      this.accountController.loginAccount,
     );
     // get all accounts
-    this.router.get('/all-accounts', this.AccountController.allAccount);
+    this.router.get('/all-accounts', this.accountController.allAccount);
     // verify account
-    this.router.post(
+    this.router.patch(
       '/verify',
       verifyToken,
-      this.AccountController.verifyAccount,
+      this.accountController.verifyAccount,
     );
     // delete account
     this.router.delete(
       '/delete/:accountId',
       // verifyToken,
-      this.AccountController.deleteAccount,
+      this.accountController.deleteAccount,
     );
     // get account by Id
-    this.router.get('/:id', verifyToken, this.AccountController.findAccount);
+    this.router.get('/:id', verifyToken, this.accountController.findAccount);
+
+    // upload avatar
+    this.router.patch(
+      '/upload-avatar',
+      uploadImage,
+      verifyToken,
+      this.accountController.uploadAvatar,
+    );
   }
 
   getRouter(): Router {

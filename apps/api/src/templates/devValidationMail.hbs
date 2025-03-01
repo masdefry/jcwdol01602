@@ -1,0 +1,29 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0;
+      padding: 0; background-color: #f9f9f9; color: #fff; text-align: center; }
+      .container { display: flex; flex-direction: column; align-items: center;
+      justify-content: center; margin: 2rem auto; max-width: 600px; padding:
+      1rem; background: linear-gradient(135deg, #d946ef, #9333ea); box-shadow: 0
+      4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; color: #fff; } .box {
+      background-color: #fde047; color: #333; padding: 1rem; border: none;
+      font-weight: bold; border-radius: 4px; text-align: center;
+      text-decoration: none; display: inline-block; margin: 0.5rem 0; }
+      .box:hover { background-color: #facc15; cursor: pointer; } h1 { color:
+      #fff; font-size: 2rem; } p { margin: 0.5rem 0; font-size: 1rem; color:
+      #fff } small { font-size: 0.8rem; color: #fff; }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <h1>Welcome to Dream Jobs<span style='color: #fde047'>!</span></h1>
+      <p>Hello, {{name}}</p>
+      <p>Thank you for registering with us! To complete your registration,
+        please click on the link below.</p>
+      <a class='box' href='{{verificationUrl}}' target='_blank'>Verify</a>
+    </div>
+  </body>
+</html>

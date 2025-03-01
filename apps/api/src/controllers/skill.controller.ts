@@ -1,8 +1,7 @@
 import { Account } from '@/custom';
-import { skillIdMaker, sQuestIdMaker } from '@/lib/customId';
-import { validate64Image } from '@/lib/validateImage';
+import { skillIdMaker } from '@/lib/customId';
 import prisma from '@/prisma';
-import { addCldQuestImage, delCldSQuestImage } from '@/services/cloudinary';
+import { delCldSQuestImage } from '@/services/cloudinary';
 import { getSkillById } from '@/services/skillHandler';
 import {
   addSkillQuest,
@@ -88,7 +87,6 @@ export class SkillController {
 
   async newSkillQuest(req: Request, res: Response, next: NextFunction) {
     try {
-      type IOptions = string[];
       const { skillId } = req.params;
       if (!skillId) throw new Error('Skill Id is required');
       const question: string = req.body.question;

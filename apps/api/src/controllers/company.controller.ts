@@ -1,59 +1,61 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '@/prisma';
+import { Account } from '@/custom';
 
 export class CompanyController {
-  async createCompany(req: Request, res: Response, next: NextFunction) {
+  async editCompany(req: Request, res: Response, next: NextFunction) {
     try {
-      // Get the authenticated admin's details from req.account (set by verifyToken middleware)
-      const account = req.account;
-      if (!account || account.role !== 'admin') {
-        return res.status(403).json({ message: 'Only admins can create a company' });
+      // name, phone, address, website, description, logo
+      const admin = req.account as Account;
+      const { name, phone, address, website, desc } = req.body;
+
+      const company = await prisma.company.findUnique({
+        where: { accountId: admin.id },
+        include: { account: true },
+      });
+      if (!company) throw new Error(`Company profile data not found`);
+
+      let upName = company.account.name;
+      let upPhone = company.phone;
+      let upAddress = company.address;
+      let upWebsite = company.website;
+      let upDesc = company.description;
+
+      if (name) {
+        upName = name;
+      }
+      if (phone) {
+        upPhone = phone;
+      }
+      if (address) {
+        upAddress = address;
+      }
+      if (desc) {
+        upDesc = desc;
+      }
+      if (website) {
+        upWebsite = website;
       }
 
-      // Extract company details from request body
-      const {
-        name,
-        email,
-        phone,
-        address,
-        website,
-        description,
-        logo,
-        socialMedia,
-      } = req.body;
-
-      // Check if a company with the same name or email already exists
-      const existingCompany = await prisma.company.findFirst({
-        where: {
-          OR: [
-            { name },
-            { email },
-          ],
+      const updateAccount = await prisma.account.update({
+        where: { id: admin.id },
+        data: {
+          name: upName,
         },
       });
-
-      if (existingCompany) {
-        return res.status(409).json({ message: 'A company with this name or email already exists' });
-      }
-
-      // Create a new company record in the database
-      const newCompany = await prisma.company.create({
+      const updateCompany = await prisma.company.update({
+        where: { id: company.id },
         data: {
-          accountId: account.id,
-          name,
-          email,
-          phone,
-          address,
-          website,
-          description,
-          logo,
-          socialMedia,
+          phone: upPhone,
+          address: upAddress,
+          website: upWebsite,
+          description: upDesc,
         },
       });
 
       return res.status(201).json({
         message: 'Company created successfully',
-        company: newCompany,
+        editComp: { updateAccount, updateCompany },
       });
     } catch (error) {
       next(error);

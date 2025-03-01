@@ -1,5 +1,13 @@
 import { cloudinary } from '@/config';
+import { avatarIdMaker } from '@/lib/cldIdHandler';
 import { paymentProofIdMaker, questImgNameMaker } from '@/lib/customId';
+
+export const avatarUrl = cloudinary.url(
+  'https://res.cloudinary.com/dnqgu6x1e/image/upload/avatar_default.jpg',
+  {
+    secure: true,
+  },
+);
 
 // Delete Avatar
 export const delCldAvatar = async (url: string) => {
@@ -88,6 +96,28 @@ export const delCldSQuestImage = async (url: string) => {
     }
     const publicId = `final-project/skill-question/${publicIdMatch[1]}`;
     await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addCldAvatar = async (
+  image: Express.Multer.File,
+  accountId: string,
+) => {
+  try {
+    const imageName = await avatarIdMaker(accountId);
+    const base64Image = `data:${image.mimetype};base64,${image.buffer.toString('base64')}`;
+    const imageUrl = await cloudinary.uploader.upload(base64Image, {
+      folder: 'final-project/avatar',
+      public_id: imageName,
+      overwrite: true,
+    });
+    if (!imageUrl || !imageUrl.secure_url)
+      throw new Error(
+        'Unexpected error while upload company logo, please try again later',
+      );
+    return imageUrl.secure_url;
   } catch (error) {
     throw error;
   }

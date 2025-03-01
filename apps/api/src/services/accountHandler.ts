@@ -4,7 +4,7 @@ import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { getSubsDataByUser } from './subsDataHandler';
 import { getPayBySubsData } from './paymentHandler';
-import { delCldAvatar, delCldPayProof } from './cloudinary';
+import { addCldAvatar, delCldAvatar, delCldPayProof } from './cloudinary';
 
 export const loginAccHandler = async (email: string, password: string) => {
   try {
@@ -35,6 +35,12 @@ export const loginAccHandler = async (email: string, password: string) => {
 
 export const verifyAccHandler = async (email: string) => {
   try {
+    const checkVerify = await prisma.account.findUnique({
+      where: { email },
+    });
+    if (!checkVerify) throw new Error(`Account doesn't exist`);
+    if (checkVerify.isVerified)
+      throw new Error(`Your account is already verified`);
     const account = await prisma.account.update({
       where: { email },
       data: {
@@ -112,5 +118,26 @@ export const getAccAllHandler = async () => {
     return accounts;
   } catch (error) {
     throw error;
+  }
+};
+
+export const addAccAvatar = async (
+  accountId: string,
+  image: Express.Multer.File,
+) => {
+  try {
+    const account = await getAccById(accountId);
+    if (!account) throw new Error(`Account doesn't exist`);
+    const avatarUrl = await addCldAvatar(image, account.id);
+    const updateData = await prisma.account.update({
+      where: { id: account.id },
+      data: {
+        avatar: avatarUrl,
+      },
+    });
+    return updateData;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error(`Unexpected Error addAvatar : ` + error);
   }
 };

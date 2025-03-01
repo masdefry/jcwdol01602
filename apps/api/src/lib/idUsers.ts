@@ -74,3 +74,28 @@ export const userSkillIdMaker = async (userId: string) => {
   const customId = `${customIdPrefix}${nextIdNumber.toString().padStart(3, '0')}-${userId}`;
   return customId;
 };
+
+export const workerIdMaker = async () => {
+  const customIdPrefix = `wrk${createDate}`;
+  const lastWorker = await prisma.worker.findFirst({
+    where: {
+      id: {
+        startsWith: customIdPrefix,
+      },
+    },
+    orderBy: {
+      id: 'desc',
+    },
+  });
+  let nextIdNumber = 1;
+  if (lastWorker) {
+    // Extract the last sequence number using regex
+    const match = lastWorker.id.match(/-(\d+)$/);
+    if (match) {
+      nextIdNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  // Format the customId
+  const customId = `${customIdPrefix}-${nextIdNumber.toString().padStart(3, '0')}`;
+  return customId;
+};

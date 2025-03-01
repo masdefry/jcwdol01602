@@ -13,6 +13,9 @@ import { addSubsData } from './subsDataHandler';
 import { addUserProf } from './userProfileHandler';
 import { addUserEdu } from './userEduHandler';
 import { delAccHandler } from './accountHandler';
+import { newCompany } from './companyHandler';
+import { avatarUrl } from './cloudinary';
+import { registValidMail } from './validationMailPath';
 
 const findRole = (name: string): Role => {
   if (!Object.values(Role).includes(name as Role)) {
@@ -21,19 +24,13 @@ const findRole = (name: string): Role => {
   return name as Role;
 };
 
-const avatarUrl = cloudinary.url(
-  'https://res.cloudinary.com/dnqgu6x1e/image/upload/avatar_default.jpg',
-  {
-    secure: true,
-  },
-);
-
 const addAccHandler = async (
   name: string,
   email: string,
   password: string,
   retypePass: string,
   roleName: string,
+  compPhone?: string,
   pob?: string,
   dobString?: string,
   genderName?: string,
@@ -42,7 +39,7 @@ const addAccHandler = async (
   school?: string,
   discipline?: string,
   beginDate?: string,
-  finishDate?: string | null,
+  finishDate?: string,
 ) => {
   try {
     // Check if password is the same as retypePass
@@ -52,22 +49,6 @@ const addAccHandler = async (
 
     // Check account Roles
     const role = findRole(roleName);
-
-    // Check the input for user
-    if (role === Role.user) {
-      if (
-        !pob ||
-        !dobString ||
-        !genderName ||
-        !address ||
-        !eduLevelName ||
-        !school ||
-        !discipline ||
-        !beginDate
-      ) {
-        throw new Error('Please complete your data');
-      }
-    }
 
     // Check if email already exist
     const findAccount = await prisma.account.findUnique({
@@ -90,8 +71,13 @@ const addAccHandler = async (
     let userProfile = null;
     let userEdu = null;
 
-    // Create account in db
-    // 1. Create account first
+    if (role === Role.admin) {
+      const checkComp = await prisma.account.findFirst({
+        where: { name },
+      });
+      if (checkComp) throw new Error('Company name already exist');
+    }
+
     const account = await prisma.account.create({
       data: {
         id: accountId,
@@ -103,7 +89,6 @@ const addAccHandler = async (
       },
     });
 
-    // 2. Create Subs data if role is 'user'
     if (role === Role.user) {
       if (
         !pob ||
@@ -113,18 +98,17 @@ const addAccHandler = async (
         !eduLevelName ||
         !school ||
         !discipline ||
-        !beginDate
+        !beginDate ||
+        typeof finishDate !== 'string'
       ) {
         await delAccHandler(account.id);
         throw new Error('User data incomplete');
       }
-      // Get Subscription Category
       const subCtg = await getSubsCatByName('free');
       if (!subCtg)
         throw new Error(
           'No subscription category found, please check your database.',
         );
-      // Input user data into Subs Data
       subsData = await addSubsData(account.id, subCtg.id);
       userProfile = await addUserProf(
         subsData.id,
@@ -143,7 +127,15 @@ const addAccHandler = async (
       );
     }
 
-    // Making payload for verification
+    let company = null;
+    if (role === Role.admin) {
+      if (!compPhone) {
+        await delAccHandler(account.id);
+        throw new Error('Admin data incomplete');
+      }
+      company = await newCompany(account.id, compPhone);
+    }
+
     const payload = {
       email,
       id: account.id,
@@ -155,16 +147,10 @@ const addAccHandler = async (
       expiresIn: '1h',
     });
 
-    // // Specify the location of registerMail.hbs
-    const templatePath = path.join(
-      __dirname,
-      '../templates',
-      'registerMail.hbs',
-    );
+    const templatePath = await registValidMail(role);
     const templateSource = await fs.readFileSync(templatePath, 'utf-8');
     const compiledTemplate = handlebars.compile(templateSource);
 
-    // // verification url
     const verificationUrl = WEB_URL + `/verify/${token}`;
     const html = compiledTemplate({
       name,
@@ -179,9 +165,13 @@ const addAccHandler = async (
     });
 
     // return base on role
-    return role === Role.user
-      ? { account, subsData, userProfile, userEdu }
-      : account;
+    if (role === Role.user) {
+      return { account, subsData, userProfile, userEdu };
+    } else if (role == Role.admin) {
+      return { account, company };
+    } else {
+      return { account };
+    }
   } catch (error) {
     throw error;
   }
