@@ -31,22 +31,6 @@ model Account {
   updatedAt      DateTime  @updatedAt
   User           SubsData[]
   Company        Company[]
-  Profile       Profile[]
-
-  InterviewSchedule InterviewSchedule[]
-}
-
-model Profile {
-  id        Int      @id @default(autoincrement())
-  accountId    String
-  account    Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
-   gender         Gender?
-  birthDate      DateTime?
-  education      String?
-  address        String?
-  phoneNumber    String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
 }
 
 enum Role {
@@ -55,9 +39,43 @@ enum Role {
   user
 }
 
+model UserProfile {
+  id             String      @id
+  subsDataid     String
+  SubsData       SubsData @relation(fields: [subsDataid], references: [id], onDelete: Cascade)
+  gender         Gender
+  pob            String
+  dob            DateTime
+  address        String
+  phoneNumber    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
 enum Gender {
-  MALE
-  FEMALE
+  male
+  female
+}
+
+model UserEdu {
+  id             String @id
+  subsDataId     String
+  subsData       SubsData @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
+  level          EduLevel
+  school         String
+  discipline     String
+  startDate      DateTime
+  endDate        DateTime?
+  description    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+enum EduLevel {
+  doctorate
+  master
+  bachelor
+  highschool
 }
 
 model SubsCtg {
@@ -68,8 +86,8 @@ model SubsCtg {
   skillAssessment Boolean  @default(false)
   priority        Boolean  @default(false)
   createdAt       DateTime @default(now())
-  User            SubsData[]
-  Payment         Payment[]
+  user            SubsData[]
+  payment         Payment[]
 }
 
 model SubsData {
@@ -85,23 +103,20 @@ model SubsData {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
-
-  Applicant Applicant[]
-  skillScore         SkillScore[]
+  applicant         Applicant[]
+  userSkill         UserSkill[]
+  userProfilie      UserProfile[]
+  userEdu           UserEdu[]
 }
 
 model Company {
   id          String   @id @default(uuid())
   accounts    Account  @relation(fields: [accountId], references: [id])
   accountId   String
-  name        String   @unique
-  email       String   @unique
   phone       String
-  address     String
-  website     String?
+  address     String?
   description String?
-  logo        String?
-  socialMedia String?
+  logo        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   jobs        Job[]
@@ -118,7 +133,6 @@ model Job {
   category    String
   location    String
   salaryRange String?
-  tags        String
   deadline    DateTime?
   isPublished Boolean
   createdAt   DateTime @default(now())
@@ -135,25 +149,22 @@ model Applicant {
   appliedAt DateTime @default(now())
   expectedSalary Int?
   education   String?
-  status      ApplicantStatus @default(PENDING)
-
+  status      ApplicantStatus @default(pending)
   InterviewSchedule InterviewSchedule[]
 }
 
 
 enum ApplicantStatus {
-  PENDING
-  INTERVIEW
-  ACCEPTED
-  REJECTED
+  pending
+  interview
+  accepted
+  rejected
 }
 
 model InterviewSchedule {
   id          String    @id @default(uuid())
   applicantId String
   applicant   Applicant @relation(fields: [applicantId], references: [id])
-  adminId     String
-  admin       Account   @relation(fields: [adminId], references: [id])
   startTime   DateTime
   endTime     DateTime
   location    String?
@@ -187,7 +198,8 @@ model Skill {
   createdById   String
   createdAt     DateTime @default(now())
   question      SkillQuestion[]
-  SkillScore    SkillScore[]
+  skillScore    SkillScore[]
+  userSkill     UserSkill[]
 }
 
 model SkillQuestion {
@@ -204,10 +216,19 @@ model SkillQuestion {
 }
 
 model SkillScore {
-  id           String  @id
-  subsDataId   String
-  subsData     SubsData @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
-  skillId      String
-  Skill        Skill   @relation(fields: [skillId], references: [id])
-  score        Int
+  id              String      @id
+  userSkillId     String
+  userSkill       UserSkill   @relation(fields: [userSkillId], references: [id], onDelete: Cascade)
+  skillId         String
+  skill           Skill       @relation(fields: [skillId], references: [id])
+  score           Int
+}
+
+model UserSkill {
+  id            String        @id
+  subsDataId    String
+  subsData      SubsData      @relation(fields: [subsDataId], references: [id], onDelete: Cascade)
+  skillId       String
+  skill         Skill         @relation(fields: [skillId], references: [id])
+  skillScore    SkillScore[]
 }

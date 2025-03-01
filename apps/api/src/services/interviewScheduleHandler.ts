@@ -2,7 +2,6 @@ import prisma from '@/prisma';
 
 export const createInterviewSchedule = async (
   applicantId: string,
-  adminId: string,
   startTime: Date,
   endTime: Date,
   location?: string,
@@ -12,7 +11,6 @@ export const createInterviewSchedule = async (
     const schedule = await prisma.interviewSchedule.create({
       data: {
         applicantId,
-        adminId,
         startTime,
         endTime,
         location,
@@ -71,23 +69,11 @@ export const deleteInterviewSchedule = async (scheduleId: string) => {
   }
 };
 
-export const getInterviewSchedulesByAdminId = async (adminId: string) => {
-  try {
-    const schedules = await prisma.interviewSchedule.findMany({
-      where: { adminId },
-      include: { applicant: { include: { subsData: { include: { accounts: true } } } } },
-    });
-    return schedules;
-  } catch (error) {
-    throw error;
-  }
-};
-
 export const getInterviewSchedulesByApplicantId = async (applicantId: string) => {
   try {
     const schedules = await prisma.interviewSchedule.findMany({
       where: { applicantId },
-      include: { admin: true },
+      include: { applicant: true },
     });
     return schedules;
   } catch (error) {

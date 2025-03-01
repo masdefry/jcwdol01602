@@ -16,7 +16,6 @@ export class ApplicantRouter {
     this.router.get('/job/:jobId', verifyToken, this.applicantController.getApplicantsByJob);
     this.router.get('/:applicantId', verifyToken, this.applicantController.getApplicantDetails);
     this.router.patch('/:applicantId', verifyToken, this.applicantController.updateApplicantStatus);
-
   }
 
   getRouter(): Router {

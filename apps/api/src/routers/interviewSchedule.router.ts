@@ -17,7 +17,6 @@ export class InterviewScheduleRouter {
     this.router.get('/:scheduleId', verifyToken, this.interviewScheduleController.getSchedule);
     this.router.patch('/:scheduleId', verifyToken, this.interviewScheduleController.updateSchedule);
     this.router.delete('/:scheduleId', verifyToken, this.interviewScheduleController.deleteSchedule);
-    this.router.get('/admin', verifyToken, this.interviewScheduleController.getAdminSchedules);
     this.router.get('/applicant/:applicantId', verifyToken, this.interviewScheduleController.getApplicantSchedules);
   }
 

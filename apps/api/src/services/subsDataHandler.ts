@@ -50,6 +50,7 @@ export const getSubsDataByUser = async (id: string) => {
       include: {
         subsCtg: true,
         payment: true,
+        userSkill: true,
       },
     });
     return data;

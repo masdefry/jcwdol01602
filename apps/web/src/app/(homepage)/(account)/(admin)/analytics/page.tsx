@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import AnalyticsDashboard from '../../../../../components/AnalyticsDashboard';
 
 const AnalyticsPage: NextPage = () => {
   return (

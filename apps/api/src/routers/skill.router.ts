@@ -1,5 +1,6 @@
 import { SkillController } from '@/controllers/skill.controller';
 import { SkillScoreController } from '@/controllers/skillScore.controller';
+import { UserSkillController } from '@/controllers/userSkill.controller';
 import {
   devGuard,
   userDevGuard,
@@ -16,10 +17,12 @@ export class SkillRouter {
   private router: Router;
   private skillController: SkillController;
   private skillScoreController: SkillScoreController;
+  private userSkillController: UserSkillController;
 
   constructor() {
     this.skillController = new SkillController();
     this.skillScoreController = new SkillScoreController();
+    this.userSkillController = new UserSkillController();
     this.router = Router();
     this.initializeRoutes();
   }
@@ -68,14 +71,34 @@ export class SkillRouter {
     );
 
     this.router.post(
-      '/submit-assestment/:skillId',
+      '/submit-assestment/:uSkillId',
       verifyToken,
       userDevGuard,
-      this.skillScoreController.addSkillScore,
+      this.skillScoreController.newSkillScore,
     );
     this.router.delete(
       '/delete-score/:sScoreId',
+      verifyToken,
+      userDevGuard,
       this.skillScoreController.deleteSkillScore,
+    );
+    this.router.get(
+      '/all-scores',
+      verifyToken,
+      devGuard,
+      this.skillScoreController.allSkillScore,
+    );
+    this.router.get(
+      '/user-scores/:uSkillId',
+      verifyToken,
+      this.skillScoreController.skillScoreByUserSkill,
+    );
+
+    this.router.post(
+      '/user-skill/add',
+      verifyToken,
+      userDevGuard,
+      this.userSkillController.newUserSkill,
     );
   }
   getRouter(): Router {

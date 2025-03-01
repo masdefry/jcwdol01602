@@ -1,86 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '@/prisma';
 import { Account } from '@/custom';
-import { getSkillById } from '@/services/skillHandler';
-import { getAllSQuestBySkill } from '@/services/skillQuestHandler';
-import { getSubsDataByUser } from '@/services/subsDataHandler';
-import { getSubsCatById } from '@/services/subsCtgHandler';
-import { sScoreIdMaker } from '@/lib/customId';
+import {
+  addSkillScore,
+  allSkillScoreByUserSkill,
+  delSkillScore,
+  getSkillScoreAll,
+} from '@/services/skillScoreHandler';
 
 export class SkillScoreController {
-  async addSkillScore(req: Request, res: Response, next: NextFunction) {
+  async newSkillScore(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.account as Account;
-      const { skillId } = req.params;
-      if (!skillId) throw new Error('Skill Id required');
-      const { answers } = req.body;
+      const { uSkillId } = req.params;
+      if (!uSkillId) throw new Error('User skill Id required');
+      const { skillId, answers } = req.body;
+      if (!skillId && !answers) throw new Error('Input needed');
       if (user.role !== 'user') {
         throw new Error('Unauthorized');
       }
-      if (!Array.isArray(answers)) {
-        throw new Error('Invalid request data');
-      }
-      const skill = await getSkillById(skillId);
-      if (!skill) throw new Error("Skill doesn't exist");
-      const sQuestions = await getAllSQuestBySkill(skill.id);
-      if (!sQuestions)
-        throw new Error(`No questions available for skill ${skill.name}`);
-
-      // Check answer length and sQuestion length
-      if (answers.length !== sQuestions.length) {
-        throw new Error('Your answers is not complete');
-      }
-      //   Calculate score based on correct answer
-      let correctCount = 0;
-      answers.forEach((answer) => {
-        const question = sQuestions.find((q) => q.id === answer.questionId);
-        if (question && question.answer === answer.selectedAnswer) {
-          correctCount++;
-        }
-      });
-
-      const subsData = await getSubsDataByUser(user.id);
-      if (!subsData) {
-        throw new Error(`No subscription data exist`);
-      }
-      const subsCtg = await getSubsCatById(subsData.subsCtgId);
-      if (!subsCtg) throw new Error('No subscription category exist');
-
-      let scoreData = null;
-      const skillScoreId = await sScoreIdMaker();
-      if (subsData.subsCtg.skillAssessment === true) {
-        // Check subsCtg standard
-        if (subsData.subsCtg.name === 'standard') {
-          const assestTime = await prisma.skillScore.findMany({
-            where: { subsDataId: subsData.id },
-          });
-          if (assestTime.length > 2) {
-            throw new Error(
-              'You have reach your assessment limit, please upgrade your subscription',
-            );
-          }
-          // store to database
-          scoreData = await prisma.skillScore.create({
-            data: {
-              id: skillScoreId,
-              skillId: skill.id,
-              subsDataId: subsData.id,
-              score: correctCount,
-            },
-          });
-        } else if (subsData.subsCtg.name === 'professional') {
-          scoreData = await prisma.skillScore.create({
-            data: {
-              id: skillScoreId,
-              skillId: skill.id,
-              subsDataId: subsData.id,
-              score: correctCount,
-            },
-          });
-        } else {
-          throw new Error('Invalid subsription category name!');
-        }
-      }
+      const scoreData = await addSkillScore(
+        user.id,
+        uSkillId,
+        skillId,
+        answers,
+      );
       return res.status(200).send({
         message: `Answer submitted successfully`,
         skillScore: scoreData,
@@ -94,17 +37,44 @@ export class SkillScoreController {
     try {
       const { sScoreId } = req.params;
       if (!sScoreId) throw new Error(`Skill score id required`);
-      const sScore = await prisma.skillScore.findUnique({
-        where: { id: sScoreId },
-      });
-      if (!sScore) throw new Error(`Score data does't exist`);
-      await prisma.skillScore.delete({
-        where: { id: sScore.id },
-      });
+      const user = req.account as Account;
+      const deletedSScore = await delSkillScore(user.id, sScoreId);
       return res.status(200).send({
         message: `Score data deleted successfully`,
-        sScore,
+        sScore: deletedSScore,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async allSkillScore(req: Request, res: Response, next: NextFunction) {
+    try {
+      let skillScore = null;
+      skillScore = await getSkillScoreAll();
+      if (skillScore.length === 0) {
+        skillScore = 'No data';
+      }
+      return res
+        .status(200)
+        .send({ message: `Skill scores retrieved successfully`, skillScore });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async skillScoreByUserSkill(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { uSkillId } = req.params;
+      if (!uSkillId) {
+        throw new Error(`User skill id required`);
+      }
+      let skillScore = null;
+      skillScore = await allSkillScoreByUserSkill(uSkillId);
+      if (skillScore.length === 0) {
+        skillScore = `No data`;
+      }
+      return res
+        .status(200)
+        .send({ message: `Skill scores retrieved successfully`, skillScore });
     } catch (error) {
       next(error);
     }

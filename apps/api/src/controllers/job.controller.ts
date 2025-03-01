@@ -5,7 +5,7 @@ export class JobController {
   // Create a new job
   async createJob(req: Request, res: Response) {
     try {
-      const { title, description, category, location, salaryRange, tags, deadline, companyId } = req.body;
+      const { title, description, category, location, salaryRange, deadline, companyId } = req.body;
       const job = await prisma.job.create({
         data: {
           title,
@@ -13,7 +13,6 @@ export class JobController {
           category,
           location,
           salaryRange,
-          tags,
           deadline,
           companyId,
           isPublished: false
