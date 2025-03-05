@@ -6,9 +6,7 @@ import prisma from '@/prisma';
 
 async function verifyToken(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log(`verifyToken called`);
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    console.log(`token - ${token}`);
     if (!token) throw new Error('Unauthorized');
     const decoded = verify(token, SECRET_KEY as string);
     if (!decoded) throw new Error('Unauthorized');
@@ -16,18 +14,14 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
     // Convert payload to matching data type
     const account = decoded as Account;
     req.account = account;
-    // console.log(account);
 
     // Check if logged user exist in db
     const findAccount = await prisma.account.findUnique({
       where: { id: account.id },
     });
     if (!findAccount) throw new Error('Who are you?!');
-    console.log(`verifyToken finished`);
     next();
   } catch (error: any) {
-    // console.log(error.message);
-    // Handle error if unauthorized
     if (error.message === 'Unauthorized') {
       return res.status(401).send({ message: error.message });
     }

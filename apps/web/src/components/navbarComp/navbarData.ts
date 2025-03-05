@@ -19,7 +19,7 @@ export const services = [
     href: '/tes',
   },
   {
-    label: 'Subscription',
-    href: '/subscription',
+    label: 'Uprgrade Plan',
+    href: '/choose-plan',
   },
 ];

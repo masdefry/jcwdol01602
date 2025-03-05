@@ -68,6 +68,14 @@ export const ProfileNav = () => {
                 My Profile
               </Link>
             </li>
+            <li>
+              <Link
+                href="/cart"
+                className="block p-2 text-gray-700 hover:bg-blue-300 rounded-lg hover:font-semibold"
+              >
+                Cart
+              </Link>
+            </li>
             {/* Logout Button */}
             <li>
               <button

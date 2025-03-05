@@ -24,10 +24,10 @@ export const newPay = async (subsDataId: string, subsCtgId: string) => {
   }
 };
 
-export const getPayById = async (id: string) => {
+export const getPayById = async (PaymentId: string) => {
   try {
     const payment = await prisma.payment.findUnique({
-      where: { id },
+      where: { id: PaymentId },
     });
     return payment;
   } catch (error) {
@@ -83,8 +83,10 @@ export const getPayBySubsData = async (subsDataId: string) => {
       where: {
         subsDataId,
       },
+      include: {
+        subsCtg: true,
+      },
     });
-    if (payments.length === 0) return (payments = 'No data');
     return payments;
   } catch (error: any) {
     if (error.message) throw new Error(error.message);
@@ -124,7 +126,6 @@ export const editPayMethod = async (paymentId: string, method: string) => {
       },
     });
     const result = { transferTo, data };
-    console.log(result);
     return result;
   } catch (error: any) {
     if (error.message) throw new Error(error.message);
