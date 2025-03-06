@@ -8,7 +8,7 @@ import ImageUploader from '@/components/imageUpload';
 import PaymentCard from '@/components/paymentCard';
 import { capitalizeFirstLetter } from '@/lib/stringFormat';
 
-const Cart = () => {
+const Plan = () => {
   const { account } = useAuthStore();
   const [payments, setPayments] = useState<IPayment[]>([]);
   const [isUploaderOpen, setIsUploaderOpen] = useState(false);
@@ -151,7 +151,10 @@ const Cart = () => {
             payment={payment}
             bankAccount={bankAccount}
             onDelete={deletePayment}
-            onUpload={setSelectedPayment}
+            onUpload={(id) => {
+              setSelectedPayment(id);
+              setIsUploaderOpen(true);
+            }}
           />
         ))
       ) : (
@@ -168,4 +171,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default Plan;
