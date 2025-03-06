@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import JobList from '../components/JobList';
-import JobForm from '../components/JobForm';
+import JobList from '../../../../../components/JobList';
+import JobForm from '../../../../../components/JobForm';
 
 const AdminDashboard: React.FC = () => {
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
