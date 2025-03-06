@@ -8,7 +8,7 @@ export interface ISubsCtg {
   createdAt: Date;
 }
 
-export interface IPayemnt {
+export interface IPayment {
   id: string;
   subsDataId: string;
   subsCtgId: string;
@@ -49,8 +49,8 @@ export interface ISubsData {
   cvPath: string;
   createdAt: Date;
   updatedAt: Date;
-  subsCtg: ISubsCtg[] | null;
-  payment: IPayemnt[] | null;
+  subsCtg: ISubsCtg | null;
+  payment: IPayment[] | null;
   userSKill: IUserSkill[] | null;
   worker: IWorker[] | null;
 }

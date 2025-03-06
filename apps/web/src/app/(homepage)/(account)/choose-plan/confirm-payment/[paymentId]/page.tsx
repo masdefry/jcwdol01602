@@ -4,14 +4,14 @@ import { useParams, useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/authStores';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/lib/axios';
-import { IPayemnt, ISubsCtg } from '@/lib/interface';
+import { IPayment, ISubsCtg } from '@/lib/interface';
 import { capitalizeFirstLetter, rupiahFormat } from '@/lib/stringFormat';
 import ButtonCustom from '@/components/button/btn';
 import { midtransText, transferText } from '@/lib/copywriting';
 
 const page = () => {
   const { paymentId } = useParams();
-  const [payment, setPayment] = useState<IPayemnt>();
+  const [payment, setPayment] = useState<IPayment>();
   const { account } = useAuthStore();
   const router = useRouter();
   const [subsCtg, setSubsCtg] = useState<ISubsCtg>();

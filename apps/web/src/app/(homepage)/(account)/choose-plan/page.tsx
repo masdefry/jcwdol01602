@@ -98,7 +98,7 @@ const Plan = () => {
   };
   return (
     <>
-      <div className="flex flex-col gap-2 justify-center items-center py-4 md:h-2/3">
+      <div className=" flex flex-col gap-2 justify-center items-center pt-2 pb-4">
         <h1 className="text-2xl font-bold">Choose Your Subscription Plan!</h1>
         <p>Upgrade your account and increase your chances of getting a job!</p>
         <div>

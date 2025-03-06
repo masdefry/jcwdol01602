@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { logReg } from './navbarData';
+import { logReg, userProfMenu } from './navbarData';
 
 export const ProfileNav = () => {
   const { account, clearAuth } = useAuthStore();
@@ -59,23 +59,20 @@ export const ProfileNav = () => {
           }`}
         >
           <ul className="p-2">
-            {/* My Profile Link */}
-            <li>
-              <Link
-                href="/"
-                className="block p-2 text-gray-700 hover:bg-blue-300 rounded-lg hover:font-semibold"
-              >
-                My Profile
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/cart"
-                className="block p-2 text-gray-700 hover:bg-blue-300 rounded-lg hover:font-semibold"
-              >
-                Cart
-              </Link>
-            </li>
+            {account.role === 'user' && (
+              <>
+                {userProfMenu.map((menu, idx) => (
+                  <li key={idx}>
+                    <Link
+                      href={menu.href}
+                      className="block p-2 text-gray-700 hover:bg-blue-300 rounded-lg hover:font-semibold"
+                    >
+                      {menu.label}
+                    </Link>
+                  </li>
+                ))}
+              </>
+            )}
             {/* Logout Button */}
             <li>
               <button
