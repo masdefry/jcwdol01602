@@ -41,16 +41,16 @@ export class SkillRouter {
 
     // Delete Skill
     this.router.delete(
-      '/:skillId',
-      // verifyToken,
-      // devGuard,
+      '/delete/:skillId',
+      verifyToken,
+      devGuard,
       this.skillController.deleteSkill,
     );
 
     this.router.post(
       '/new-question/:skillId',
-      // verifyToken,
-      // devGuard,
+      verifyToken,
+      devGuard,
       uploadImage,
       skillQuestValidation,
       this.skillController.newSkillQuest,
@@ -58,8 +58,8 @@ export class SkillRouter {
 
     this.router.patch(
       '/edit-question/:sQuestId',
-      // verifyToken,
-      // devGuard,
+      verifyToken,
+      devGuard,
       uploadImage,
       updateSkillQuestValidation,
       this.skillController.updateSkillQuest,
@@ -68,6 +68,20 @@ export class SkillRouter {
     this.router.get(
       '/all-question/:skillId',
       this.skillController.allSkillQuestBySkill,
+    );
+
+    this.router.get(
+      '/get-question/:sQuestId',
+      verifyToken,
+      devGuard,
+      this.skillController.skillQuestById,
+    );
+
+    this.router.delete(
+      '/delete-question/:sQuestId',
+      verifyToken,
+      devGuard,
+      this.skillController.deleteSkillQuest,
     );
 
     this.router.post(

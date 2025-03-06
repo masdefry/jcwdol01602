@@ -54,3 +54,22 @@ export interface ISubsData {
   userSKill: IUserSkill[] | null;
   worker: IWorker[] | null;
 }
+
+export interface ISkill {
+  id: string;
+  name: string;
+  createdById: string;
+  createdAt: Date;
+}
+
+export interface ISkillQuestion {
+  id: string;
+  skillId: string;
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  answer: string;
+  imageUrl: string | null;
+}

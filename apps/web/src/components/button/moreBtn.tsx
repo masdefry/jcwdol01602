@@ -4,8 +4,11 @@ import {
   TrashIcon,
   CheckCircleIcon,
   XCircleIcon,
+  PlusIcon,
+  ArrowUturnLeftIcon,
 } from '@heroicons/react/24/solid';
 interface IMoreBtn {
+  title?: string;
   runFunction: () => void;
   disabled?: boolean;
 }
@@ -80,5 +83,33 @@ export const TrashBtn = ({ runFunction, disabled }: IMoreBtn) => {
     >
       <TrashIcon width={20} height={20} />
     </button>
+  );
+};
+
+export const AddBtn = ({ title, runFunction }: IMoreBtn) => {
+  return (
+    <div className="flex items-center">
+      <button
+        className="border bg-blue-300 text-black px-2 py-2 flex items-center gap-1 rounded-lg hover:bg-blue-400 duration-150 ease-in-out"
+        onClick={() => runFunction()}
+      >
+        <PlusIcon width={20} height={20} />
+        <p>{title ? title : 'Add New Data'}</p>
+      </button>
+    </div>
+  );
+};
+
+export const ReturnBtn = ({ title, runFunction }: IMoreBtn) => {
+  return (
+    <div className="flex items-center">
+      <button
+        className="bg-gray-200 text-gray-800 hover:text-black px-2 py-2 flex items-center gap-1 rounded-lg hover:bg-yellow-400 duration-150 ease-in-out"
+        onClick={() => runFunction()}
+      >
+        <ArrowUturnLeftIcon width={20} height={20} />
+        <p>{title}</p>
+      </button>
+    </div>
   );
 };

@@ -20,6 +20,16 @@ const DevSideNav = (): ISideNavItem[] => {
       href: '/dev-dashboard/payments',
       active: pathname === '/dev-dashboard/payments',
     },
+    {
+      label: 'Skill List',
+      href: '/dev-dashboard/skill-list',
+      active: pathname === '/dev-dashboard/skill-list',
+    },
+    {
+      label: 'Assesstment Results',
+      href: '/dev-dashboard/assesstment-results',
+      active: pathname === '/dev-dashboard/assesstment-restults',
+    },
   ];
 };
 

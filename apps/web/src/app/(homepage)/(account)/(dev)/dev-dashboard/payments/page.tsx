@@ -1,11 +1,5 @@
 'use client';
-import {
-  ApproveBtn,
-  DeleteBtn,
-  DetailBtn,
-  EditBtn,
-  RejectBtn,
-} from '@/components/button/moreBtn';
+import { ApproveBtn, DetailBtn, RejectBtn } from '@/components/button/moreBtn';
 import { Heading } from '@/components/heading';
 import ModalDetail from '@/components/table/modalDetail';
 import TableDashboard from '@/components/table/table';
@@ -32,7 +26,6 @@ const Payments = () => {
   const getPayment = async () => {
     try {
       const { data } = await axiosInstance.get('/api/payment/datas');
-      console.log(data.payments);
       setPayments(data.payments);
     } catch (error: any) {
       const errorMessage = error.response?.data?.message;
@@ -50,6 +43,11 @@ const Payments = () => {
         { isApproved: true },
       );
       toast.success(data.message);
+      setPayments((prevPayments) =>
+        prevPayments.map((payment) =>
+          payment.id === paymentId ? { ...payment, isApproved: true } : payment,
+        ),
+      );
     } catch (error: any) {
       const errorMessage = error.response?.data?.message;
       toast.error(errorMessage);
@@ -63,6 +61,13 @@ const Payments = () => {
         { isApproved: false },
       );
       toast.success(data.message);
+      setPayments((prevPayments) =>
+        prevPayments.map((payment) =>
+          payment.id === paymentId
+            ? { ...payment, isApproved: false }
+            : payment,
+        ),
+      );
     } catch (error: any) {
       const errorMessage = error.response?.data?.message;
       toast.error(errorMessage);
