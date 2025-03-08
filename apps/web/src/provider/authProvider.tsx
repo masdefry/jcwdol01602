@@ -1,7 +1,7 @@
 'use client';
 import useAuthStore from '@/stores/authStores';
 import { getCookie } from 'cookies-next';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import toast from 'react-hot-toast';
@@ -23,6 +23,7 @@ export default function AuthProvider({
 }) {
   const { onAuthSuccess, clearAuth } = useAuthStore();
   const router = useRouter();
+  const [isAuthLoading, setIsAuthLoading] = useState(true); //add loading to check if account is logged in
 
   // function to check if user already logged in
   const checkLogin = async () => {
@@ -30,12 +31,14 @@ export default function AuthProvider({
       // get token from cookies
       const access_token = await getCookie('access_token');
 
-      // Check if token is available, if not goo to login
+      // Check if token is available
       if (!access_token) {
-        clearAuth();
-        toast.dismiss();
-        // toast.error('Please login first');
-        // router.push('/login');
+        // clearAuth();
+        // toast.dismiss();
+        // toast.error(`You need to login first`);
+        // router.push('/');
+
+        setIsAuthLoading(false);
         return;
       }
 
@@ -61,6 +64,8 @@ export default function AuthProvider({
       const errorMessage = error.response?.data?.message;
       toast.error(errorMessage);
       console.log(error);
+    } finally {
+      setIsAuthLoading(false);
     }
   };
 
@@ -69,5 +74,6 @@ export default function AuthProvider({
       checkLogin();
     }
   }, []);
+  if (isAuthLoading) return <div>Loading authentication...</div>;
   return <>{children}</>;
 }

@@ -18,12 +18,22 @@ export class PaymentRouter {
   }
 
   private initializeRoutes(): void {
+    this.router.get('/options', this.paymentController.paymentOption);
+
     // Cancel payment
     this.router.delete(
-      '/:paymentId',
+      '/delete/:paymentId',
       verifyToken,
       userDevGuard,
       this.paymentController.deletePayment,
+    );
+
+    // All user payments
+    this.router.get(
+      '/my-invoices',
+      verifyToken,
+      userDevGuard,
+      this.paymentController.userPayments,
     );
 
     // Add payment method
@@ -57,6 +67,14 @@ export class PaymentRouter {
       verifyToken,
       devGuard,
       this.paymentController.approvalPayment,
+    );
+
+    // Get Payment by PaymentId
+    this.router.get(
+      '/data/:paymentId',
+      verifyToken,
+      userDevGuard,
+      this.paymentController.paymentData,
     );
   }
 

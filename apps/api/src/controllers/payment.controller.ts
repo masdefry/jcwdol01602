@@ -5,7 +5,11 @@ import {
   editPayMethod,
   editPayProof,
   getPayAll,
+  getPayById,
+  getPayBySubsData,
 } from '@/services/paymentHandler';
+import { getSubsDataByUser } from '@/services/subsDataHandler';
+import { paymentMethod } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 
 export class PaymentController {
@@ -24,6 +28,28 @@ export class PaymentController {
       return res.status(200).send({
         message: `Payment with id: ${deletedPayment.id}, deleted successfully`,
         payment: deletedPayment,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async paymentData(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.account as Account;
+      const { paymentId } = req.params;
+      const subsData = await getSubsDataByUser(user.id);
+      if (!subsData) throw new Error('No subscription data found');
+      let payment = null;
+      payment = await getPayById(paymentId);
+      if (!payment) {
+        payment = 'No Data';
+      } else if (payment && payment.subsDataId !== subsData.id) {
+        throw new Error('Unauthorized to continue to get payment data');
+      }
+      return res.status(200).send({
+        message: 'Payment retrieved successfully',
+        payment,
       });
     } catch (error) {
       next(error);
@@ -103,6 +129,34 @@ export class PaymentController {
       return res.status(200).send({
         message: 'Approval payment updated sucessfully',
         payment: paymentStatus,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async paymentOption(req: Request, res: Response, next: NextFunction) {
+    try {
+      const optionPayment = Object.values(paymentMethod);
+      return res.status(200).send({
+        message: 'Payment option retrieved successfully',
+        optionPayment,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userPayments(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.account as Account;
+      const subsData = await getSubsDataByUser(user.id);
+      if (!subsData) throw new Error(`No subscription data exist`);
+      let payments = null;
+      payments = await getPayBySubsData(subsData.id);
+      return res.status(200).send({
+        message: 'Payments data retrieved successfully',
+        payments,
       });
     } catch (error) {
       next(error);

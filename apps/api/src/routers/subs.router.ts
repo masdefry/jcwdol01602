@@ -22,6 +22,7 @@ export class SubsRouter {
 
   private initializeRoutes(): void {
     this.router.get('/categories', this.subsCtgController.allSubsCategory);
+    this.router.get('/category/:subsCtgId', this.subsCtgController.subsCtgById);
 
     this.router.post(
       '/category/new',
@@ -40,10 +41,17 @@ export class SubsRouter {
     );
 
     this.router.delete(
-      '/category/:id',
+      '/delete-category/:subsCtgId',
       verifyToken,
       devGuard,
       this.subsCtgController.deleteSubsCategory,
+    );
+
+    this.router.get(
+      '/my-data',
+      verifyToken,
+      userDevGuard,
+      this.subsDataController.userSubsData,
     );
 
     // Get All Subs Datas
