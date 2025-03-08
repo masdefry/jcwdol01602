@@ -100,6 +100,7 @@ export default class App {
     this.app.use('/api/skill', skillRouter.getRouter());
     this.app.use('/api/education', eduRouter.getRouter());
     this.app.use('/api/company', companyRouter.getRouter());
+    this.app.use('/api/job', jobRouter.getRouter());
     this.app.use('/api/worker', workRouter.getRouter());
     this.app.use('/api/applicant', applicantRouter.getRouter());
     this.app.use('/api/interviewschedule', interviewScheduleRouter.getRouter());

@@ -1,73 +1,61 @@
-import axios from 'axios';
+import axiosInstance from "@/lib/axios";
 
-const API_URL = 'http://localhost:8000/api/job';
+const API_URL = '/api/job';
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return { headers: { Authorization: `Bearer ${token}` } };
-};
-
-export const fetchJobs = async (accountId: string) => {
-  try {
-    const url = `${API_URL}/list?accountId=${accountId}`;
-    console.log("Fetching jobs from:", url);
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
+const JobService = {
+  createJob: async (jobData: any, accountId: string) => {
+    try {
+      const response = await axiosInstance.post(`${API_URL}/create`, { ...jobData, accountId });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
     }
+  },
 
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching jobs:", error);
-    throw error;
-  }
+  updateJob: async (jobId: string, jobData: any, accountId: string) => {
+    try {
+      const response = await axiosInstance.put(`${API_URL}/${jobId}`, { ...jobData, accountId });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
+  },
+
+  deleteJob: async (jobId: string, accountId: string) => {
+    try {
+      const response = await axiosInstance.delete(`${API_URL}/${jobId}`, { data: { accountId } });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
+  },
+
+  getAllJobs: async (accountId: string) => {
+    try {
+      const response = await axiosInstance.get(`${API_URL}/list?accountId=${accountId}`);
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
+  },
+
+  getJobDetails: async (jobId: string, accountId: string) => {
+    try {
+      const response = await axiosInstance.get(`${API_URL}/${jobId}?accountId=${accountId}`);
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
+  },
+
+  togglePublish: async (jobId: string, accountId: string) => {
+    try {
+      const response = await axiosInstance.patch(`${API_URL}/${jobId}/publish`, { accountId });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
+  },
 };
 
-
-// Create a new job
-export const createJob = async (jobData: any) => {
-  try {
-    await axios.post(`${API_URL}/create`, jobData, getAuthHeaders());
-  } catch (error) {
-    console.error("Error creating job:", error);
-    throw error;
-  }
-};
-
-// Update an existing job
-export const updateJob = async (id: string, jobData: any) => {
-  try {
-    await axios.put(`${API_URL}/${id}`, jobData, getAuthHeaders());
-  } catch (error) {
-    console.error("Error updating job:", error);
-    throw error;
-  }
-};
-
-// Delete a job
-export const deleteJob = async (id: string) => {
-  try {
-    await axios.delete(`${API_URL}/${id}`, getAuthHeaders());
-  } catch (error) {
-    console.error("Error deleting job:", error);
-    throw error;
-  }
-};
-
-// Toggle job publish status
-export const togglePublish = async (id: string) => {
-  try {
-    const response = await axios.patch(`${API_URL}/${id}/publish`, {}, getAuthHeaders());
-    return response.data;
-  } catch (error) {
-    console.error("Error toggling publish status:", error);
-    throw error;
-  }
-};
+export default JobService;

@@ -6,7 +6,7 @@ export interface Job {
   category: string;
   location: string;
   salaryRange?: string;
-  deadline?: string;
+  deadline: string;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;

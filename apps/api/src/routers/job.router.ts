@@ -13,15 +13,13 @@ export class JobRouter {
     this.initializeRoutes();
   }
 
-  // verifyToken, adminDevGuard,
-
   private initializeRoutes(): void {
-    this.router.post('/create', JobValidation, this.jobController.createJob);
-    this.router.put('/:id',  JobValidation, this.jobController.updateJob);
-    this.router.delete('/:id',  this.jobController.deleteJob);
-    this.router.get('/list', this.jobController.getAllJobs);
-    this.router.get('/:id',  this.jobController.getJobDetails);
-    this.router.patch('/:id/publish', this.jobController.togglePublish);
+    this.router.post('/create', verifyToken, adminDevGuard, JobValidation, this.jobController.createJob);
+    this.router.put('/:id', verifyToken, adminDevGuard, JobValidation, this.jobController.updateJob);
+    this.router.delete('/:id', verifyToken, adminDevGuard, this.jobController.deleteJob);
+    this.router.get('/list', verifyToken, adminDevGuard, this.jobController.getAllJobs);
+    this.router.get('/:id', verifyToken, adminDevGuard, this.jobController.getJobDetails);
+    this.router.patch('/:id/publish', verifyToken, adminDevGuard, this.jobController.togglePublish);
   }
 
   getRouter(): Router {

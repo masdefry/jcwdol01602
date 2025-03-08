@@ -11,7 +11,12 @@ import {
 export class JobController {
   async createJob(req: Request, res: Response) {
     try {
-      const job = await createJobHandler(req.body);
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
+      }
+
+      const job = await createJobHandler(req.body, accountId);
       return res.status(201).json({ message: 'Job created successfully', job });
     } catch (error: any) {
       console.error(error);
@@ -22,7 +27,13 @@ export class JobController {
   async updateJob(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const updatedJob = await updateJobHandler(id, req.body);
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
+
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
+      }
+
+      const updatedJob = await updateJobHandler(id, req.body, accountId);
       return res.json({ message: 'Job updated successfully', updatedJob });
     } catch (error: any) {
       return res.status(500).json({ error: 'Failed to update job' });
@@ -32,7 +43,13 @@ export class JobController {
   async deleteJob(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      await deleteJobHandler(id);
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
+
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
+      }
+
+      await deleteJobHandler(id, accountId);
       return res.json({ message: 'Job deleted successfully' });
     } catch (error: any) {
       return res.status(500).json({ error: 'Failed to delete job' });
@@ -59,7 +76,13 @@ export class JobController {
   async getJobDetails(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const job = await getJobDetailsHandler(id);
+      const { accountId } = req.query;
+
+      if (!accountId || typeof accountId !== 'string') {
+          return res.status(400).json({error: "AccountId is required as a query parameter."})
+      }
+
+      const job = await getJobDetailsHandler(id, accountId);
 
       if (!job) {
         return res.status(404).json({ error: 'Job not found' });
@@ -74,7 +97,13 @@ export class JobController {
   async togglePublish(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const updatedJob = await togglePublishHandler(id);
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
+
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
+      }
+
+      const updatedJob = await togglePublishHandler(id, accountId);
       return res.json({
         message: `Job ${updatedJob.isPublished ? 'published' : 'unpublished'}`,
         updatedJob,
