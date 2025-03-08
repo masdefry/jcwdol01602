@@ -45,5 +45,21 @@ export class ApplicantController {
         } catch (error) {
             next(error);
         }
+
+    }
+
+    async getApplicantById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { applicantId } = req.params;
+            const applicant = await getApplicantById(applicantId);
+
+            if (!applicant) {
+                return res.status(404).json({ message: 'Applicant not found' });
+            }
+
+            return res.status(200).json({ applicant });
+        } catch (error) {
+            next(error);
+        }
     }
 }

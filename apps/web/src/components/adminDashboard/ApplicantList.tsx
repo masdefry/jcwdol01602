@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useApplicantStore } from '@/stores/applicantStore';
 import ApplicantItem from './ApplicantItem';
-import FilterBar from './FilterBar';
+import FilterBar from '../FilterBar';
 
 interface Props {
   jobId: string;

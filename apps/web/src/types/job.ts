@@ -6,19 +6,36 @@ export interface Job {
   category: string;
   location: string;
   salaryRange?: string;
-  deadline?: string;
+  deadline: string;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
+  applicants: Applicant[];
 }
 
 export interface Company {
   id: string;
-  name: string;
-  email: string;
+  accountId: string;
   phone: string;
-  address: string;
+  address?: string;
   website?: string;
   description?: string;
-  logo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Applicant {
+  id: string;
+  subsDataId: string;
+  jobId: string;
+  appliedAt: string;
+  expectedSalary?: number;
+  status: ApplicantStatus;
+}
+
+export enum ApplicantStatus {
+  Pending = "pending",
+  Interview = "interview",
+  Accepted = "accepted",
+  Rejected = "rejected"
 }

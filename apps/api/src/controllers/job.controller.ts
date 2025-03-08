@@ -1,106 +1,114 @@
 import { Request, Response } from 'express';
-import prisma from '@/prisma';
+import {
+  createJobHandler,
+  updateJobHandler,
+  deleteJobHandler,
+  getAllJobsHandler,
+  getJobDetailsHandler,
+  togglePublishHandler,
+} from '@/services/jobHandler';
 
 export class JobController {
-  // Create a new job
   async createJob(req: Request, res: Response) {
     try {
-      const { title, description, category, location, salaryRange, deadline, companyId } = req.body;
-      const job = await prisma.job.create({
-        data: {
-          title,
-          description,
-          category,
-          location,
-          salaryRange,
-          deadline,
-          companyId,
-          isPublished: false
-        },
-      });
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
+      }
+
+      const job = await createJobHandler(req.body, accountId);
       return res.status(201).json({ message: 'Job created successfully', job });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       return res.status(500).json({ error: 'Failed to create job' });
     }
   }
 
-  // Update job posting
   async updateJob(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const data = req.body;
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
 
-      // Check if companyId is being updated:
-      if (data.companyId) {
-        data.company = { connect: { id: data.companyId } };
-        delete data.companyId;
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
       }
-      const updatedJob = await prisma.job.update({
-        where: { id },
-        data: data,
-      });
+
+      const updatedJob = await updateJobHandler(id, req.body, accountId);
       return res.json({ message: 'Job updated successfully', updatedJob });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).json({ error: 'Failed to update job' });
     }
   }
 
-  // Delete job posting
   async deleteJob(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      await prisma.job.delete({ where: { id } });
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
+
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
+      }
+
+      await deleteJobHandler(id, accountId);
       return res.json({ message: 'Job deleted successfully' });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).json({ error: 'Failed to delete job' });
     }
   }
 
-  // Get all jobs with filters & sorting
   async getAllJobs(req: Request, res: Response) {
     try {
-      const { title, category, sort } = req.query;
-      const jobs = await prisma.job.findMany({
-        where: { title: { contains: title as string }, category: category as string },
-        orderBy: { title: sort === 'asc' ? 'asc' : 'desc' },
-        include: { applicants: true },
-      });
+      console.log('Query Params:', req.query);
+
+      const { accountId } = req.query;
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required as a query parameter' });
+      }
+
+      const jobs = await getAllJobsHandler(accountId);
       return res.json(jobs);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error in getAllJobs:', error);
       return res.status(500).json({ error: 'Failed to fetch jobs' });
     }
   }
 
-  // Get job details (including applicants count)
   async getJobDetails(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const job = await prisma.job.findUnique({
-        where: { id },
-        include: { applicants: true },
-      });
+      const { accountId } = req.query;
+
+      if (!accountId || typeof accountId !== 'string') {
+          return res.status(400).json({error: "AccountId is required as a query parameter."})
+      }
+
+      const job = await getJobDetailsHandler(id, accountId);
+
+      if (!job) {
+        return res.status(404).json({ error: 'Job not found' });
+      }
+
       return res.json(job);
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).json({ error: 'Failed to fetch job details' });
     }
   }
 
-  // Toggle Publish / Unpublish job
   async togglePublish(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const job = await prisma.job.findUnique({ where: { id } });
+      const { accountId } = req.body; // Assuming accountId is passed in the request body
 
-      if (!job) return res.status(404).json({ error: 'Job not found' });
+      if (!accountId || typeof accountId !== 'string') {
+        return res.status(400).json({ error: 'AccountId is required in the request body' });
+      }
 
-      const updatedJob = await prisma.job.update({
-        where: { id },
-        data: { isPublished: !job.isPublished },
+      const updatedJob = await togglePublishHandler(id, accountId);
+      return res.json({
+        message: `Job ${updatedJob.isPublished ? 'published' : 'unpublished'}`,
+        updatedJob,
       });
-
-      return res.json({ message: `Job ${updatedJob.isPublished ? 'published' : 'unpublished'}`, updatedJob });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).json({ error: 'Failed to update job status' });
     }
   }
