@@ -2,22 +2,28 @@ import prisma from '@/prisma';
 
 export const getUserDemographics = async () => {
   try {
-    const demographics = await prisma.profile.findMany({
+    const demographics = await prisma.userProfile.findMany({
       select: {
         gender: true,
-        birthDate: true,
+        dob: true,
         address: true,
-        account: { select: { id: true } },
+        SubsData: {
+          select: {
+            accounts: {
+              select: { id: true },
+            },
+          },
+        },
       },
     });
 
     return demographics.map((profile) => ({
       gender: profile.gender,
-      age: profile.birthDate
-        ? new Date().getFullYear() - profile.birthDate.getFullYear()
+      age: profile.dob
+        ? new Date().getFullYear() - profile.dob.getFullYear()
         : null,
       location: profile.address,
-      accountId: profile.account.id,
+      accountId: profile.SubsData.accounts.id,
     }));
   } catch (error) {
     throw error;
@@ -29,7 +35,12 @@ export const getSalaryTrends = async () => {
     const salaryTrends = await prisma.applicant.findMany({
       select: {
         expectedSalary: true,
-        job: { select: { title: true, location: true } },
+        job: {
+          select: {
+            title: true,
+            location: true,
+          },
+        },
       },
     });
 
@@ -77,9 +88,7 @@ export const getJobPostStatistics = async () => {
         id: true,
         title: true,
         _count: {
-          select: {
-            applicants: true,
-          },
+          select: { applicants: true },
         },
       },
     });
@@ -97,9 +106,7 @@ export const getJobPostStatistics = async () => {
 export const getNewUsersPerMonth = async () => {
   try {
     const users = await prisma.account.findMany({
-      select: {
-        createdAt: true,
-      },
+      select: { createdAt: true },
     });
 
     const userCounts = users.reduce((acc, user) => {
