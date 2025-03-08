@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import Logo from './logo';
 import {
   footerCompLink,
   footerContact,
   footerData,
   footerMenu,
 } from './footer/footerData';
+import Logo from './logo';
 
 const Footer = (): JSX.Element => {
   return (
@@ -48,7 +48,9 @@ const Footer = (): JSX.Element => {
             <h2 className="font-semibold text-sm">{footerMenu.contact}</h2>
             <div className=" flex flex-col gap-2">
               {footerContact.map((data, idx) => (
-                <p className="text-xs text-gray-900">{data}</p>
+                <p className="text-xs text-gray-900" key={idx}>
+                  {data}
+                </p>
               ))}
             </div>
           </div>

@@ -8,7 +8,7 @@ const HomePage = () => {
   const { account, clearAuth } = useAuthStore();
   const router = useRouter();
   return (
-    <div>
+    <div className="">
       <h1>Hello {account?.name} !</h1>
 
       <button

@@ -1,3 +1,5 @@
+import Footer from '@/components/footer';
+import Navbar from '@/components/navbar';
 import AuthProvider from '@/provider/authProvider';
 
 export default function SiteLayout({
@@ -7,7 +9,11 @@ export default function SiteLayout({
 }) {
   return (
     <>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <Navbar />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+      </AuthProvider>
     </>
   );
 }

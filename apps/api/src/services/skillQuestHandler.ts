@@ -113,9 +113,6 @@ export const editSkillQuest = async (
       newOption_c = options[2];
       newOption_d = options[3];
       newOptions = [options[0], options[1], options[2], options[3]];
-      if (!newOptions.includes(newAnswer)) {
-        throw new Error('Correct answer must be one of the provided options');
-      }
     } else
       throw new Error(
         'Each question must have a question, 4 options, and a correct answer',

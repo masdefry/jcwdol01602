@@ -8,6 +8,7 @@ import {
   delSkillQuest,
   editSkillQuest,
   getAllSQuestBySkill,
+  getSQuestById,
 } from '@/services/skillQuestHandler';
 import { Request, Response, NextFunction } from 'express';
 
@@ -33,7 +34,7 @@ export class SkillController {
         },
       });
       return res.status(201).send({
-        mesage: 'New skill created successfully',
+        message: 'New skill created successfully',
         skill,
       });
     } catch (error) {
@@ -72,10 +73,6 @@ export class SkillController {
     try {
       let skills = null;
       skills = await prisma.skill.findMany();
-      if (skills.length === 0) {
-        skills = 'No Data';
-        return res.status(200).send({ message: 'No data', skills });
-      }
       return res.status(200).send({
         message: 'All skill retrieved successfully',
         skills,
@@ -147,9 +144,24 @@ export class SkillController {
       next(error);
     }
   }
+
+  async skillQuestById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { sQuestId } = req.params;
+      if (!sQuestId) throw new Error(`Skill question id required`);
+      const question = await getSQuestById(sQuestId);
+      return res.status(200).send({
+        message: 'Question retrieved successfully',
+        question,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
   async deleteSkillQuest(req: Request, res: Response, next: NextFunction) {
     try {
       const { sQuestId } = req.params;
+
       if (!sQuestId) throw new Error(`Skill question id required`);
       const deleteData = await delSkillQuest(sQuestId);
       return res.status(200).send({

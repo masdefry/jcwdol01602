@@ -16,7 +16,6 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
     // Convert payload to matching data type
     const account = decoded as Account;
     req.account = account;
-    // console.log(account);
 
     // Check if logged user exist in db
     const findAccount = await prisma.account.findUnique({
@@ -26,8 +25,6 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
     console.log(`verifyToken finished`);
     next();
   } catch (error: any) {
-    // console.log(error.message);
-    // Handle error if unauthorized
     if (error.message === 'Unauthorized') {
       return res.status(401).send({ message: error.message });
     }

@@ -19,7 +19,48 @@ export const services = [
     href: '/tes',
   },
   {
-    label: 'Subscription',
-    href: '/subscription',
+    label: 'Uprgrade Plan',
+    href: '/choose-plan',
+  },
+];
+
+export const devServices = [
+  {
+    label: 'Job Posting',
+    href: '/',
+  },
+  {
+    label: 'Company',
+    href: '/tes',
+  },
+  {
+    label: 'Dashboard',
+    href: '/dev-dashboard/home',
+  },
+];
+
+export const adminServices = [
+  {
+    label: 'Job Posting',
+    href: '/',
+  },
+  {
+    label: 'Company',
+    href: '/tes',
+  },
+  {
+    label: 'Dashboard',
+    href: '/',
+  },
+];
+
+export const userProfMenu = [
+  {
+    label: 'My Profile',
+    href: '/user-data/profile',
+  },
+  {
+    label: 'My Plan',
+    href: '/user-data/plan',
   },
 ];

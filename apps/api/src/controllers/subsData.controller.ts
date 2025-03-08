@@ -69,4 +69,19 @@ export class SubsDataController {
       next(error);
     }
   }
+
+  async userSubsData(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.account as Account;
+      const data = await getSubsDataByUser(user.id);
+      if (!data)
+        throw new Error(`Subscription data doesn't exist for this user`);
+      return res.status(200).send({
+        message: `Subscription data retrieved successfully`,
+        subsData: data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

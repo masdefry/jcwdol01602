@@ -46,17 +46,17 @@ export class SubsCtgController {
 
   async deleteSubsCategory(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      if (!id) {
+      const { subsCtgId } = req.params;
+      if (!subsCtgId) {
         throw new Error('Id not available');
       }
 
-      const findSubsCtg = await getSubsCatById(id);
+      const findSubsCtg = await getSubsCatById(subsCtgId);
       if (!findSubsCtg) {
         throw new Error('Subscription category not found');
       }
 
-      await delSubsCatHandler(id);
+      await delSubsCatHandler(subsCtgId);
       return res.status(200).send({
         message: `${findSubsCtg.name} subscription category deleted successfully`,
       });
@@ -91,6 +91,20 @@ export class SubsCtgController {
       return res.status(201).send({
         message: `${findSubsCtg.name} subscription category updated successfully`,
         subsCtg: updatedData,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async subsCtgById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { subsCtgId } = req.params;
+      let subsCtg = null;
+      subsCtg = await getSubsCatById(subsCtgId);
+      res.status(200).send({
+        message: 'Subscription category retrieved successfully',
+        subsCtg,
       });
     } catch (error) {
       next(error);
