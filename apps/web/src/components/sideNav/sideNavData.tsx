@@ -50,4 +50,32 @@ const UserSideNav = (): ISideNavItem[] => {
   ];
 };
 
-export { DevSideNav, UserSideNav };
+const AdminSideNav = (): ISideNavItem[] => {
+  const pathname = usePathname();
+
+  return [
+    {
+      label: 'Job',
+      href: '/adm-dashboard/job',
+      active: pathname === '/adm-dashboard/job',
+    },
+    {
+      label: 'Pre Selection Test',
+      href: '/adm-dashboard/pre-selection-test',
+      active: pathname === '/dev-dashboard/pre-selection-test',
+    },
+    {
+      label: 'Pre Selection Results',
+      href: '/adm-dashboard/pre-selection-results',
+      active: pathname === '/adm-dashboard/pre-selection-restults',
+    },
+    {
+      label: 'Analytics',
+      href: '/adm-dashboard/analytics',
+      active: pathname === '/adm-dashboard/analytics',
+    },
+  ];
+};
+
+
+export { DevSideNav, UserSideNav, AdminSideNav };
