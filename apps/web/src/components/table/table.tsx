@@ -6,6 +6,7 @@ interface TableProps {
   itemsPerPage: number;
   datas: Array<Record<string, any>>;
 }
+
 export default function TableDashboard({
   columns,
   datas,
@@ -17,8 +18,8 @@ export default function TableDashboard({
   // Filter data based on searchQuery
   const filteredData = datas.filter((data) =>
     Object.values(data).some((value) =>
-      String(value).toLowerCase().includes(searchQuery.toLocaleLowerCase()),
-    ),
+      String(value).toLowerCase().includes(searchQuery.toLocaleLowerCase())
+    )
   );
 
   // Calculate total pages
@@ -83,7 +84,9 @@ export default function TableDashboard({
                         ? value
                           ? 'Yes'
                           : 'No'
-                        : String(value)}
+                        : React.isValidElement(value) // Check if value is a React element
+                          ? value // Render React element directly
+                          : String(value)}
                   </td>
                 ))}
             </tr>

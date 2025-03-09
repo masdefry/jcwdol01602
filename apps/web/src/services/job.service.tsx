@@ -12,9 +12,10 @@ const JobService = {
     }
   },
 
-  updateJob: async (jobId: string, jobData: any, accountId: string) => {
+  updateJob: async (jobId: string, jobData: any) => {
     try {
-      const response = await axiosInstance.put(`${API_URL}/${jobId}`, { ...jobData, accountId });
+      const response = await axiosInstance.put(`${API_URL}/${jobId}`, { ...jobData});
+      console.log(response);
       return response.data;
     } catch (error: any) {
       throw error.response?.data || error;

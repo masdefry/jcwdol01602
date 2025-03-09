@@ -1,6 +1,6 @@
 import useAuthStore from '@/stores/authStores';
 import React from 'react';
-import { DevSideNav, ISideNavItem, UserSideNav } from './sideNavData';
+import { AdminSideNav, DevSideNav, ISideNavItem, UserSideNav } from './sideNavData';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -18,6 +18,8 @@ const SideNav = () => {
     sideNavItems = DevSideNav();
   } else if (account.role === 'user') {
     sideNavItems = UserSideNav();
+  } else if (account.role === 'admin') {
+    sideNavItems = AdminSideNav();
   }
   return (
     <>

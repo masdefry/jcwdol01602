@@ -5,8 +5,8 @@ import {
   updateInterviewSchedule,
   deleteInterviewSchedule,
   getInterviewSchedulesByApplicantId,
+  getInterviewApplicantsByCompanyAccountId,
 } from '@/services/interviewScheduleHandler';
-import { Account } from '@/custom';
 import prisma from '@/prisma';
 import { transporter } from '@/lib/mail';
 
@@ -23,7 +23,6 @@ export class InterviewScheduleController {
       );
 
       await this.sendInterviewNotification(applicantId, schedule);
-
       return res.status(201).json({ schedule });
     } catch (error) {
       next(error);
@@ -77,6 +76,18 @@ export class InterviewScheduleController {
     }
   }
 
+  async getApplicantsByCompany(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { companyAccountId } = req.params;
+      const applicants = await getInterviewApplicantsByCompanyAccountId(companyAccountId);
+      return res.status(200).json({ applicants });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
+
   private async sendInterviewNotification(applicantId: string, schedule: any) {
     try {
       const applicant = await prisma.applicant.findUnique({
@@ -84,7 +95,7 @@ export class InterviewScheduleController {
         include: { subsData: { include: { accounts: true } } },
       });
 
-      if (!applicant || !applicant.subsData.accounts.email) {
+      if (!applicant || !applicant.subsData?.accounts?.email) {
         throw new Error('Applicant or email not found');
       }
 

@@ -10,26 +10,15 @@ interface QuestionInput {
   answer: string;
 }
 
-/**
- * Create a pre-selection test for a given job.
- * The test must contain exactly 25 questions.
- */
 export const createPreSelectionTest = async (
   jobId: string,
-  isActive: boolean,
-  questions: QuestionInput[]
 ) => {
   try {
-    if (questions.length !== 25) {
-      throw new Error('Test must contain exactly 25 questions');
-    }
     const test = await prisma.preSelectionTest.create({
       data: {
-        job: { connect: { id: jobId } },
-        isActive,
-        questions: { create: questions },
+        jobId,
       },
-      include: { questions: true },
+
     });
     return test;
   } catch (error: any) {
@@ -37,21 +26,19 @@ export const createPreSelectionTest = async (
     throw new Error('Unexpected error - createPreSelectionTest: ' + error);
   }
 };
-
 /**
- * Retrieve the pre-selection test by jobId.
+ * Delete a pre-selection test by ID.
  */
-export const getPreSelectionTestByJobId = async (jobId: string) => {
+export const deletePreSelectionTest = async (testId: string) => {
   try {
-    const test = await prisma.preSelectionTest.findUnique({
-      where: { jobId },
+    const test = await prisma.preSelectionTest.delete({
+      where: { id: testId },
       include: { questions: true },
     });
-    if (!test) throw new Error("Test doesn't exist for this job");
     return test;
   } catch (error: any) {
     if (error.message) throw new Error(error.message);
-    throw new Error('Unexpected error - getPreSelectionTestByJobId: ' + error);
+    throw new Error('Unexpected error - deletePreSelectionTest: ' + error);
   }
 };
 
@@ -87,6 +74,69 @@ export const updatePreSelectionTest = async (
   }
 };
 
+/**
+ * Get a pre-selection test by jobId.
+ */
+export const getPreSelectionTestByJobId = async (jobId: string) => {
+  try {
+    const test = await prisma.preSelectionTest.findUnique({
+      where: { jobId: jobId },
+      include: { questions: true },
+    });
+    if (!test) throw new Error("Test doesn't exist for this job");
+    return test;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - getPreSelectionTestByJobId: ' + error);
+  }
+};
+
+/**
+ * Get a pre-selection test by ID.
+ */
+export const getPreSelectionTestById = async (testId: string) => {
+  try {
+    const test = await prisma.preSelectionTest.findUnique({
+      where: { id: testId },
+      include: { questions: true },
+    });
+    if (!test) throw new Error("Test doesn't exist");
+    return test;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - getPreSelectionTestById: ' + error);
+  }
+};
+
+/**
+ * Get all pre-selection tests by company (accountId).
+ */
+export const getAllPreSelectionTestsByCompany = async (accountId: string) => {
+  try {
+    const companies = await prisma.company.findMany({
+      where: {
+        accountId: accountId,
+      },
+      include: {
+        jobs: {
+          include: {
+            PreSelectionTest: true,
+          },
+        },
+      },
+    });
+
+    // Flatten the results to get a list of all PreSelectionTests
+    const preSelectionTests = companies.flatMap(company =>
+      company.jobs.flatMap(job => job.PreSelectionTest)
+    );
+
+    return preSelectionTests;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - getAllPreSelectionTestsByCompany: ' + error);
+  }
+};
 /**
  * Submit the test result for an applicant.
  * This function calculates the score based on the correct answers.

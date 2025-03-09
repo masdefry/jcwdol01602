@@ -1,5 +1,46 @@
 import prisma from '@/prisma';
 
+
+export const getInterviewApplicantsByCompanyAccountId = async (
+  companyAccountId: string,
+) => {
+  try {
+    const applicants = await prisma.applicant.findMany({
+      where: {
+        job: {
+          company: {
+            accountId: companyAccountId,
+          },
+        },
+        status: 'interview',
+      },
+      select: {
+        id: true,
+        jobId: true,
+        InterviewSchedule: true,
+        subsData: {
+          select: {
+            id: true,
+            accounts: true,
+            userProfilie: true,
+            userEdu: true,
+            userSkill: {
+              select: {
+                id: true,
+                skill: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return applicants;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 export const createInterviewSchedule = async (
   applicantId: string,
   startTime: Date,
