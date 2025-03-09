@@ -28,30 +28,23 @@ export const createJobHandler = async (jobData: any, accountId: string) => {
   });
 };
 
-export const updateJobHandler = async (id: string, data: any, accountId: string) => {
-  // Find the company associated with the given accountId
+
+export const updateJobHandler = async (id: string, data: any) => {
+
   const company = await prisma.company.findUnique({
-    where: { accountId },
+    where: { id },
     select: { id: true },
   });
 
-  if (!company) {
-    throw new Error('Company not found for the given accountId');
-  }
-
-  // Ensure the job being updated belongs to the company associated with the accountId
   const job = await prisma.job.findUnique({
     where: { id },
-    select: { companyId: true },
   });
 
-  if (!job || job.companyId !== company.id) {
-    throw new Error('Job not found or does not belong to the company associated with the given accountId');
-  }
+  const { applicants, ...jobDataWithoutApplicants } = data;
 
   return await prisma.job.update({
     where: { id },
-    data,
+    data: jobDataWithoutApplicants,
   });
 };
 

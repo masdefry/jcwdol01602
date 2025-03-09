@@ -13,11 +13,14 @@ export class InterviewScheduleRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.post('/', verifyToken, this.interviewScheduleController.createSchedule);
-    this.router.get('/:scheduleId', verifyToken, this.interviewScheduleController.getSchedule);
-    this.router.patch('/:scheduleId', verifyToken, this.interviewScheduleController.updateSchedule);
-    this.router.delete('/:scheduleId', verifyToken, this.interviewScheduleController.deleteSchedule);
-    this.router.get('/applicant/:applicantId', verifyToken, this.interviewScheduleController.getApplicantSchedules);
+    this.router.post('/', verifyToken, (req, res, next) => this.interviewScheduleController.createSchedule(req, res, next));
+    this.router.get('/:scheduleId', verifyToken, (req, res, next) => this.interviewScheduleController.getSchedule(req, res, next));
+    this.router.patch('/:scheduleId', verifyToken, (req, res, next) => this.interviewScheduleController.updateSchedule(req, res, next));
+    this.router.delete('/:scheduleId', verifyToken, (req, res, next) => this.interviewScheduleController.deleteSchedule(req, res, next));
+    this.router.get('/applicant/:applicantId', verifyToken, (req, res, next) => this.interviewScheduleController.getApplicantSchedules(req, res, next));
+    this.router.get('/company/:companyAccountId', verifyToken, (req, res, next) =>
+    this.interviewScheduleController.getApplicantsByCompany(req, res, next)
+    );
   }
 
   getRouter(): Router {

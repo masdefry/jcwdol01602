@@ -27,13 +27,9 @@ export class JobController {
   async updateJob(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { accountId } = req.body; // Assuming accountId is passed in the request body
 
-      if (!accountId || typeof accountId !== 'string') {
-        return res.status(400).json({ error: 'AccountId is required in the request body' });
-      }
 
-      const updatedJob = await updateJobHandler(id, req.body, accountId);
+      const updatedJob = await updateJobHandler(id, req.body);
       return res.json({ message: 'Job updated successfully', updatedJob });
     } catch (error: any) {
       return res.status(500).json({ error: 'Failed to update job' });

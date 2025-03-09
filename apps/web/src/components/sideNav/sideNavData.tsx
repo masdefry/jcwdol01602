@@ -70,6 +70,11 @@ const AdminSideNav = (): ISideNavItem[] => {
       active: pathname === '/adm-dashboard/pre-selection-restults',
     },
     {
+      label: 'Interview Schedule',
+      href: '/adm-dashboard/schedule',
+      active: pathname === '/adm-dashboard/schedule',
+    },
+    {
       label: 'Analytics',
       href: '/adm-dashboard/analytics',
       active: pathname === '/adm-dashboard/analytics',

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '@/lib/axios';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import {
@@ -10,6 +10,8 @@ import {
   JobStatsData,
   UserCountsData,
 } from '@/types/analytics';
+import useAuthStore from '@/stores/authStores';
+import toast from 'react-hot-toast';
 
 Chart.register(...registerables);
 
@@ -20,44 +22,49 @@ const AnalyticsDashboard: React.FC = () => {
   const [jobStats, setJobStats] = useState<JobStatsData[]>([]);
   const [userCounts, setUserCounts] = useState<UserCountsData[]>([]);
   const [loading, setLoading] = useState(true);
+  const account = useAuthStore((state) => state.account);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const token = localStorage.getItem('token');
-        const headers = { Authorization: `Bearer ${token}` };
+        if (!account || !account.id) {
+          setLoading(false);
+          toast.error('User not authenticated.');
+          return;
+        }
 
-        const demographicsRes = await axios.get<DemographicsData[]>('/api/analytics/demographics', { headers });
+        const demographicsRes = await axiosInstance.get<DemographicsData[]>('/api/analytics/demographics');
         setDemographics(demographicsRes.data);
 
-        const salaryTrendsRes = await axios.get<SalaryTrendsData[]>('/api/analytics/salary-trends', { headers });
+        const salaryTrendsRes = await axiosInstance.get<SalaryTrendsData[]>('/api/analytics/salary');
         setSalaryTrends(salaryTrendsRes.data);
 
-        const applicantInterestsRes = await axios.get<ApplicantInterestsData[]>('/api/analytics/applicant-interests', { headers });
+        const applicantInterestsRes = await axiosInstance.get<ApplicantInterestsData[]>('/api/analytics/interests');
         setApplicantInterests(applicantInterestsRes.data);
 
-        const jobStatsRes = await axios.get<JobStatsData[]>('/api/analytics/job-stats', { headers });
+        const jobStatsRes = await axiosInstance.get<JobStatsData[]>('/api/analytics/jobpost');
         setJobStats(jobStatsRes.data);
 
-        const userCountsRes = await axios.get<UserCountsData[]>('/api/analytics/new-users', { headers });
+        const userCountsRes = await axiosInstance.get<UserCountsData[]>('/api/analytics/newuser');
         setUserCounts(userCountsRes.data);
-
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching data:', error);
-      } finally{
+        const errorMessage = error.response?.data?.message || 'Failed to fetch analytics data.';
+        toast.error(errorMessage);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [account]);
 
   if (loading) {
     return <div className="p-4">Loading...</div>;
   }
 
-  const demographicsChartData = {
+  const genderChartData = {
     labels: ['Male', 'Female', 'Unknown'],
     datasets: [
       {
@@ -71,6 +78,51 @@ const AnalyticsDashboard: React.FC = () => {
       },
     ],
   };
+
+//  const locationChartData = {
+//   labels: [...new Set(demographics.map((d) => d.location).filter(location => location))],
+//   datasets: [
+//     {
+//       data: [...new Set(demographics.map((d) => d.location).filter(location => location))].map((location) =>
+//         demographics.filter((d) => d.location === location).length
+//       ),
+//       backgroundColor: [
+//         '#FF6384',
+//         '#36A2EB',
+//         '#FFCE56',
+//         '#2ecc71',
+//         '#9b59b6',
+//         '#e67e22',
+//         '#34495e',
+//       ],
+//       hoverBackgroundColor: [
+//         '#FF6384',
+//         '#36A2EB',
+//         '#FFCE56',
+//         '#2ecc71',
+//         '#9b59b6',
+//         '#e67e22',
+//         '#34495e',
+//       ],
+//     },
+//   ],
+// };
+
+// const ageChartData = {
+//   labels: ['18-24', '25-34', '35-44', '45+'],
+//   datasets: [
+//     {
+//       data: [
+//         demographics.filter((d) => d.age != null && d.age >= 18 && d.age <= 24).length,
+//         demographics.filter((d) => d.age != null && d.age >= 25 && d.age <= 34).length,
+//         demographics.filter((d) => d.age != null && d.age >= 35 && d.age <= 44).length,
+//         demographics.filter((d) => d.age != null && d.age >= 45).length,
+//       ],
+//       backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#2ecc71'],
+//       hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#2ecc71'],
+//     },
+//   ],
+// };
 
   const salaryTrendsChartData = {
     labels: salaryTrends.map((trend) => trend.jobTitle),
@@ -123,42 +175,59 @@ const AnalyticsDashboard: React.FC = () => {
 
   const userCountsChartData = {
     labels: userCounts.map((user) => user.month),
-    datasets: [{
-      label: 'New Users',
-      data: userCounts.map((user) => user.userCount),
-      fill: false,
-      borderColor: 'rgb(75, 192, 192)',
-      tension: 0.1
-    }]
-  }
+    datasets: [
+      {
+        label: 'New Users',
+        data: userCounts.map((user) => user.userCount),
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      },
+    ],
+  };
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
 
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">User Demographics</h2>
-        <Pie data={demographicsChartData} />
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Gender Demographics</h2>
+          <Pie data={genderChartData} />
+        </div>
 
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
-        <Bar data={salaryTrendsChartData} />
-      </div>
+        {/* <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Location Demographics</h2>
+          <Pie data={locationChartData} />
+        </div> */}
 
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
-        <Pie data={applicantInterestsChartData} />
-      </div>
+        {/* <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Age Demographics</h2>
+          <Pie data={ageChartData} />
+        </div> */}
 
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
-        <Bar data={jobStatsChartData} />
-      </div>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
+          <Bar data={salaryTrendsChartData} />
+        </div>
 
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
-        <Line data={userCountsChartData} />
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
+          <Bar data={jobStatsChartData} />
+        </div>
+
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
+          <div style={{ maxWidth: '270px', margin: '0 auto' }}>
+          <Pie data={applicantInterestsChartData} />
+          </div>
+        </div>
+
+
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
+          <Line data={userCountsChartData} />
+        </div>
       </div>
     </div>
   );

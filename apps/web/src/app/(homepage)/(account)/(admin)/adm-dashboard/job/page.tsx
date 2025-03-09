@@ -68,7 +68,7 @@ const AdminDashboard = () => {
         try {
             if (!account || !account.id) return;
             if (editJob) {
-                await JobService.updateJob(editJob.id, values, account.id);
+                await JobService.updateJob(editJob.id, values);
                 setJobs((prev) =>
                     prev.map((job) => (job.id === editJob.id ? { ...job, ...values } : job))
                 );

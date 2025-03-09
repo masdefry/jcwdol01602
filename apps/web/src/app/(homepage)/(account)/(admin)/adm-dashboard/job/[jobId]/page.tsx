@@ -5,6 +5,7 @@ import axiosInstance from '@/lib/axios';
 import { ApplicantStatus } from '@prisma/client';
 import TableDashboard2 from '@/components/table/table2';
 import { Heading } from '@/components/heading';
+import useAuthStore from "@/stores/authStores";
 import toast from 'react-hot-toast';
 import Image from 'next/image';
 

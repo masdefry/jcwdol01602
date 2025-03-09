@@ -31,6 +31,8 @@ model Account {
   updatedAt      DateTime  @updatedAt
   User           SubsData[]
   Company        Company[]
+
+  Applicant Applicant[]
 }
 
 enum Role {
@@ -135,8 +137,8 @@ model Job {
   company     Company  @relation(fields: [companyId], references: [id])
   title       String
   description String
-  category    String
-  location    String
+  category    Categories
+  location    Locations
   salaryRange String?
   deadline    DateTime?
   isPublished Boolean  @default(false)
@@ -146,17 +148,39 @@ model Job {
   PreSelectionTest PreSelectionTest[]
 }
 
+
+enum Locations {
+  Jakarta
+  Bandung
+  Surabaya
+  Bali
+  Remote
+}
+
+
+enum Categories {
+  IT
+  education
+  HR
+  finance
+  healthcare
+  sales
+  design
+}
+
+
 model Applicant {
   id        String   @id @default(uuid())
   subsDataId    String
   subsData      SubsData     @relation(fields: [subsDataId], references: [id])
+  accountId         String
+  accounts      Account         @relation(fields: [accountId], references: [id])
   jobId     String
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())
   expectedSalary Int?
   status      ApplicantStatus @default(pending)
   InterviewSchedule InterviewSchedule[]
-
   PreSelectionTestResult PreSelectionTestResult[]
 }
 
