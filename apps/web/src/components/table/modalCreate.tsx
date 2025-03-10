@@ -16,7 +16,7 @@ import ButtonCustom from '../button/btn';
 interface FieldConfig {
   name: string;
   label: string;
-  type: 'text' | 'checkbox' | 'textarea' | 'select' | 'file' | 'date';
+  type: 'text' | 'checkbox' | 'textarea' | 'select' | 'file' | 'date' | 'string' | 'datetime-local' ;
   options?: { id: string; name: string }[];
 }
 

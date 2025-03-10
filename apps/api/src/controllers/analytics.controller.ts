@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import {
-  getUserDemographics,
+  getUserDob,
+  getUserGender,
+  getUserLocation,
   getSalaryTrends,
   getApplicantInterests,
   getJobPostStatistics,
@@ -8,10 +10,28 @@ import {
 } from '@/services/analyticsHandler';
 
 export class AnalyticsController {
-  async getUserDemographics(req: Request, res: Response, next: NextFunction) {
+  async getUserDob(req: Request, res: Response, next: NextFunction) {
     try {
-      const demographics = await getUserDemographics();
-      return res.status(200).json(demographics);
+      const dobs = await getUserDob();
+      return res.status(200).json(dobs);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getUserGender(req: Request, res: Response, next: NextFunction) {
+    try {
+      const genders = await getUserGender();
+      return res.status(200).json(genders);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getUserLocation(req: Request, res: Response, next: NextFunction) {
+    try {
+      const locations = await getUserLocation();
+      return res.status(200).json(locations);
     } catch (error) {
       next(error);
     }

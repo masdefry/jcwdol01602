@@ -3,7 +3,7 @@ import { ReturnBtn } from '@/components/button/moreBtn';
 import { Heading } from '@/components/heading';
 import NewForm from '@/components/newForm';
 import axiosInstance from '@/lib/axios';
-import { ISkillQuestion } from '@/lib/interface';
+import { ITestQuestion } from '@/lib/interface';
 import { QuestionSchema } from '@/lib/skillSchemas';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 const EditQuestion = () => {
   const { questionId } = useParams();
   const [loading, setLoading] = useState(false);
-  const [oldQuestion, setOldQuestion] = useState<ISkillQuestion>();
+  const [oldQuestion, setOldQuestion] = useState<ITestQuestion>();
   const router = useRouter();
   const [initialValues, setInitialValues] = useState({
     question: '',
@@ -96,7 +96,7 @@ const EditQuestion = () => {
       setTimeout(
         () =>
           router.push(
-            `/dev-dashboard/skill-list/questions/${oldQuestion?.skillId}`,
+            `/adm-dashboard/skill-list/questions/${oldQuestion?.testId}`,
           ),
         1500,
       );
@@ -117,7 +117,7 @@ const EditQuestion = () => {
           title="Back"
           runFunction={() =>
             router.push(
-              `/dev-dashboard/skill-list/questions/${oldQuestion?.skillId}`,
+              `/adm-dashboard/preselectiontest/questions/${oldQuestion?.testId}`,
             )
           }
         />

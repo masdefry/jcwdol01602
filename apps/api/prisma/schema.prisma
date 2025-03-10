@@ -32,7 +32,6 @@ model Account {
   User           SubsData[]
   Company        Company[]
 
-  Applicant Applicant[]
 }
 
 enum Role {
@@ -173,8 +172,6 @@ model Applicant {
   id        String   @id @default(uuid())
   subsDataId    String
   subsData      SubsData     @relation(fields: [subsDataId], references: [id])
-  accountId         String
-  accounts      Account         @relation(fields: [accountId], references: [id])
   jobId     String
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())

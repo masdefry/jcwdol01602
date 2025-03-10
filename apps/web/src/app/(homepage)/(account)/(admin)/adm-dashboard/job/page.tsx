@@ -2,7 +2,7 @@
 import { AddBtn, DeleteBtn } from '@/components/button/moreBtn';
 import { Heading } from '@/components/heading';
 import TableDashboard from '@/components/table/table';
-import { Job } from '@/types/job';
+import { Job, Categories, Locations } from '@/types/job';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import JobService from '@/services/job.service';
@@ -141,7 +141,7 @@ const AdminDashboard = () => {
                     onClick={() => handleTogglePublish(job.id, job.isPublished)}
                     className={`px-3 py-1 rounded ${job.isPublished ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
                 >
-                    {job.isPublished ? 'Unpublish' :'Publish'}
+                    {job.isPublished ? 'Unpublish' : 'Publish'}
                 </button>
                 <button
                     onClick={() => router.push(`/adm-dashboard/job/${job.id}`)}
@@ -189,6 +189,8 @@ const AdminDashboard = () => {
                 addModalOpen={addModalOpen}
                 setAddModalOpen={setAddModalOpen}
                 handleNewJob={handleNewJob}
+                categories={Object.values(Categories)}
+                locations={Object.values(Locations)}
             />
         </div>
     );

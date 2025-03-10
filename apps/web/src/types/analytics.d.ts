@@ -1,8 +1,14 @@
-// types/analytics.d.ts
+export interface DobData {
+  dob: number;
+  accountId: string;
+}
 
-export interface DemographicsData {
-  gender: 'MALE' | 'FEMALE' | null;
-  age: number | null;
+export interface GenderData {
+  gender: 'male' | 'female' | null;
+  accountId: string;
+}
+
+export interface LocationData {
   location: string | null;
   accountId: string;
 }

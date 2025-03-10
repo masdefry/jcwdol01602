@@ -1,11 +1,60 @@
 import prisma from '@/prisma';
 
-export const getUserDemographics = async () => {
+export const getUserDob = async () => {
   try {
-    const demographics = await prisma.userProfile.findMany({
+    const userProfiles = await prisma.userProfile.findMany({
+      select: {
+        dob: true,
+        SubsData: {
+          select: {
+            accounts: {
+              select: { id: true },
+            },
+          },
+        },
+      },
+    });
+
+    return userProfiles.map((profile) => ({
+      dob: profile.dob,
+      accountId: profile.SubsData.accounts.id,
+    }));
+  } catch (error) {
+    console.error("Error fetching user DOB:", error);
+    throw new Error("Failed to fetch user DOB.");
+  }
+};
+
+
+export const getUserGender = async () => {
+  try {
+    const userProfiles = await prisma.userProfile.findMany({
       select: {
         gender: true,
-        dob: true,
+        SubsData: {
+          select: {
+            accounts: {
+              select: { id: true },
+            },
+          },
+        },
+      },
+    });
+
+    return userProfiles.map((profile) => ({
+      gender: profile.gender,
+      accountId: profile.SubsData.accounts.id,
+    }));
+  } catch (error) {
+    console.error("Error fetching user gender:", error);
+    throw new Error("Failed to fetch user gender.");
+  }
+};
+
+export const getUserLocation = async () => {
+  try {
+    const userProfiles = await prisma.userProfile.findMany({
+      select: {
         address: true,
         SubsData: {
           select: {
@@ -17,17 +66,13 @@ export const getUserDemographics = async () => {
       },
     });
 
-    return demographics.map((profile) => ({
-      gender: profile.gender,
-      age: profile.dob
-        ? new Date().getFullYear() - profile.dob.getFullYear()
-        : "Age unknown",
+    return userProfiles.map((profile) => ({
       location: profile.address,
       accountId: profile.SubsData.accounts.id,
     }));
   } catch (error) {
-    console.error("Error fetching user demographics:", error);
-    throw new Error("Failed to fetch user demographics.");
+    console.error("Error fetching user location:", error);
+    throw new Error("Failed to fetch user location.");
   }
 };
 
