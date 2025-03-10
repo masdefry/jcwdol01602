@@ -1,12 +1,13 @@
 import { AccountController } from '@/controllers/account.controller';
 import { RegisterController } from '@/controllers/register.controller';
+import { UserProfileController } from '@/controllers/userProfile.controller';
 import {
   adminRegistValidation,
   loginValidation,
   registerValidation,
   userRegistValidation,
 } from '@/middlewares/account.validation';
-import { verifyToken } from '@/middlewares/auth.middleware';
+import { userDevGuard, verifyToken } from '@/middlewares/auth.middleware';
 import { uploadImage } from '@/middlewares/multer';
 import { Router } from 'express';
 
@@ -14,10 +15,12 @@ export class AccountRouter {
   private router: Router;
   private accountController: AccountController;
   private registerController: RegisterController;
+  private userProfileController: UserProfileController;
 
   constructor() {
     this.accountController = new AccountController();
     this.registerController = new RegisterController();
+    this.userProfileController = new UserProfileController();
     this.router = Router();
     this.initializeRoutes();
   }
@@ -25,6 +28,9 @@ export class AccountRouter {
   private initializeRoutes(): void {
     // Get all gender
     this.router.get('/gender', this.accountController.userGender);
+
+    // Get all company name data
+    this.router.get('/company', this.accountController.companyName);
 
     // New user account
     this.router.post(
@@ -73,6 +79,13 @@ export class AccountRouter {
       uploadImage,
       verifyToken,
       this.accountController.uploadAvatar,
+    );
+
+    this.router.get(
+      '/user/my-profile',
+      verifyToken,
+      userDevGuard,
+      this.userProfileController.profileBySubsData,
     );
   }
 

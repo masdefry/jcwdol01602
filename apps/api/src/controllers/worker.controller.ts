@@ -9,7 +9,9 @@ import {
 import {
   getAllWorkerByCompany,
   getAllWorkerByUser,
+  getWorkerById,
 } from '@/services/workerGet';
+import { getSubsDataByUser } from '@/services/subsDataHandler';
 
 export class WorkerController {
   async newWorkerUser(req: Request, res: Response, next: NextFunction) {
@@ -119,6 +121,19 @@ export class WorkerController {
       return res.status(201).send({
         message: 'Work experience added successfully',
         worker,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async workerData(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { workerId } = req.params;
+      let work = await getWorkerById(workerId);
+      return res.status(200).send({
+        message: 'Worker experience retrieved successfully',
+        work,
       });
     } catch (error) {
       next(error);

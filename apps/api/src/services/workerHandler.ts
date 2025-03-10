@@ -31,7 +31,7 @@ export const addWorkerUser = async (
     }
     const startDate = new Date(beginDate);
     let endDate = null;
-    if (finishDate) {
+    if (finishDate !== '') {
       endDate = new Date(finishDate);
     }
     let description = null;

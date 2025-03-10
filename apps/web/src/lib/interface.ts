@@ -8,6 +8,16 @@ export interface ISubsCtg {
   createdAt: Date;
 }
 
+export interface IUserProfile {
+  id: string;
+  subsDataId: string;
+  gender: string;
+  pob: string;
+  dob: string;
+  address: string;
+  phoneNumber: string;
+}
+
 export interface IPayment {
   id: string;
   subsDataId: string;
@@ -50,6 +60,7 @@ export interface ISubsData {
   createdAt: Date;
   updatedAt: Date;
   subsCtg: ISubsCtg | null;
+  userProfile: IUserProfile;
   payment: IPayment[] | null;
   userSKill: IUserSkill[] | null;
   worker: IWorker[] | null;
@@ -72,4 +83,22 @@ export interface ISkillQuestion {
   option_d: string;
   answer: string;
   imageUrl: string | null;
+}
+
+export interface IWorkerForm {
+  companyName: string;
+  position: string;
+  beginDate: string;
+  finishDate: string;
+  isStillWorking: boolean;
+  desc: string;
+}
+
+export interface ICompany {
+  id: string;
+}
+
+export interface ICompanyData {
+  name: string;
+  company: ICompany;
 }

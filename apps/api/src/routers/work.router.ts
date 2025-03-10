@@ -31,6 +31,14 @@ export class WorkRouter {
       userDevGuard,
       this.workerController.workerByUser,
     );
+
+    this.router.get(
+      '/work-data/:workerId',
+      verifyToken,
+      userDevGuard,
+      this.workerController.workerData,
+    );
+
     // get all work experience by company
     this.router.get(
       '/by-company',

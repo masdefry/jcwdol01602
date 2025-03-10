@@ -11,6 +11,7 @@ interface IMoreBtn {
   title?: string;
   runFunction: () => void;
   disabled?: boolean;
+  style?: string;
 }
 export const DetailBtn = ({ runFunction }: IMoreBtn) => {
   return (
@@ -24,7 +25,7 @@ export const DetailBtn = ({ runFunction }: IMoreBtn) => {
   );
 };
 
-export const EditBtn = ({ runFunction }: IMoreBtn) => {
+export const EditBtn = ({ title, runFunction }: IMoreBtn) => {
   return (
     <button
       onClick={() => runFunction()}
@@ -86,11 +87,11 @@ export const TrashBtn = ({ runFunction, disabled }: IMoreBtn) => {
   );
 };
 
-export const AddBtn = ({ title, runFunction }: IMoreBtn) => {
+export const AddBtn = ({ title, runFunction, style }: IMoreBtn) => {
   return (
     <div className="flex items-center">
       <button
-        className="border bg-blue-300 text-black px-2 py-2 flex items-center gap-1 rounded-lg hover:bg-blue-400 duration-150 ease-in-out"
+        className={`px-2 py-2 flex items-center gap-1 rounded-lg  duration-150 ease-in-out ${style ? style : 'bg-blue-300 text-black hover:bg-blue-400'}`}
         onClick={() => runFunction()}
       >
         <PlusIcon width={20} height={20} />
