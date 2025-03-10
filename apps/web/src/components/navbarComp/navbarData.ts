@@ -50,7 +50,7 @@ export const adminServices = [
   },
   {
     label: 'Dashboard',
-    href: '/adm-dashboard',
+    href: '/adm-dashboard/job',
   },
 ];
 

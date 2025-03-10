@@ -10,15 +10,18 @@ interface QuestionInput {
   answer: string;
 }
 
-export const createPreSelectionTest = async (
-  jobId: string,
-) => {
+export const createPreSelectionTest = async (jobId: string) => {
   try {
+    // Validate jobId exists
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!job) {
+      throw new Error('Job not found');
+    }
+
     const test = await prisma.preSelectionTest.create({
       data: {
         jobId,
       },
-
     });
     return test;
   } catch (error: any) {
@@ -26,6 +29,37 @@ export const createPreSelectionTest = async (
     throw new Error('Unexpected error - createPreSelectionTest: ' + error);
   }
 };
+
+
+export const createPreSelectionQuestions = async (
+  testId: string,
+  questions: QuestionInput[]
+) => {
+  try {
+    // Validate testId exists
+    const test = await prisma.preSelectionTest.findUnique({where: {id: testId}})
+    if(!test){
+        throw new Error("Test not found");
+    }
+
+    if (questions.length !== 25) {
+      throw new Error('Test must contain exactly 25 questions');
+    }
+
+    const createdQuestions = await prisma.preSelectionQuestion.createMany({
+      data: questions.map((question) => ({
+        testId,
+        ...question,
+      })),
+    });
+
+    return createdQuestions;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - createPreSelectionQuestions: ' + error);
+  }
+};
+
 /**
  * Delete a pre-selection test by ID.
  */
@@ -48,26 +82,19 @@ export const deletePreSelectionTest = async (testId: string) => {
  */
 export const updatePreSelectionTest = async (
   testId: string,
-  isActive: boolean,
-  questions?: QuestionInput[]
+  isActive: boolean
 ) => {
   try {
-    const data: any = { isActive };
-    if (questions) {
-      if (questions.length !== 25) {
-        throw new Error('Test must contain exactly 25 questions');
-      }
-      data.questions = {
-        deleteMany: {},
-        create: questions,
-      };
+    const test = await prisma.preSelectionTest.findUnique({where: {id: testId}})
+    if(!test){
+        throw new Error("Test not found");
     }
-    const test = await prisma.preSelectionTest.update({
+    const updatedTest = await prisma.preSelectionTest.update({
       where: { id: testId },
-      data,
+      data: { isActive },
       include: { questions: true },
     });
-    return test;
+    return updatedTest;
   } catch (error: any) {
     if (error.message) throw new Error(error.message);
     throw new Error('Unexpected error - updatePreSelectionTest: ' + error);

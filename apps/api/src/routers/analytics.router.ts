@@ -14,11 +14,22 @@ export class AnalyticsRouter {
 
     private initializeRoutes(): void {
         this.router.get(
-            '/demographics',
+            '/dob',
             verifyToken,
-            this.analyticsController.getUserDemographics.bind(this.analyticsController)
+            this.analyticsController.getUserDob.bind(this.analyticsController)
         );
 
+        this.router.get(
+            '/gender',
+            verifyToken,
+            this.analyticsController.getUserGender.bind(this.analyticsController)
+        );
+
+        this.router.get(
+            '/location',
+            verifyToken,
+            this.analyticsController.getUserLocation.bind(this.analyticsController)
+        );
         this.router.get(
             '/salary',
             verifyToken,

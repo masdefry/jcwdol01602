@@ -33,12 +33,10 @@ interface IApplicantData {
     photo: JSX.Element;
     name: string;
     email: string;
-    age: number;
     education: string;
     status: string;
     expectedSalary: number | null;
     id: string;
-    no: number;
 }
 
 const JobApplicants = () => {
@@ -97,7 +95,6 @@ const JobApplicants = () => {
     };
 
     const tableData: IApplicantData[] = applicants.map((applicant, index) => ({
-        no: index + 1,
         id: applicant.id,
         photo: (
             <Image
@@ -110,9 +107,6 @@ const JobApplicants = () => {
         ),
         name: applicant.subsData.accounts.name,
         email: applicant.subsData.accounts.email,
-        age: applicant.subsData.userProfilie[0]?.dob
-            ? new Date(applicant.subsData.userProfilie[0].dob).getFullYear()
-            : 0,
         education: applicant.subsData.userEdu[0]?.level || 'N/A',
         expectedSalary: applicant.expectedSalary,
         status: applicant.status,
@@ -129,7 +123,7 @@ const JobApplicants = () => {
                 <p>Error: {error}</p>
             ) : (
                 <TableDashboard2
-                    columns={['No', 'Photo', 'Name', 'Email', 'Age', 'Education', 'Expected Salary', 'Status']}
+                    columns={['No', 'Photo', 'Name', 'Email', 'Education', 'Expected Salary', 'Status']}
                     datas={tableData}
                     itemsPerPage={5}
                     onStatusChange={(id, status) => handleUpdateStatus(id, status as ApplicantStatus)}

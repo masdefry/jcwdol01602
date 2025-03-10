@@ -2,16 +2,36 @@
 'use client';
 import React from 'react';
 import ModalCreate from '@/components/table/modalCreate';
-import { Job } from '@/types/job';
+import { Job, Categories, Locations } from '@/types/job';
 
 interface JobModalProps {
     editJob: Job | null;
     addModalOpen: boolean;
     setAddModalOpen: (open: boolean) => void;
     handleNewJob: (values: Omit<Job, 'id'>) => Promise<void>;
+    categories: Categories[];
+    locations: Locations[];
 }
 
-const JobModal: React.FC<JobModalProps> = ({ editJob, addModalOpen, setAddModalOpen, handleNewJob }) => {
+const JobModal: React.FC<JobModalProps> = ({
+    editJob,
+    addModalOpen,
+    setAddModalOpen,
+    handleNewJob,
+    categories,
+    locations,
+}) => {
+
+    const categoryOptions = categories.map((cat) => ({
+        id: cat,
+        name: cat,
+    }));
+
+    const locationOptions = locations.map((loc) => ({
+        id: loc,
+        name: loc,
+    }));
+
     return (
         addModalOpen && (
             <ModalCreate
@@ -22,12 +42,14 @@ const JobModal: React.FC<JobModalProps> = ({ editJob, addModalOpen, setAddModalO
                             ...editJob,
                             deadline: editJob.deadline ? editJob.deadline.split('T')[0] : '',
                             createdAt: editJob.createdAt,
+                            category: editJob.category,
+                            location: editJob.location,
                         }
                         : {
                             title: '',
                             description: '',
-                            category: '',
-                            location: '',
+                            category: categories[0] || Categories.IT,
+                            location: locations[0] || Locations.Jakarta,
                             salaryRange: '',
                             deadline: '',
                             companyId: '',
@@ -35,6 +57,7 @@ const JobModal: React.FC<JobModalProps> = ({ editJob, addModalOpen, setAddModalO
                             createdAt: new Date().toISOString(),
                             updatedAt: new Date().toISOString(),
                             applicants: [],
+                            PreSelectionTest: []
                         }
                 }
                 onSubmit={handleNewJob}
@@ -44,8 +67,18 @@ const JobModal: React.FC<JobModalProps> = ({ editJob, addModalOpen, setAddModalO
                 fields={[
                     { name: 'title', label: 'Title', type: 'text' as const },
                     { name: 'description', label: 'Description', type: 'textarea' as const },
-                    { name: 'category', label: 'Category', type: 'text' as const },
-                    { name: 'location', label: 'Location', type: 'text' as const },
+                    {
+                        name: 'category',
+                        label: 'Category',
+                        type: 'select' as const,
+                        options: categoryOptions,
+                    },
+                    {
+                        name: 'location',
+                        label: 'Location',
+                        type: 'select' as const,
+                        options: locationOptions,
+                    },
                     { name: 'salaryRange', label: 'Salary Range', type: 'text' as const },
                     { name: 'deadline', label: 'Deadline', type: 'date' as const },
                 ]}

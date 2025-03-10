@@ -1,6 +1,6 @@
 'use client';
 import axiosInstance from '@/lib/axios';
-import { IPayemnt } from '@/lib/interface';
+import { IPayment } from '@/lib/interface';
 import useAuthStore from '@/stores/authStores';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import ImageUploader from '@/components/imageUpload';
 
 const Cart = () => {
   const { account } = useAuthStore();
-  const [payments, setPayments] = useState<IPayemnt[]>([]);
+  const [payments, setPayments] = useState<IPayment[]>([]);
   const router = useRouter();
   const [isUploaderOpen, setIsUploaderOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<string>('');
@@ -208,11 +208,11 @@ const Cart = () => {
 
 export default Cart;
 
-/* 
+/*
     "bg-white text-red-500 p-2 rounded-lg hover:bg-red-500 hover:text-white ease-in-out duration-150"
 */
 
-/* 
+/*
     {payment.isApproved === true ? (
                   <div className="">
                     <h1 className="text-lg font-semibold bg-gradient-to-r from-yellow-200 to-orange-400 p-4 rounded-lg text-black">

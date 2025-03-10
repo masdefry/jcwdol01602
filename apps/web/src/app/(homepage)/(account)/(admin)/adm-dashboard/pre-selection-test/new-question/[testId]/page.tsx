@@ -16,7 +16,7 @@ const CreatePreSelectionTest: React.FC = () => {
     isActive: false,
     questions: Array.from({ length: 25 }, () => ({
       question: '',
-      image: null, // Menggunakan 'image' bukan imageUrl untuk NewForm
+      image: null,
       option_a: '',
       option_b: '',
       option_c: '',
@@ -67,7 +67,7 @@ const CreatePreSelectionTest: React.FC = () => {
       const response = await axiosInstance.post('/api/preselectiontest', {
         jobId: values.jobId,
         isActive: values.isActive,
-        questions: formattedQuestions.map(formData => Object.fromEntries(formData)), // convert form data to object
+        questions: formattedQuestions.map(formData => Object.fromEntries(formData)),
         accountId: account.id,
       });
 
@@ -85,7 +85,7 @@ const CreatePreSelectionTest: React.FC = () => {
       <h2>Create Pre-Selection Test</h2>
       <NewForm
         initialValues={initialValues}
-        validationSchema={undefined} // Tambahkan skema validasi jika diperlukan
+        validationSchema={undefined}
         onSubmit={onSubmit}
         fields={fields}
         disabled={loading}
