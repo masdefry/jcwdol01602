@@ -106,6 +106,7 @@ export class InterviewScheduleController {
       };
 
       await transporter.sendMail(mailOptions);
+      console.log(mailOptions);
     } catch (error) {
       console.error('Error sending email:', error);
     }

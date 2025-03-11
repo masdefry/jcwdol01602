@@ -4,7 +4,7 @@ import {
     createPreSelectionQuestions,
     updatePreSelectionTest,
     submitPreSelectionTestResult,
-    getPreSelectionTestResult,
+    getPreSelectionTestResultsByTestId,
     getAllPreSelectionTestsByCompany,
     getPreSelectionTestByJobId,
     deletePreSelectionTest,
@@ -76,11 +76,11 @@ export class PreSelectionTestController {
 
     async getTestResult(req: Request, res: Response, next: NextFunction) {
         try {
-            const { applicantId, testId } = req.query;
-            if (!applicantId || !testId) {
+            const {testId } = req.query;
+            if (!testId) {
                 return res.status(400).json({ message: 'Missing applicantId or testId' });
             }
-            const result = await getPreSelectionTestResult(applicantId as string, testId as string);
+            const result = await getPreSelectionTestResultsByTestId( testId as string);
             return res.status(200).json({ message: 'Test result retrieved successfully', result });
         } catch (error: any) {
             next(error);
@@ -105,6 +105,17 @@ export class PreSelectionTestController {
             const { testId } = req.params;
             if (!testId) throw new Error('Test id required');
             const test = await getPreSelectionTestById(testId);
+            return res.status(200).json({ message: 'Test retrieved successfully', test });
+        } catch (error: any) {
+            next(error);
+        }
+    }
+
+    async getTestResultbyId(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { testId } = req.params;
+            if (!testId) throw new Error('Test id required');
+            const test = await getPreSelectionTestResultsByTestId(testId);
             return res.status(200).json({ message: 'Test retrieved successfully', test });
         } catch (error: any) {
             next(error);

@@ -1,5 +1,5 @@
 import { ApplicantController } from '@/controllers/applicant.controller';
-import { verifyToken } from '@/middlewares/auth.middleware';
+import { verifyToken, adminDevGuard } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class ApplicantRouter {
@@ -15,26 +15,26 @@ export class ApplicantRouter {
     private initializeRoutes(): void {
         this.router.get(
             '/job/:jobId',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.applicantController.getApplicantsByJob
         );
 
 
         this.router.get(
             '/details/:applicantId',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.applicantController.getApplicantDetails
         );
 
         this.router.patch(
             '/:applicantId',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.applicantController.updateApplicantStatus
         );
 
         this.router.get(
             '/id/:applicantId',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.applicantController.getApplicantById
         );
     }

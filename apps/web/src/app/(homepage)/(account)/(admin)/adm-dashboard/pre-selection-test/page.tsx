@@ -59,12 +59,16 @@ const PreSelectionTestList = () => {
         }
     };
 
-    const handleEditTest = (testId: string) => {
-        router.push(`/dev-dashboard/pre-selection-test/edit/${testId}`);
+    const handleAddQuestionTest = (testId: string) => {
+        router.push(`/adm-dashboard/pre-selection-test/new-question/${testId}`);
     };
 
     const handleViewQuestions = (testId: string) => {
         router.push(`/adm-dashboard/pre-selection-test/questions/${testId}`);
+    };
+
+    const handleViewApplicantResults = (testId: string) => {
+        router.push(`/adm-dashboard/pre-selection-test/result/${testId}`);
     };
 
     interface IActionButton {
@@ -76,7 +80,8 @@ const PreSelectionTestList = () => {
             <>
                 <div className="flex flex-col lg:flex-row gap-2">
                     <DeleteBtn runFunction={() => handleDelete(test.id)} />
-                    <AddBtn title="Edit Test" runFunction={() => handleEditTest(test.id)} />
+                    <AddBtn title="Questions" runFunction={() => handleAddQuestionTest(test.id)} />
+                    <DetailBtn title="Applicants" runFunction={() => handleViewApplicantResults(test.id)} />
                 </div>
             </>
         );

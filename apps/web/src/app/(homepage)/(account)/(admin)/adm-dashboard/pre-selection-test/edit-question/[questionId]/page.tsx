@@ -27,7 +27,7 @@ const EditQuestion = () => {
   const getOldQuestion = async () => {
     try {
       const { data } = await axiosInstance.get(
-        `/api/skill/get-question/${questionId}`,
+        `/api/preselectiontest/question/${questionId}`,
       );
 
       setOldQuestion(data.question);
@@ -89,14 +89,14 @@ const EditQuestion = () => {
       formData.append('answer', values.answer);
       formData.append('image', values.image);
       const { data } = await axiosInstance.patch(
-        `/api/skill/edit-question/${questionId}`,
+        `/api/preselectiontest/edit-question/${questionId}`,
         formData,
       );
       toast.success(data.message);
       setTimeout(
         () =>
           router.push(
-            `/adm-dashboard/skill-list/questions/${oldQuestion?.testId}`,
+            `/adm-dashboard/pres-election-test/questions/${oldQuestion?.testId}`,
           ),
         1500,
       );

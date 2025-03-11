@@ -1,5 +1,5 @@
 import { AnalyticsController } from '@/controllers/analytics.controller';
-import { verifyToken } from '@/middlewares/auth.middleware';
+import { verifyToken, adminDevGuard } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class AnalyticsRouter {
@@ -15,42 +15,42 @@ export class AnalyticsRouter {
     private initializeRoutes(): void {
         this.router.get(
             '/dob',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.analyticsController.getUserDob.bind(this.analyticsController)
         );
 
         this.router.get(
             '/gender',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.analyticsController.getUserGender.bind(this.analyticsController)
         );
 
         this.router.get(
             '/location',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.analyticsController.getUserLocation.bind(this.analyticsController)
         );
         this.router.get(
             '/salary',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.analyticsController.getSalaryTrends.bind(this.analyticsController)
         );
 
         this.router.get(
             '/interests',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.analyticsController.getApplicantInterests.bind(this.analyticsController)
         );
 
         this.router.get(
             '/jobpost',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.analyticsController.getJobPostStatistics.bind(this.analyticsController)
         );
 
         this.router.get(
             '/newuser',
-            verifyToken,
+            verifyToken, adminDevGuard,
             this.analyticsController.getNewUsersPerMonth.bind(this.analyticsController)
         );
     }

@@ -62,12 +62,7 @@ const AdminSideNav = (): ISideNavItem[] => {
     {
       label: 'Pre Selection Test',
       href: '/adm-dashboard/pre-selection-test',
-      active: pathname === '/dev-dashboard/pre-selection-test',
-    },
-    {
-      label: 'Pre Selection Results',
-      href: '/adm-dashboard/pre-selection-results',
-      active: pathname === '/adm-dashboard/pre-selection-restults',
+      active: pathname === '/adm-dashboard/pre-selection-test',
     },
     {
       label: 'Interview Schedule',
