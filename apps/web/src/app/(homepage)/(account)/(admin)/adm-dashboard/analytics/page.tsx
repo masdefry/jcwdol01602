@@ -83,8 +83,8 @@ const AnalyticsDashboard: React.FC = () => {
                     genders.filter((d) => d.gender === 'female').length,
                     genders.filter((d) => !d.gender).length,
                 ],
-                backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
-                hoverBackgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'],
+                hoverBackgroundColor: ['rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(255, 206, 86, 0.7)'],
             },
         ],
     };
@@ -125,18 +125,10 @@ const AnalyticsDashboard: React.FC = () => {
             {
                 data: applicantInterests.map((interest) => interest.applicantCount),
                 backgroundColor: [
-                    '#FF6384',
-                    '#36A2EB',
-                    '#FFCE56',
-                    '#2ecc71',
-                    '#9b59b6',
+                    'rgba(54, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'
                 ],
                 hoverBackgroundColor: [
-                    '#FF6384',
-                    '#36A2EB',
-                    '#FFCE56',
-                    '#2ecc71',
-                    '#9b59b6',
+                    'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(255, 206, 86, 0.7)'
                 ],
             },
         ],

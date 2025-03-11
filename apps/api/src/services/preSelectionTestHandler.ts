@@ -215,21 +215,16 @@ export const submitPreSelectionTestResult = async (
 };
 
 /**
- * Retrieve a test result for a given applicant and test.
+ * Retrieve all test results for a given test ID.
  */
-export const getPreSelectionTestResult = async (
-  applicantId: string,
-  testId: string
-) => {
+export const getPreSelectionTestResultsByTestId = async (testId: string) => {
   try {
-    const result = await prisma.preSelectionTestResult.findFirst({
-      where: { applicantId, testId },
-      include: { answers: true },
-    });
-    if (!result) throw new Error('Test result not found');
-    return result;
+      const results = await prisma.preSelectionTestResult.findMany({
+          where: { testId: testId },
+      });
+      return results;
   } catch (error: any) {
-    if (error.message) throw new Error(error.message);
-    throw new Error('Unexpected error - getPreSelectionTestResult: ' + error);
+      if (error.message) throw new Error(error.message);
+      throw new Error('Unexpected error - getPreSelectionTestResultsByTestId: ' + error);
   }
 };

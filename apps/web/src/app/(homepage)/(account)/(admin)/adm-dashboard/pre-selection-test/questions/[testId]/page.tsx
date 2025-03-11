@@ -22,8 +22,7 @@ interface IPreSelectionQuestion {
 
 interface ITableData {
     id: string;
-    questionId: string;
-    details: (setIsOpen: (isOpen: boolean) => void) => JSX.Element;
+    question: string;
 }
 
 const QuestionsPreSelectionTest = () => {
@@ -49,20 +48,6 @@ const QuestionsPreSelectionTest = () => {
         getQuestionsByTest();
     }, [testId]);
 
-    const handleDelete = async (questionId: string) => {
-        try {
-            const { data } = await axiosInstance.delete(
-                `/api/preselectiontest/question/${questionId}`,
-            );
-            toast.success(data.message);
-            setQuestions((prevQuestions) =>
-                prevQuestions.filter((q) => q.id !== questionId),
-            );
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message;
-            toast.error(errorMessage);
-        }
-    };
 
     const handleEdit = async (questionId: string) => {
         router.push(`/adm-dashboard/pre-selection-test/edit-question/${questionId}`);
@@ -86,8 +71,8 @@ const QuestionsPreSelectionTest = () => {
         return (
             <>
                 <div className="flex flex-col lg:flex-row gap-2">
-                    <DeleteBtn runFunction={() => handleDelete(question.id)} />
                     <EditBtn runFunction={() => handleEdit(question.id)} />
+                    <DetailBtn runFunction={() => handleDetailModal(question)} />
                 </div>
             </>
         );
@@ -95,10 +80,7 @@ const QuestionsPreSelectionTest = () => {
 
     const tableData: ITableData[] = questions.map((question) => ({
         id: question.id,
-        questionId: question.id,
-        details: () => (
-            <DetailBtn runFunction={() => handleDetailModal(question)} />
-        ),
+        question: question.question,
         actions: () => <ActionButton question={question} />,
     }));
 
@@ -111,7 +93,7 @@ const QuestionsPreSelectionTest = () => {
                 />
             </div>
             <TableDashboard
-                columns={['No', 'Question Id', 'Details', 'Actions']}
+                columns={['No', 'Question', 'Actions']}
                 datas={tableData}
                 itemsPerPage={5}
             />
