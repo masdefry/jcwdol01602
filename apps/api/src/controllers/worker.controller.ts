@@ -119,7 +119,7 @@ export class WorkerController {
         desc,
       );
       return res.status(201).send({
-        message: 'Work experience added successfully',
+        message: 'Work experience updated successfully',
         worker,
       });
     } catch (error) {

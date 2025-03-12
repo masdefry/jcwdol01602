@@ -19,7 +19,6 @@ const page = () => {
         const { data } = await axiosInstance.get(
           `/api/worker/work-data/${workerId}`,
         );
-        console.log(data.work);
         setWork(data.work);
       } catch (error: any) {
         const errorMessage =
@@ -65,9 +64,9 @@ const page = () => {
             initialValues={{
               companyName: work.companyName,
               position: work.position,
-              beginDate: new Date(work.startDate).toLocaleDateString(),
+              beginDate: new Date(work.startDate).toISOString().split('T')[0],
               finishDate: work.endDate
-                ? new Date(work.endDate).toLocaleDateString()
+                ? new Date(work.endDate).toISOString().split('T')[0]
                 : '',
               isStillWorking: false,
               desc: work.description ? work.description : '',
@@ -164,7 +163,7 @@ const page = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-end md:px-16">
+                  <div className="flex items-center justify-end">
                     <button
                       type="submit"
                       className="w-fit bg-yellow-200 hover:bg-yellow-400 px-4 font-semibold text-gray-800 hover:text-black py-2 rounded ease-in-out duration-150"

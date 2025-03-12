@@ -136,6 +136,8 @@ export const editWorkUser = async (
     if (beginDate) upStartDate = new Date(beginDate);
     if (finishDate) {
       upEndDate = new Date(finishDate);
+    } else if (finishDate === '') {
+      upEndDate = null;
     }
     if (desc) {
       upDescription = desc;

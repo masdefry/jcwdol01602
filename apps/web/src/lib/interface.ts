@@ -49,6 +49,19 @@ export interface IWorker {
   description: string | null;
 }
 
+export interface IUserEdu {
+  id: string;
+  subsDataId: string;
+  level: string;
+  school: string;
+  discipline: string;
+  startDate: Date;
+  endDate: Date | null;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}
+
 export interface ISubsData {
   id: string;
   accountId: string;
@@ -61,9 +74,10 @@ export interface ISubsData {
   updatedAt: Date;
   subsCtg: ISubsCtg | null;
   userProfile: IUserProfile;
-  payment: IPayment[] | null;
-  userSKill: IUserSkill[] | null;
-  worker: IWorker[] | null;
+  payment: IPayment[] | [];
+  userSKill: IUserSkill[] | [];
+  worker: IWorker[] | [];
+  userEdu: IUserEdu[] | [];
 }
 
 export interface ISkill {
@@ -101,4 +115,14 @@ export interface ICompany {
 export interface ICompanyData {
   name: string;
   company: ICompany;
+}
+
+export interface IEduForm {
+  eduLevelName: string;
+  school: string;
+  discipline: string;
+  beginDate: string;
+  finishDate: string;
+  isStillStudying: boolean;
+  desc: string;
 }

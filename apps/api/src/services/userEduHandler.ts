@@ -128,6 +128,8 @@ export const editUserEdu = async (
     if (finishDate) {
       const endDate = new Date(finishDate);
       upEndDate = endDate;
+    } else if (finishDate === '') {
+      upEndDate = null;
     }
     if (desc) {
       upDesc = desc;

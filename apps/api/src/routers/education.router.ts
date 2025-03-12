@@ -44,6 +44,12 @@ export class EduRouter {
       this.userEduController.allUserEducationForUser,
     );
     this.router.get(
+      '/data/:eduId',
+      verifyToken,
+      userDevGuard,
+      this.userEduController.userEduData,
+    );
+    this.router.get(
       '/all-education/:subsDataId',
       verifyToken,
       adminDevGuard,

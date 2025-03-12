@@ -5,50 +5,19 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/solid';
 import { capitalizeFirstLetter } from '@/lib/stringFormat';
-import { AddBtn, DeleteBtn, EditBtn } from '@/components/button/moreBtn';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/lib/axios';
+import WorkList from '@/components/userProfile/workList';
+import { IUserEdu } from '@/lib/interface';
+import { AddBtn, DeleteBtn, EditBtn } from '@/components/button/moreBtn';
+import UserEduList from '@/components/userProfile/userEduList';
 
 const Profile = () => {
   const { account } = useAuthStore();
   const { subsData, loading, error } = useUserSubsData();
-  const [workList, setWorkList] = useState(subsData?.worker || []);
-  // const [eduList, setEduList] = useState(subsData?)
   const router = useRouter();
-  const handleAddWork = () => {
-    router.push(`/user-data/new-work/${account?.id}`);
-  };
 
-  useEffect(() => {
-    if (subsData?.worker) {
-      setWorkList(subsData.worker);
-    }
-  }, [subsData]);
-
-  const handleEditWork = (workerId: string) => {
-    router.push(`/user-data/edit-work/${workerId}`);
-  };
-
-  const handleDeleteWork = async (workerId: string) => {
-    try {
-      const { data } = await axiosInstance.delete(
-        `/api/worker/delete/${workerId}`,
-      );
-      toast.success(data.message);
-      setTimeout(
-        () =>
-          setWorkList((prevWorkList) =>
-            prevWorkList.filter((work) => work.id !== workerId),
-          ),
-        1000,
-      );
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || 'Something went wrong!';
-      toast.error(errorMessage);
-    }
-  };
   return (
     <div className="p-2">
       {account && subsData && (
@@ -92,11 +61,6 @@ const Profile = () => {
               <p>{subsData.userProfile.pob}</p>
             </div>
             <div className="flex flex-row gap-1 p-2 border-2 rounded-lg items-center">
-              <p className="basis-1/6 font-semibold">Place of Birth</p>
-              <p>:</p>
-              <p>{subsData.userProfile.pob}</p>
-            </div>
-            <div className="flex flex-row gap-1 p-2 border-2 rounded-lg items-center">
               <p className="basis-1/6 font-semibold">Date of Birth</p>
               <p>:</p>
               <p>
@@ -108,65 +72,10 @@ const Profile = () => {
               </p>
             </div>
           </div>
-          {/* Work Experience */}
-          <div className="my-2 flex flex-col gap-2">
-            <div className="flex justify-between items-center p-2 bg-gradient-to-r from-fuchsia-500 to-purple-500 rounded-lg">
-              <h1 className="text-white font-semibold text-xl">
-                Work Experience
-              </h1>
-              <AddBtn
-                title="Work"
-                runFunction={handleAddWork}
-                style="bg-white text-black hover:bg-yellow-400"
-              />
-            </div>
 
-            {/* Work experience */}
-            {workList.length > 0
-              ? workList.map((work, idx) => (
-                  <div
-                    className="p-2 bg-white border-2 rounded-lg border-purple-500 flex flex-col gap-1"
-                    key={idx}
-                  >
-                    <div className="flex flex-row w-full justify-between items-center">
-                      <div className="flex gap-0 flex-col">
-                        <h1 className="font-semibold">{work.companyName}</h1>
-                        <p>{work.position}</p>
-                        {work.isVerified ? (
-                          <p className="text-green-400">Verified by company</p>
-                        ) : (
-                          <p className="text-slate-400">
-                            Not verified by company
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex flex-row gap-2 items-center">
-                        <p className="font-semibold">
-                          {new Date(work.startDate).toLocaleDateString()} -{' '}
-                          {work.endDate
-                            ? new Date(work.endDate).toLocaleDateString()
-                            : 'Now'}
-                        </p>
-                        <EditBtn runFunction={() => handleEditWork(work.id)} />
-                        <DeleteBtn
-                          runFunction={() => handleDeleteWork(work.id)}
-                        />
-                      </div>
-                    </div>
-                    {work.description ? (
-                      <div>
-                        <hr className="border border-purple-500 rounded-full" />
-                        <p>{work.description}</p>
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </div>
-                ))
-              : 'No Data'}
+          <WorkList subsData={subsData} />
 
-            {/* Education */}
-          </div>
+          <UserEduList subsData={subsData} />
         </>
       )}
     </div>
