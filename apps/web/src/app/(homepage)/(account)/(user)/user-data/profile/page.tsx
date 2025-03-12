@@ -2,21 +2,16 @@
 import useUserSubsData from '@/hooks/userSubsData';
 import useAuthStore from '@/stores/authStores';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/solid';
 import { capitalizeFirstLetter } from '@/lib/stringFormat';
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
-import axiosInstance from '@/lib/axios';
 import WorkList from '@/components/userProfile/workList';
-import { IUserEdu } from '@/lib/interface';
-import { AddBtn, DeleteBtn, EditBtn } from '@/components/button/moreBtn';
 import UserEduList from '@/components/userProfile/userEduList';
+import UserSkillList from '@/components/userProfile/skillList';
 
 const Profile = () => {
   const { account } = useAuthStore();
-  const { subsData, loading, error } = useUserSubsData();
-  const router = useRouter();
+  const { subsData } = useUserSubsData();
 
   return (
     <div className="p-2">
@@ -76,6 +71,9 @@ const Profile = () => {
           <WorkList subsData={subsData} />
 
           <UserEduList subsData={subsData} />
+
+          {/* Skills */}
+          <UserSkillList subsData={subsData} />
         </>
       )}
     </div>

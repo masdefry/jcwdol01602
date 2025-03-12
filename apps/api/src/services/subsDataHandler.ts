@@ -52,7 +52,12 @@ export const getSubsDataByUser = async (userId: string) => {
         userProfile: true,
         payment: true,
         userEdu: true,
-        userSkill: true,
+        userSkill: {
+          include: {
+            skill: true,
+            skillScore: true,
+          },
+        },
         worker: true,
       },
     });

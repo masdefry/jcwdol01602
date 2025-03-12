@@ -35,6 +35,8 @@ export interface IUserSkill {
   id: string;
   subsDataId: string;
   skillId: string;
+  skill: ISkill;
+  skillScore: ISkillScore[];
 }
 
 export interface IWorker {
@@ -75,7 +77,7 @@ export interface ISubsData {
   subsCtg: ISubsCtg | null;
   userProfile: IUserProfile;
   payment: IPayment[] | [];
-  userSKill: IUserSkill[] | [];
+  userSkill: IUserSkill[] | [];
   worker: IWorker[] | [];
   userEdu: IUserEdu[] | [];
 }
@@ -125,4 +127,15 @@ export interface IEduForm {
   finishDate: string;
   isStillStudying: boolean;
   desc: string;
+}
+
+export interface IChooseSkill {
+  skillName: string;
+}
+
+export interface ISkillScore {
+  id: string;
+  skillId: string;
+  score: number;
+  userSkillId: string;
 }

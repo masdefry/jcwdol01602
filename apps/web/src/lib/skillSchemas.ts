@@ -51,3 +51,7 @@ export const QuestionSchema = object({
       validationMessage.answer.match,
     ),
 });
+
+export const chooseSkillSchema = object({
+  skillName: string().required(validationMessage.skillName.notEmpty),
+});

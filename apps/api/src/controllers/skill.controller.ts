@@ -69,6 +69,19 @@ export class SkillController {
     }
   }
 
+  async skillById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { skillId } = req.params;
+      if (!skillId) throw new Error(`Skill id required`);
+      const skill = await getSkillById(skillId);
+      return res.status(200).send({
+        message: `Skill data retrieved successfully`,
+        skill,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
   async allSkill(req: Request, res: Response, next: NextFunction) {
     try {
       let skills = null;

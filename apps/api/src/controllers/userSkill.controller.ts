@@ -1,5 +1,10 @@
 import { Account } from '@/custom';
-import { addUserSkill, delUserSkill } from '@/services/userSkillHandler';
+import { getSubsDataByUser } from '@/services/subsDataHandler';
+import {
+  addUserSkill,
+  delUserSkill,
+  getUserSkillBySubsData,
+} from '@/services/userSkillHandler';
 import { Request, Response, NextFunction } from 'express';
 
 export class UserSkillController {
@@ -27,6 +32,22 @@ export class UserSkillController {
       return res.status(200).send({
         message: `User skill deleted successfully`,
         deleteUserSkill,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userSkillAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.account as Account;
+      const subsData = await getSubsDataByUser(user.id);
+      if (!subsData) throw new Error('No subscription data exist');
+      let userSkills = null;
+      userSkills = await getUserSkillBySubsData(subsData.id);
+      return res.status(200).send({
+        message: 'User skills retrieved successfully',
+        userSkills,
       });
     } catch (error) {
       next(error);

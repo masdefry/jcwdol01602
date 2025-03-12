@@ -39,6 +39,12 @@ export class SkillRouter {
       this.skillController.newSkill,
     );
 
+    this.router.get(
+      '/data/:skillId',
+      verifyToken,
+      this.skillController.skillById,
+    );
+
     // Delete Skill
     this.router.delete(
       '/delete/:skillId',
@@ -113,6 +119,18 @@ export class SkillRouter {
       verifyToken,
       userDevGuard,
       this.userSkillController.newUserSkill,
+    );
+    this.router.get(
+      '/user-skill/all',
+      verifyToken,
+      userDevGuard,
+      this.userSkillController.userSkillAll,
+    );
+    this.router.delete(
+      '/user-skill/delete/:uSkillId',
+      verifyToken,
+      userDevGuard,
+      this.userSkillController.deleteUserSkill,
     );
   }
   getRouter(): Router {

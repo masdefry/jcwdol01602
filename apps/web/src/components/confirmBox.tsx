@@ -45,9 +45,9 @@ const ConfirmBox = ({ message, setIsOpen, runFunction }: IConfirm) => {
           <h1 className="text-xl font-bold">Please Confirm</h1>
           <button
             onClick={closeModal}
-            className="text-red-500 p-2 duration-150 ease-in-out font-bold text-xl rounded-full hover:bg-red-500 hover:text-white"
+            className="text-red-500 p-1 duration-150 ease-in-out font-bold text-xl rounded-full hover:bg-red-500 hover:text-white border border-red-500"
           >
-            <XMarkIcon />
+            <XMarkIcon width={20} height={20} />
           </button>
         </div>
 

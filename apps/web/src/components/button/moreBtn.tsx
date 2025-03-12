@@ -78,7 +78,7 @@ export const RejectBtn = ({ runFunction, disabled }: IMoreBtn) => {
 export const TrashBtn = ({ runFunction, disabled }: IMoreBtn) => {
   return (
     <button
-      className={`p-2 rounded-lg ${disabled ? 'bg-gray-400 text-gray-700 cursor-not-allowed' : 'bg-white text-red-500 hover:bg-red-500 hover:text-white ease-in-out duration-150'}`}
+      className={`p-2 rounded-lg ${disabled ? 'bg-gray-400 text-gray-700 cursor-not-allowed' : 'bg-white border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white ease-in-out duration-150'}`}
       onClick={() => runFunction()}
       disabled={disabled}
     >
