@@ -141,3 +141,26 @@ export const addAccAvatar = async (
     throw new Error(`Unexpected Error addAvatar : ` + error);
   }
 };
+
+export const getCompanyData = async () => {
+  try {
+    const data = await prisma.account.findMany({
+      where: {
+        role: 'admin',
+        isVerified: true,
+      },
+      select: {
+        name: true,
+        Company: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error(`Unexpected Error addAvatar : ` + error);
+  }
+};

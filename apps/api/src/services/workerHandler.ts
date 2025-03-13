@@ -31,7 +31,7 @@ export const addWorkerUser = async (
     }
     const startDate = new Date(beginDate);
     let endDate = null;
-    if (finishDate) {
+    if (finishDate !== '') {
       endDate = new Date(finishDate);
     }
     let description = null;
@@ -136,6 +136,8 @@ export const editWorkUser = async (
     if (beginDate) upStartDate = new Date(beginDate);
     if (finishDate) {
       upEndDate = new Date(finishDate);
+    } else if (finishDate === '') {
+      upEndDate = null;
     }
     if (desc) {
       upDescription = desc;

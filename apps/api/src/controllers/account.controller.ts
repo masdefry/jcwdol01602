@@ -4,6 +4,7 @@ import {
   delAccHandler,
   getAccAllHandler,
   getAccById,
+  getCompanyData,
   loginAccHandler,
   verifyAccHandler,
 } from '@/services/accountHandler';
@@ -109,6 +110,19 @@ export class AccountController {
       return res.status(200).send({
         message: `Gender retrieved successfully`,
         gender,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async companyName(req: Request, res: Response, next: NextFunction) {
+    try {
+      let company = null;
+      company = await getCompanyData();
+      return res.status(200).send({
+        message: 'Company data retrieved successfully',
+        company,
       });
     } catch (error) {
       next(error);

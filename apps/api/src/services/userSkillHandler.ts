@@ -60,3 +60,17 @@ export const delUserSkill = async (userId: string, uSkillId: string) => {
     throw new Error('Unexpected error - delUserSkill :' + error);
   }
 };
+
+export const getUserSkillBySubsData = async (subsDataId: string) => {
+  try {
+    const userSkills = await prisma.userSkill.findMany({
+      where: { subsDataId },
+    });
+    return userSkills;
+  } catch (error: any) {
+    if (error.message) {
+      throw new Error(error.message);
+    }
+    throw new Error('Unexpected error - getUserSkillBySubsData :' + error);
+  }
+};

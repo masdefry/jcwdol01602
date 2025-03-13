@@ -5,6 +5,7 @@ import {
   allUserEduBySubsData,
   delUserEdu,
   editUserEdu,
+  getUserEduById,
 } from '@/services/userEduHandler';
 import { EduLevel } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
@@ -130,6 +131,25 @@ export class UserEduController {
       return res.status(200).send({
         message: `Education level retreived successfully`,
         eduLevel,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userEduData(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.account as Account;
+      const { eduId } = req.params;
+      if (!eduId) throw new Error('Education id required');
+      const subsData = await getSubsDataByUser(user.id);
+      if (!subsData) throw new Error('No subscription data exist');
+      const userEdu = await getUserEduById(eduId);
+      if (userEdu && userEdu.subsDataId !== subsData.id)
+        throw new Error('Unauthorized');
+      return res.status(200).send({
+        message: 'Education data retrieved successfully',
+        userEdu,
       });
     } catch (error) {
       next(error);

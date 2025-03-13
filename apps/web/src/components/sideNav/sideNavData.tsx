@@ -47,6 +47,11 @@ const UserSideNav = (): ISideNavItem[] => {
       href: '/user-data/plan',
       active: pathname === '/user-data/plan',
     },
+    {
+      label: 'Assestment Result',
+      href: '/user-data/score-test',
+      active: pathname === '/user-data/score-test',
+    },
   ];
 };
 

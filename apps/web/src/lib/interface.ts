@@ -8,6 +8,16 @@ export interface ISubsCtg {
   createdAt: Date;
 }
 
+export interface IUserProfile {
+  id: string;
+  subsDataId: string;
+  gender: string;
+  pob: string;
+  dob: string;
+  address: string;
+  phoneNumber: string;
+}
+
 export interface IPayment {
   id: string;
   subsDataId: string;
@@ -25,6 +35,8 @@ export interface IUserSkill {
   id: string;
   subsDataId: string;
   skillId: string;
+  skill: ISkill;
+  skillScore: ISkillScore[];
 }
 
 export interface IWorker {
@@ -39,6 +51,19 @@ export interface IWorker {
   description: string | null;
 }
 
+export interface IUserEdu {
+  id: string;
+  subsDataId: string;
+  level: string;
+  school: string;
+  discipline: string;
+  startDate: Date;
+  endDate: Date | null;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}
+
 export interface ISubsData {
   id: string;
   accountId: string;
@@ -50,9 +75,11 @@ export interface ISubsData {
   createdAt: Date;
   updatedAt: Date;
   subsCtg: ISubsCtg | null;
-  payment: IPayment[] | null;
-  userSKill: IUserSkill[] | null;
-  worker: IWorker[] | null;
+  userProfile: IUserProfile;
+  payment: IPayment[] | [];
+  userSkill: IUserSkill[] | [];
+  worker: IWorker[] | [];
+  userEdu: IUserEdu[] | [];
 }
 
 export interface ISkill {
@@ -74,6 +101,44 @@ export interface ISkillQuestion {
   imageUrl: string | null;
 }
 
+export interface IWorkerForm {
+  companyName: string;
+  position: string;
+  beginDate: string;
+  finishDate: string;
+  isStillWorking: boolean;
+  desc: string;
+}
+
+export interface ICompany {
+  id: string;
+}
+
+export interface ICompanyData {
+  name: string;
+  company: ICompany;
+}
+
+export interface IEduForm {
+  eduLevelName: string;
+  school: string;
+  discipline: string;
+  beginDate: string;
+  finishDate: string;
+  isStillStudying: boolean;
+  desc: string;
+}
+
+export interface IChooseSkill {
+  skillName: string;
+}
+
+export interface ISkillScore {
+  id: string;
+  skillId: string;
+  score: number;
+  userSkillId: string;
+}
 
 export interface ITestQuestion {
   id: string;

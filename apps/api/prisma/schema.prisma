@@ -29,9 +29,8 @@ model Account {
   avatar         String
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  User           SubsData[]
-  Company        Company[]
-
+  User           SubsData?
+  Company        Company?
 }
 
 enum Role {
@@ -41,8 +40,8 @@ enum Role {
 }
 
 model UserProfile {
-  id             String      @id
-  subsDataid     String
+  id             String      @id 
+  subsDataid     String   @unique
   SubsData       SubsData @relation(fields: [subsDataid], references: [id], onDelete: Cascade)
   gender         Gender
   pob            String
@@ -51,6 +50,7 @@ model UserProfile {
   phoneNumber    String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+
 }
 
 enum Gender {
@@ -105,10 +105,12 @@ model SubsData {
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
   userSkill         UserSkill[]
-  userProfilie      UserProfile[]
+  userProfile      UserProfile?
   userEdu           UserEdu[]
   worker            Worker[]
   Applicant         Applicant[]
+
+  @@unique([accountId])
 }
 
 model Company {
