@@ -14,6 +14,7 @@ export class ApplicantController {
 
             return res.status(200).json({ applicants });
         } catch (error) {
+            console.error('Error in getApplicantsByJob controller:', error);
             next(error);
         }
     }
@@ -29,6 +30,7 @@ export class ApplicantController {
 
             return res.status(200).json({ applicant });
         } catch (error) {
+            console.error('Error in getApplicantDetails controller:', error);
             next(error);
         }
     }
@@ -43,6 +45,23 @@ export class ApplicantController {
                 applicant: updatedApplicant,
             });
         } catch (error) {
+            console.error('Error in updateApplicantStatus controller:', error);
+            next(error);
+        }
+    }
+
+    async getApplicantById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { applicantId } = req.params;
+            const applicant = await getApplicantById(applicantId);
+
+            if (!applicant) {
+                return res.status(404).json({ message: 'Applicant not found' });
+            }
+
+            return res.status(200).json({ applicant });
+        } catch (error) {
+            console.error('Error in getApplicantById controller:', error);
             next(error);
         }
     }

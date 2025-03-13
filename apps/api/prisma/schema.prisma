@@ -118,7 +118,7 @@ model Company {
   account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId   String
   phone       String
-  address     String?   
+  address     String?
   website     String?
   description String?   @db.VarChar(300)
   createdAt   DateTime @default(now())
@@ -138,15 +138,37 @@ model Job {
   company     Company  @relation(fields: [companyId], references: [id])
   title       String
   description String
-  category    String
-  location    String
+  category    Categories
+  location    Locations
   salaryRange String?
   deadline    DateTime?
-  isPublished Boolean
+  isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   applicants  Applicant[]
+  PreSelectionTest PreSelectionTest[]
 }
+
+
+enum Locations {
+  Jakarta
+  Bandung
+  Surabaya
+  Bali
+  Remote
+}
+
+
+enum Categories {
+  IT
+  education
+  HR
+  finance
+  healthcare
+  sales
+  design
+}
+
 
 model Applicant {
   id        String   @id @default(uuid())
@@ -156,9 +178,9 @@ model Applicant {
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())
   expectedSalary Int?
-  education   String?
   status      ApplicantStatus @default(pending)
   InterviewSchedule InterviewSchedule[]
+  PreSelectionTestResult PreSelectionTestResult[]
 }
 
 
@@ -268,4 +290,59 @@ model CompReview {
   facility      Int?
   career        Int?
   description   String?   @db.VarChar(300)
+}
+
+
+model PreSelectionTest {
+  id         String                     @id @default(uuid())
+  jobId      String                     @unique
+  job        Job                        @relation(fields: [jobId], references: [id])
+  isActive   Boolean                    @default(false)
+  questions  PreSelectionQuestion[]
+  createdAt  DateTime                   @default(now())
+  updatedAt  DateTime                   @updatedAt
+
+  PreSelectionTestResult PreSelectionTestResult[]
+}
+
+model PreSelectionQuestion {
+  id         String            @id @default(uuid())
+  testId     String
+  test       PreSelectionTest  @relation(fields: [testId], references: [id])
+  question   String
+  imageUrl   String?
+  option_a   String
+  option_b   String
+  option_c   String
+  option_d   String
+  answer     String
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  PreSelectionAnswer PreSelectionAnswer[]
+}
+
+model PreSelectionTestResult {
+  id          String                    @id @default(uuid())
+  applicantId String
+  applicant   Applicant                 @relation(fields: [applicantId], references: [id])
+  testId      String
+  test        PreSelectionTest          @relation(fields: [testId], references: [id])
+  score       Int
+  total       Int
+  answers     PreSelectionAnswer[]
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+}
+
+model PreSelectionAnswer {
+  id             String                  @id @default(uuid())
+  testResultId   String
+  testResult     PreSelectionTestResult  @relation(fields: [testResultId], references: [id])
+  questionId     String
+  question       PreSelectionQuestion    @relation(fields: [questionId], references: [id])
+  selectedOption String
+  isCorrect      Boolean
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
 }

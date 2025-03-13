@@ -42,15 +42,15 @@ export const devServices = [
 export const adminServices = [
   {
     label: 'Job Posting',
-    href: '/',
+    href: '/adm-dashboard/job',
   },
   {
     label: 'Company',
-    href: '/tes',
+    href: '/adm-dashboard/job',
   },
   {
     label: 'Dashboard',
-    href: '/',
+    href: '/adm-dashboard/job',
   },
 ];
 

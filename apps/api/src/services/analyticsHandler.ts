@@ -1,26 +1,78 @@
 import prisma from '@/prisma';
 
-export const getUserDemographics = async () => {
+export const getUserDob = async () => {
   try {
-    const demographics = await prisma.profile.findMany({
+    const userProfiles = await prisma.userProfile.findMany({
       select: {
-        gender: true,
-        birthDate: true,
-        address: true,
-        account: { select: { id: true } },
+        dob: true,
+        SubsData: {
+          select: {
+            accounts: {
+              select: { id: true },
+            },
+          },
+        },
       },
     });
 
-    return demographics.map((profile) => ({
-      gender: profile.gender,
-      age: profile.birthDate
-        ? new Date().getFullYear() - profile.birthDate.getFullYear()
-        : null,
-      location: profile.address,
-      accountId: profile.account.id,
+    return userProfiles.map((profile) => ({
+      dob: profile.dob,
+      accountId: profile.SubsData.accounts.id,
     }));
   } catch (error) {
-    throw error;
+    console.error("Error fetching user DOB:", error);
+    throw new Error("Failed to fetch user DOB.");
+  }
+};
+
+
+export const getUserGender = async () => {
+  try {
+    const userProfiles = await prisma.userProfile.findMany({
+      select: {
+        gender: true,
+        SubsData: {
+          select: {
+            accounts: {
+              select: { id: true },
+            },
+          },
+        },
+      },
+    });
+
+    return userProfiles.map((profile) => ({
+      gender: profile.gender,
+      accountId: profile.SubsData.accounts.id,
+    }));
+  } catch (error) {
+    console.error("Error fetching user gender:", error);
+    throw new Error("Failed to fetch user gender.");
+  }
+};
+
+export const getUserLocation = async () => {
+  try {
+    const userProfiles = await prisma.userProfile.findMany({
+      select: {
+        address: true,
+        SubsData: {
+          select: {
+            accounts: {
+              select: { id: true },
+            },
+          },
+        },
+      },
+    });
+
+    return userProfiles.map((profile) => ({
+      location: profile.address,
+      accountId: profile.SubsData.accounts.id,
+    }));
+  } catch (error) {
+    console.error("Error fetching user location:", error);
+    throw new Error("Failed to fetch user location.");
   }
 };
 
@@ -29,7 +81,12 @@ export const getSalaryTrends = async () => {
     const salaryTrends = await prisma.applicant.findMany({
       select: {
         expectedSalary: true,
-        job: { select: { title: true, location: true } },
+        job: {
+          select: {
+            title: true,
+            location: true,
+          },
+        },
       },
     });
 
@@ -39,7 +96,8 @@ export const getSalaryTrends = async () => {
       jobLocation: applicant.job.location,
     }));
   } catch (error) {
-    throw error;
+    console.error("Error fetching salary trends:", error);
+    throw new Error("Failed to fetch salary trends.");
   }
 };
 
@@ -66,7 +124,8 @@ export const getApplicantInterests = async () => {
       applicantCount: count,
     }));
   } catch (error) {
-    throw error;
+    console.error("Error fetching applicant interests:", error);
+    throw new Error("Failed to fetch applicant interests.");
   }
 };
 
@@ -77,9 +136,7 @@ export const getJobPostStatistics = async () => {
         id: true,
         title: true,
         _count: {
-          select: {
-            applicants: true,
-          },
+          select: { applicants: true },
         },
       },
     });
@@ -90,16 +147,15 @@ export const getJobPostStatistics = async () => {
       applicantCount: job._count.applicants,
     }));
   } catch (error) {
-    throw error;
+    console.error("Error fetching job post statistics:", error);
+    throw new Error("Failed to fetch job post statistics.");
   }
 };
 
 export const getNewUsersPerMonth = async () => {
   try {
     const users = await prisma.account.findMany({
-      select: {
-        createdAt: true,
-      },
+      select: { createdAt: true },
     });
 
     const userCounts = users.reduce((acc, user) => {
@@ -113,6 +169,7 @@ export const getNewUsersPerMonth = async () => {
       userCount: count,
     }));
   } catch (error) {
-    throw error;
+    console.error("Error fetching new users per month:", error);
+    throw new Error("Failed to fetch new users per month.");
   }
 };

@@ -19,6 +19,11 @@ import { SkillRouter } from './routers/skill.router';
 import { EduRouter } from './routers/education.router';
 import { CompanyRouter } from './routers/company.router';
 import { WorkRouter } from './routers/work.router';
+import { JobRouter } from './routers/job.router';
+import { ApplicantRouter } from './routers/applicant.router';
+import { InterviewScheduleRouter } from './routers/interviewSchedule.router';
+import { PreSelectionTestRouter } from './routers/preSelectionTest.router';
+import { AnalyticsRouter } from './routers/analytics.router';
 
 export default class App {
   private app: Express;
@@ -77,6 +82,11 @@ export default class App {
     const eduRouter = new EduRouter();
     const companyRouter = new CompanyRouter();
     const workRouter = new WorkRouter();
+    const jobRouter = new JobRouter();
+    const applicantRouter = new ApplicantRouter();
+    const interviewScheduleRouter = new InterviewScheduleRouter();
+    const preselectiontestRouter = new PreSelectionTestRouter();
+    const analyticsRouter = new AnalyticsRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -92,7 +102,13 @@ export default class App {
     this.app.use('/api/skill', skillRouter.getRouter());
     this.app.use('/api/education', eduRouter.getRouter());
     this.app.use('/api/company', companyRouter.getRouter());
+    this.app.use('/api/job', jobRouter.getRouter());
     this.app.use('/api/worker', workRouter.getRouter());
+    this.app.use('/api/applicant', applicantRouter.getRouter());
+    this.app.use('/api/interviewschedule', interviewScheduleRouter.getRouter());
+    this.app.use('/api/preselectiontest', preselectiontestRouter.getRouter());
+    this.app.use('/api/job', jobRouter.getRouter());
+    this.app.use('/api/analytics', analyticsRouter.getRouter());
   }
 
   public start(): void {

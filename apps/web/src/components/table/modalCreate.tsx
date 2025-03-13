@@ -13,15 +13,13 @@ import { XMarkIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
 import ButtonCustom from '../button/btn';
 
-// Tipe untuk field konfigurasi
 interface FieldConfig {
   name: string;
   label: string;
-  type: 'text' | 'checkbox' | 'textarea' | 'select' | 'file';
+  type: 'text' | 'checkbox' | 'textarea' | 'select' | 'file' | 'date' | 'string' | 'datetime-local' ;
   options?: { id: string; name: string }[];
 }
 
-// Tipe untuk props modal
 interface ModalCreateProps<T extends FormikValues> {
   title?: string;
   initialValues: T;
@@ -59,10 +57,7 @@ const ModalCreate = <T extends FormikValues>({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         closeModal();
       }
     };
@@ -133,7 +128,6 @@ const ModalCreate = <T extends FormikValues>({
           show ? 'open' : ''
         }`}
       >
-        {/* Header Modal */}
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-bold">{title}</h1>
           <button
@@ -144,7 +138,6 @@ const ModalCreate = <T extends FormikValues>({
           </button>
         </div>
 
-        {/* Form */}
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -241,6 +234,12 @@ const ModalCreate = <T extends FormikValues>({
                             />
                           </label>
                         </div>
+                      ) : field.type === 'date' ? (
+                        <Field
+                          type="date"
+                          name={field.name}
+                          className="formik-input"
+                        />
                       ) : (
                         <Field
                           className="formik-input"
