@@ -6,7 +6,9 @@ import prisma from '@/prisma';
 
 async function verifyToken(req: Request, res: Response, next: NextFunction) {
   try {
+    console.log(`verifyToken called`);
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    console.log(`token - ${token}`);
     if (!token) throw new Error('Unauthorized');
     const decoded = verify(token, SECRET_KEY as string);
     if (!decoded) throw new Error('Unauthorized');
@@ -20,6 +22,7 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
       where: { id: account.id },
     });
     if (!findAccount) throw new Error('Who are you?!');
+    console.log(`verifyToken finished`);
     next();
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
