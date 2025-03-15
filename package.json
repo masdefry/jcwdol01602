@@ -43,6 +43,7 @@
     "chart.js": "^4.4.8",
     "cloudinary": "^2.5.1",
     "cookies-next": "^4.3.0",
+    "date-fns": "^4.1.0",
     "express-validator": "^7.2.1",
     "formik": "^2.4.6",
     "handlebars": "^4.7.8",
