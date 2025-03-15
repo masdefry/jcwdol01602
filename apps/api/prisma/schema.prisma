@@ -275,14 +275,14 @@ model Worker {
   endDate       DateTime?
   description   String?     @db.VarChar(300)
   isVerified    Boolean     @default(false)
-  compReview    CompReview[]
+  compReview    CompReview?
 }
 
 model CompReview {
   id            String    @id
   companyId     String
   company       Company   @relation(fields: [companyId], references: [id])
-  workerId      String
+  workerId      String    @unique
   worker        Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
   salary        Int?
   culture       Int?

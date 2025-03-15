@@ -28,3 +28,20 @@ export const getCompReviewForAdmin = async (adminId: string) => {
     throw new Error(`Unexpected Error - getCompReviewForAdmin : ` + error);
   }
 };
+
+export const getCompanyReviewByCompanyId = async (companyId: string) => {
+  try {
+    const data = await prisma.compReview.findMany({
+      where: { companyId },
+      include: {
+        worker: true,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error(
+      `Unexpected Error - getCompanyReviewByCompanyId : ` + error,
+    );
+  }
+};

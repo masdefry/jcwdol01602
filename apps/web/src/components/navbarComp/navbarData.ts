@@ -16,7 +16,7 @@ export const services = [
   },
   {
     label: 'Company',
-    href: '/tes',
+    href: '/company',
   },
   {
     label: 'Uprgrade Plan',

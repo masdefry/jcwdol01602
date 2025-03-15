@@ -39,6 +39,17 @@ export const getAllWorkerByCompany = async (adminId: string) => {
       where: {
         companyId: company.id,
       },
+      include: {
+        subsData: {
+          select: {
+            accounts: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
     return data;
   } catch (error: any) {

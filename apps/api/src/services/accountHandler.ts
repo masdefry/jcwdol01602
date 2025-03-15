@@ -151,11 +151,9 @@ export const getCompanyData = async () => {
       },
       select: {
         name: true,
-        Company: {
-          select: {
-            id: true,
-          },
-        },
+        email: true,
+        avatar: true,
+        Company: true,
       },
     });
     return data;
