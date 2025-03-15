@@ -29,6 +29,12 @@ export class CompanyRouter {
       this.companyController.editCompany,
     );
 
+    this.router.get('/data/:companyId', this.companyController.getCompanyData);
+    this.router.get(
+      '/reviews/:companyId',
+      this.compReviewController.showCompanyReview,
+    );
+
     this.router.post(
       '/add-review/:companyId',
       verifyToken,

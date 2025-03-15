@@ -5,7 +5,10 @@ import {
   delCompReview,
   editCompReview,
 } from '@/services/compReviewAddEditDel';
-import { getCompReviewForAdmin } from '@/services/compReviewGet';
+import {
+  getCompanyReviewByCompanyId,
+  getCompReviewForAdmin,
+} from '@/services/compReviewGet';
 
 export class CompReviewController {
   async newCompReview(req: Request, res: Response, next: NextFunction) {
@@ -80,7 +83,21 @@ export class CompReviewController {
       compReview = await getCompReviewForAdmin(admin.id);
       if (compReview.length === 0) compReview = 'No Data';
       return res.status(200).send({
-        message: `Company review retieved successfully`,
+        message: `Company review retrieved successfully`,
+        compReview,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async showCompanyReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { companyId } = req.params;
+      if (!companyId) throw new Error('Company Id required');
+      const compReview = await getCompanyReviewByCompanyId(companyId);
+      return res.status(200).send({
+        message: `Company reviews retrieved successfully`,
         compReview,
       });
     } catch (error) {

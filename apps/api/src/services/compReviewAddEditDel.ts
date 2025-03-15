@@ -17,12 +17,6 @@ export const addCompReview = async (
   desc: string | null,
 ) => {
   try {
-    let salaryRange = null;
-    let cultureRating = null;
-    let wlbRating = null;
-    let facilityRating = null;
-    let careerRating = null;
-    let description = null;
     // get worker by userId
     const workerData = await getAllWorkerByUser(userId);
     if (workerData.length === 0) throw new Error(`No Data`);
@@ -39,12 +33,6 @@ export const addCompReview = async (
     );
     if (!matchedWorker)
       throw new Error(`User is not associated with this company`);
-    if (salary) salaryRange = salary;
-    if (culture) cultureRating = culture;
-    if (wlb) wlbRating = culture;
-    if (facility) facilityRating = facility;
-    if (career) careerRating = career;
-    if (desc) description = desc;
 
     const compReviewId = await compReviewIdMaker();
     const data = await prisma.compReview.create({
@@ -52,12 +40,12 @@ export const addCompReview = async (
         id: compReviewId,
         companyId: company.id,
         workerId: matchedWorker.id,
-        salary: salaryRange,
-        culture: cultureRating,
-        wlb: wlbRating,
-        facility: facilityRating,
-        career: careerRating,
-        description,
+        salary: salary ?? null,
+        culture: culture ?? null,
+        wlb: wlb ?? null,
+        facility: facility ?? null,
+        career: career ?? null,
+        description: desc ?? null,
       },
     });
     return data;
@@ -84,32 +72,22 @@ export const editCompReview = async (
     // Check compReviewId
     const compReview = await getCompReviewById(compReviewId);
     if (!compReview) throw new Error(`Invalid review Id`);
-    let upSalaryRating = compReview.salary;
-    let upCultureRating = compReview.culture;
-    let upWlbRating = compReview.wlb;
-    let upFacilityRating = compReview.facility;
-    let upCareerRating = compReview.career;
-    let upDescription = compReview.description;
+
     // Check if compReview has the same workId
-    const matchedWorker = workerData.find((worker) =>
-      worker.compReview.find((review) => review.id === compReview.id),
+    const matchedWorker = workerData.find(
+      (worker) => worker.compReview?.workerId === compReview.workerId,
     );
     if (!matchedWorker) throw new Error(`Unauthorized`);
-    if (salary) upSalaryRating = salary;
-    if (culture) upCultureRating = culture;
-    if (wlb) upWlbRating = wlb;
-    if (facility) upFacilityRating = facility;
-    if (career) upCareerRating = career;
-    if (desc) upDescription = desc;
+
     const data = await prisma.compReview.update({
       where: { id: compReview.id },
       data: {
-        salary: upSalaryRating,
-        culture: upCultureRating,
-        wlb: upWlbRating,
-        facility: upFacilityRating,
-        career: upCareerRating,
-        description: upDescription,
+        salary: salary ?? compReview.salary,
+        culture: culture ?? compReview.culture,
+        wlb: wlb ?? compReview.wlb,
+        facility: facility ?? compReview.facility,
+        career: career ?? compReview.career,
+        description: desc ?? compReview.description,
       },
     });
     return data;
@@ -129,31 +107,25 @@ export const delCompReview = async (account: Account, compReviewId: string) => {
   try {
     const compReview = await getCompReviewById(compReviewId);
     if (!compReview) throw new Error(`Review doesn't exist`);
-    let data = null;
+
     if (account.role === 'user') {
       const workerData = await getAllWorkerByUser(account.id);
       if (workerData.length === 0)
         throw new Error(`Work experience doesn't exist`);
-      const matchedWorker = workerData.find((worker) =>
-        worker.compReview.find((review) => review.id === compReview.id),
+      const matchedWorker = workerData.find(
+        (worker) => worker.compReview?.workerId === compReview.workerId,
       );
       if (!matchedWorker) throw new Error(`Unauthorized`);
-      data = await prisma.compReview.delete({
-        where: { id: compReview.id },
-      });
     } else if (account.role == 'admin') {
       const company = await getCompanyByAdmin(account.id);
       if (!company) throw new Error(`Company data doesn't exist`);
       if (compReview.companyId !== company.id)
         throw new Error(`This review is not for your company`);
-      data = await prisma.compReview.delete({
-        where: { id: compReview.id },
-      });
     } else {
       throw new Error(`Unauthorized`);
     }
 
-    return data;
+    return await prisma.compReview.delete({ where: { id: compReview.id } });
   } catch (error: any) {
     if (error.message) throw new Error(error.message);
     throw new Error(`Unexpected Error - delCompReview : ` + error);

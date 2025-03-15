@@ -30,3 +30,29 @@ export const getCompanyByAdmin = async (adminId: string) => {
     throw new Error(`Unexpected Error - getCompanyByAdmin : ` + error);
   }
 };
+
+export const getCompanyById = async (companyId: string) => {
+  try {
+    let company = null;
+    company = await prisma.company.findUnique({
+      where: { id: companyId },
+      include: {
+        account: {
+          select: {
+            name: true,
+            avatar: true,
+            email: true,
+            isVerified: true,
+          },
+        },
+      },
+    });
+    if (company?.account.isVerified === false) {
+      return (company = null);
+    }
+    return company;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error(`Unexpected Error - getCompanyById : ` + error);
+  }
+};

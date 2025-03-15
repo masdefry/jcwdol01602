@@ -1,6 +1,5 @@
 import prisma from '@/prisma';
 
-
 export const getInterviewApplicantsByCompanyAccountId = async (
   companyAccountId: string,
 ) => {
@@ -22,7 +21,7 @@ export const getInterviewApplicantsByCompanyAccountId = async (
           select: {
             id: true,
             accounts: true,
-            userProfilie: true,
+            userProfile: true,
             userEdu: true,
             userSkill: {
               select: {
@@ -39,7 +38,6 @@ export const getInterviewApplicantsByCompanyAccountId = async (
     throw error;
   }
 };
-
 
 export const createInterviewSchedule = async (
   applicantId: string,
@@ -68,7 +66,9 @@ export const getInterviewScheduleById = async (scheduleId: string) => {
   try {
     const schedule = await prisma.interviewSchedule.findUnique({
       where: { id: scheduleId },
-      include: { applicant: { include: { subsData: { include: { accounts: true } } } } },
+      include: {
+        applicant: { include: { subsData: { include: { accounts: true } } } },
+      },
     });
     return schedule;
   } catch (error) {
@@ -110,7 +110,9 @@ export const deleteInterviewSchedule = async (scheduleId: string) => {
   }
 };
 
-export const getInterviewSchedulesByApplicantId = async (applicantId: string) => {
+export const getInterviewSchedulesByApplicantId = async (
+  applicantId: string,
+) => {
   try {
     const schedules = await prisma.interviewSchedule.findMany({
       where: { applicantId },

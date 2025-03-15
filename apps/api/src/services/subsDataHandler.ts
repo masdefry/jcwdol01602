@@ -58,7 +58,11 @@ export const getSubsDataByUser = async (userId: string) => {
             skillScore: true,
           },
         },
-        worker: true,
+        worker: {
+          include: {
+            compReview: true,
+          },
+        },
       },
     });
     return data;

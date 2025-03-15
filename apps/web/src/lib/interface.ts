@@ -43,12 +43,12 @@ export interface IWorker {
   id: string;
   subsDataId: string;
   companyId: string;
+  companyName: string;
   position: string;
   startDate: Date;
   endDate: Date | null;
-  companyName: string;
-  isVerified: boolean;
   description: string | null;
+  isVerified: boolean;
 }
 
 export interface IUserEdu {
@@ -112,11 +112,34 @@ export interface IWorkerForm {
 
 export interface ICompany {
   id: string;
+  acountId: string;
+  phone: string;
+  address: string;
+  website: string;
+  description: string;
 }
 
 export interface ICompanyData {
   name: string;
-  company: ICompany;
+  email: string;
+  avatar: string;
+  Company: ICompany;
+}
+
+interface adminForCompanyById {
+  name: string;
+  avatar: string;
+  email: string;
+  isVerified: boolean;
+}
+export interface ICompanyById {
+  id: string;
+  acountId: string;
+  phone: string;
+  address: string;
+  website: string;
+  description: string;
+  account: adminForCompanyById;
 }
 
 export interface IEduForm {
@@ -150,4 +173,30 @@ export interface ITestQuestion {
   option_d: string;
   answer: string;
   imageUrl: string | null;
+}
+
+export interface ICompReviewForm {
+  salary: number;
+  culture: number;
+  wlb: number;
+  facility: number;
+  career: number;
+  desc: string;
+}
+
+export interface IEmployee {
+  id: string;
+  subsDataId: string;
+  companyId: string;
+  companyName: string;
+  position: string;
+  startDate: Date;
+  endDate: Date | null;
+  description: string | null;
+  isVerified: boolean;
+  subsData: {
+    accounts: {
+      name: string;
+    };
+  };
 }

@@ -7,27 +7,13 @@ import { WorkSchema } from '@/lib/workSchema';
 import toast from 'react-hot-toast';
 import { ICompanyData, IWorkerForm } from '@/lib/interface';
 import axiosInstance from '@/lib/axios';
+import useCompanyData from '@/hooks/useCompanyData';
 
 const NewWork = () => {
-  const [companies, setCompanies] = useState<ICompanyData[]>([]);
+  const { companies } = useCompanyData();
   const router = useRouter();
   const [customCompany, setCustomCompany] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState('');
-
-  useEffect(() => {
-    const getCompanyData = async () => {
-      try {
-        const { data } = await axiosInstance.get('/api/account/company');
-        setCompanies(data.company);
-        console.log(data.company);
-      } catch (error: any) {
-        const errorMessage =
-          error.response?.data?.message || 'Something went wrong!';
-        toast.error(errorMessage);
-      }
-    };
-    getCompanyData();
-  }, []);
 
   const onSubmit = async (values: any) => {
     try {

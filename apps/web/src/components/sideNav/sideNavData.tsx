@@ -79,8 +79,12 @@ const AdminSideNav = (): ISideNavItem[] => {
       href: '/adm-dashboard/analytics',
       active: pathname === '/adm-dashboard/analytics',
     },
+    {
+      label: 'Employee',
+      href: '/adm-dashboard/employee',
+      active: pathname === '/adm-dashboard/employee',
+    },
   ];
 };
-
 
 export { DevSideNav, UserSideNav, AdminSideNav };
