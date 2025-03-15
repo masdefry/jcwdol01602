@@ -1,10 +1,10 @@
-// components/FilterSortControls.tsx
 'use client';
 import React from 'react';
+import { Categories } from '@/types/job';
 
 interface FilterSortControlsProps {
-  filterCategory: string;
-  setFilterCategory: (category: string) => void;
+  filterCategory: Categories | ''; // Update filterCategory type
+  setFilterCategory: (category: Categories | '') => void; // Update setFilterCategory type
   sortColumn: 'title' | 'deadline' | 'category' | null;
   setSortColumn: (column: 'title' | 'deadline' | 'category' | null) => void;
   sortDirection: 'asc' | 'desc';
@@ -21,13 +21,18 @@ const FilterSortControls: React.FC<FilterSortControlsProps> = ({
 }) => {
   return (
     <div className="flex space-x-4 mb-4">
-      <input
-        type="text"
-        placeholder="Filter by Category"
+      <select
         value={filterCategory}
-        onChange={(e) => setFilterCategory(e.target.value)}
+        onChange={(e) => setFilterCategory(e.target.value as Categories | '')}
         className="border p-2 rounded"
-      />
+      >
+        <option value="">Category</option>
+        {Object.values(Categories).map((category) => (
+          <option key={category} value={category}>
+            {category}
+          </option>
+        ))}
+      </select>
       <select
         value={sortColumn || ''}
         onChange={(e) => {

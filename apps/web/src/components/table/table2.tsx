@@ -1,12 +1,12 @@
 'use client';
 import React, { useState } from 'react';
-import Image from 'next/image';
 
 interface TableProps {
     columns: string[];
     itemsPerPage: number;
     datas: Array<Record<string, any>>;
     onStatusChange?: (id: string, status: string) => void;
+    onRowClick?: (rowData: Record<string, any>, columnIndex: number) => void;
 }
 
 export default function TableDashboard({
@@ -14,6 +14,7 @@ export default function TableDashboard({
     datas,
     itemsPerPage,
     onStatusChange,
+    onRowClick,
 }: TableProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
@@ -30,12 +31,12 @@ export default function TableDashboard({
     };
 
     const filteredData = datas.filter((data) => {
-        const nameMatch = data.name.toLowerCase().includes(filterCriteria.name.toLowerCase());
-        const ageMatch = filterCriteria.age === '' || String(data.age).includes(filterCriteria.age);
-        const salaryMatch = filterCriteria.salary === '' || String(data.expectedSalary).includes(filterCriteria.salary);
-        const educationMatch = data.education.toLowerCase().includes(filterCriteria.education.toLowerCase());
+        const nameMatch = data.name?.toLowerCase().includes(filterCriteria.name.toLowerCase());
+        const ageMatch = filterCriteria.age === '' || String(data.age)?.includes(filterCriteria.age);
+        const salaryMatch = filterCriteria.salary === '' || String(data.expectedSalary)?.includes(filterCriteria.salary);
+        const educationMatch = data.education?.toLowerCase().includes(filterCriteria.education.toLowerCase());
         const searchMatch = Object.values(data).some((value) =>
-            String(value).toLowerCase().includes(searchQuery.toLocaleLowerCase())
+            String(value)?.toLowerCase().includes(searchQuery.toLocaleLowerCase())
         );
 
         return nameMatch && ageMatch && salaryMatch && educationMatch && searchMatch;
@@ -49,6 +50,7 @@ export default function TableDashboard({
     const goToPrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
     const goToNextPage = () =>
         setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+
 
     return (
         <div className="overflow-x-auto">
@@ -109,9 +111,15 @@ export default function TableDashboard({
                 <tbody>
                     {currentData.map((data, index) => (
                         <tr
-                            key={index}
-                            className="cursor-pointer hover:bg-gray-100"
-                        >
+                        key={index}
+                        className="cursor-pointer hover:bg-gray-100"
+                        onClick={(e) => {
+                            if (onRowClick && e.target instanceof HTMLTableCellElement) {
+                                const columnIndex = e.target.cellIndex;
+                                onRowClick(data, columnIndex);
+                            }
+                        }}
+                    >
                             <td className="px-4 py-2 w-16"></td>
                             {Object.entries(data)
                                 .filter(([key]) => !['id'].includes(key))

@@ -1,6 +1,7 @@
 import prisma from '@/prisma';
 import { ApplicantStatus } from '@prisma/client';
 
+
 export const getApplicantsByJobId = async (jobId: string) => {
   try {
     const applicants = await prisma.applicant.findMany({

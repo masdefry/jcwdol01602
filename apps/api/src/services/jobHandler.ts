@@ -1,9 +1,11 @@
 import prisma from '@/prisma';
-
+import { JobIdMaker } from '@/lib/adminId';
 
 
 export const createJobHandler = async (jobData: any, accountId: string) => {
   const { title, description, category, location, salaryRange, deadline } = jobData;
+  const jobId = await JobIdMaker();
+
 
   const company = await prisma.company.findUnique({
     where: { accountId },
@@ -16,6 +18,7 @@ export const createJobHandler = async (jobData: any, accountId: string) => {
 
   return await prisma.job.create({
     data: {
+      id: jobId,
       title,
       description,
       category,
