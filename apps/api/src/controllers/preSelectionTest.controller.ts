@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import {
     createPreSelectionTest,
     createPreSelectionQuestions,
+    editPreSelectionQuestion,
     updatePreSelectionTest,
     submitPreSelectionTestResult,
     getPreSelectionTestResultsByTestId,
@@ -128,6 +129,17 @@ export class PreSelectionTestController {
             if (!testId) throw new Error('Test id required');
             const test = await deletePreSelectionTest(testId);
             return res.status(200).json({ message: 'Test deleted successfully', test });
+        } catch (error: any) {
+            next(error);
+        }
+    }
+    async editQuestion(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { questionId } = req.params;
+            const questionData = req.body;
+            if (!questionId) throw new Error('Question id required');
+            const updatedQuestion = await editPreSelectionQuestion(questionId, questionData);
+            return res.status(200).json({ message: 'Question updated successfully', question: updatedQuestion });
         } catch (error: any) {
             next(error);
         }

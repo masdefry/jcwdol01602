@@ -60,6 +60,34 @@ export const createPreSelectionQuestions = async (
   }
 };
 
+
+export const editPreSelectionQuestion = async (
+  questionId: string,
+  questionData: QuestionInput
+) => {
+  try {
+    const existingQuestion = await prisma.preSelectionQuestion.findUnique({
+      where: { id: questionId },
+    });
+
+    if (!existingQuestion) {
+      throw new Error('Question not found');
+    }
+
+    const updatedQuestion = await prisma.preSelectionQuestion.update({
+      where: { id: questionId },
+      data: {
+        ...questionData,
+      },
+    });
+
+    return updatedQuestion;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - editPreSelectionQuestion: ' + error);
+  }
+};
+
 /**
  * Delete a pre-selection test by ID.
  */

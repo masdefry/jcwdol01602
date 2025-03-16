@@ -1,5 +1,5 @@
 'use client';
-import { AddBtn, DeleteBtn, DetailBtn } from '@/components/button/moreBtn';
+import { DeleteBtn, AddBtn, DetailBtn } from '@/components/button/moreBtn';
 import { Heading } from '@/components/heading';
 import ModalCreate from '@/components/table/modalCreate';
 import TableDashboard from '@/components/table/table';
@@ -19,9 +19,8 @@ interface IPreSelectionTest {
 interface ITableData {
     id: string;
     jobId: string;
-    isActive: () => JSX.Element;
     createdAt: string;
-    questions: () => JSX.Element;
+    actions: () => JSX.Element;
 }
 
 const PreSelectionTestList = () => {
@@ -71,28 +70,36 @@ const PreSelectionTestList = () => {
         router.push(`/adm-dashboard/pre-selection-test/result/${testId}`);
     };
 
-    interface IActionButton {
-        test: IPreSelectionTest;
-    }
+    const handleToggleActive = async (test: IPreSelectionTest) => {
+        try {
+            const { data } = await axiosInstance.put(`/api/preselectiontest/active/${test.id}`);
+            toast.success(data.message);
+            getPreSelectionTests();
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message;
+            toast.error(errorMessage);
+        }
+    };
 
-    const ActionButton = ({ test }: IActionButton) => {
+    const ActionButton = ({ test }: { test: IPreSelectionTest }) => {
         return (
-            <>
-                <div className="flex flex-col lg:flex-row gap-2">
-                    <DeleteBtn runFunction={() => handleDelete(test.id)} />
-                    <AddBtn title="Questions" runFunction={() => handleAddQuestionTest(test.id)} />
-                    <DetailBtn title="Applicants" runFunction={() => handleViewApplicantResults(test.id)} />
-                </div>
-            </>
+            <div className="flex flex-col lg:flex-row gap-2">
+                <DetailBtn runFunction={() => handleViewQuestions(test.id)} />
+                <DeleteBtn runFunction={() => handleDelete(test.id)} />
+                <button
+                    className={`px-4 py-2 rounded-md ${test.isActive ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
+                    onClick={() => handleToggleActive(test)}
+                >
+                    {test.isActive ? 'Active' : 'Inactive'}
+                </button>
+            </div>
         );
     };
 
     const tableData: ITableData[] = tests.map((test) => ({
         id: test.id,
         jobId: test.jobId,
-        isActive: () => (test.isActive ? <span className="text-green-500">Active</span> : <span className="text-red-500">Inactive</span>),
         createdAt: new Date(test.createdAt).toLocaleDateString(),
-        questions: () => <DetailBtn runFunction={() => handleViewQuestions(test.id)} />,
         actions: () => <ActionButton test={test} />,
     }));
 
@@ -106,10 +113,10 @@ const PreSelectionTestList = () => {
             return;
         }
         try {
-            const { data } = await axiosInstance.post(`/api/preselectiontest/create`, { jobId: values.jobId }); // Only jobId
+            const { data } = await axiosInstance.post(`/api/preselectiontest/create`, { jobId: values.jobId });
             toast.success(data.message);
             setAddModalOpen(false);
-            router.push(`/adm-dashboard/pre-selection-test/questions/${data.test.id}`); // Redirect to question creation page
+            router.push(`/adm-dashboard/pre-selection-test/questions/${data.test.id}`);
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Something went wrong!';
             toast.error(errorMessage);
@@ -120,6 +127,17 @@ const PreSelectionTestList = () => {
         { name: 'jobId', label: 'Job ID', type: 'text' as const },
     ];
 
+    const handleRowClick = (testId: string, event: React.MouseEvent<HTMLTableRowElement>) => {
+        const target = event.target as HTMLElement;
+        const isAction = target.closest('[data-cell-type="actions"]');
+
+        if (isAction) {
+            return;
+        }
+
+        handleViewApplicantResults(testId);
+    };
+
     return (
         <>
             <div className="flex items-center justify-between">
@@ -127,9 +145,14 @@ const PreSelectionTestList = () => {
                 <AddBtn title="Add New Test" runFunction={() => setAddModalOpen(true)} />
             </div>
             <TableDashboard
-                columns={['No', 'Job ID', 'Active', 'Created At', 'Questions', 'Actions']}
+                columns={['No', 'Job ID', 'Created At', 'Actions']}
                 datas={tableData}
                 itemsPerPage={5}
+                onRowClick={(rowData, columnIndex) => {
+                    if (columnIndex !== 3) {
+                        router.push(`/adm-dashboard/job/${rowData.id}`);
+                    }
+                }}
             />
             {addModalOpen && (
                 <ModalCreate
