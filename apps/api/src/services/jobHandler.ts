@@ -52,7 +52,6 @@ export const updateJobHandler = async (id: string, data: any) => {
 };
 
 export const deleteJobHandler = async (id: string, accountId: string) => {
-    // Find the company associated with the given accountId
     const company = await prisma.company.findUnique({
       where: { accountId },
       select: { id: true },
@@ -62,7 +61,6 @@ export const deleteJobHandler = async (id: string, accountId: string) => {
       throw new Error('Company not found for the given accountId');
     }
 
-    // Ensure the job being deleted belongs to the company associated with the accountId
     const job = await prisma.job.findUnique({
       where: { id },
       select: { companyId: true },
@@ -85,7 +83,7 @@ export const getAllJobsHandler = async (accountId: string) => {
     throw new Error('Company not found');
   }
 
-  // Fetch all jobs for the found company ID
+
   return await prisma.job.findMany({
     where: { companyId: company.id },
     include: { applicants: true },
@@ -94,7 +92,6 @@ export const getAllJobsHandler = async (accountId: string) => {
 };
 
 export const getJobDetailsHandler = async (id: string, accountId: string) => {
-    // Find the company associated with the given accountId
     const company = await prisma.company.findUnique({
       where: { accountId },
       select: { id: true },
@@ -104,7 +101,7 @@ export const getJobDetailsHandler = async (id: string, accountId: string) => {
       throw new Error('Company not found for the given accountId');
     }
 
-    // Ensure the job being viewed belongs to the company associated with the accountId
+
     const job = await prisma.job.findUnique({
       where: { id },
       select: { companyId: true },
@@ -121,7 +118,6 @@ export const getJobDetailsHandler = async (id: string, accountId: string) => {
 };
 
 export const togglePublishHandler = async (id: string, accountId: string) => {
-    // Find the company associated with the given accountId
     const company = await prisma.company.findUnique({
       where: { accountId },
       select: { id: true },
@@ -131,7 +127,7 @@ export const togglePublishHandler = async (id: string, accountId: string) => {
       throw new Error('Company not found for the given accountId');
     }
 
-    // Ensure the job being toggled belongs to the company associated with the accountId
+
     const job = await prisma.job.findUnique({
       where: { id },
       select: { companyId: true },

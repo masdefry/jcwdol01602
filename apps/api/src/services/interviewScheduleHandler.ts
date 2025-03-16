@@ -18,6 +18,11 @@ export const getInterviewApplicantsByCompanyAccountId = async (
         id: true,
         jobId: true,
         InterviewSchedule: true,
+        job: {
+          select: {
+            title: true,
+          },
+        },
         subsData: {
           select: {
             id: true,
