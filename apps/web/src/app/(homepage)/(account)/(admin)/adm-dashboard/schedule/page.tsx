@@ -32,12 +32,15 @@ interface ApplicantSchedule {
       avatar?: string;
     };
   };
+  job: {
+    title: string;
+  };
 }
 
 interface IApplicantData {
   name: string;
   email: string;
-  jobId: string;
+  jobTitle: string;
   schedule: string;
   action: JSX.Element;
   id: string;
@@ -92,7 +95,7 @@ function InterviewScheduleFrontend() {
         id: applicantSchedule.id,
         name: applicantSchedule.subsData.accounts.name,
         email: applicantSchedule.subsData.accounts.email,
-        jobId: applicantSchedule.jobId,
+        jobTitle: applicantSchedule.job.title, // Use job.title
         schedule:
           applicantSchedule.InterviewSchedule &&
           applicantSchedule.InterviewSchedule.length > 0
@@ -164,7 +167,7 @@ function InterviewScheduleFrontend() {
         <p>Error: {error}</p>
       ) : (
         <TableDashboard
-          columns={["No", "Name", "Email", "Job ID", "Schedule", "Action"]}
+          columns={["No", "Name", "Email", "Job Title", "Schedule", "Action"]}
           datas={tableData}
           itemsPerPage={5}
         />
@@ -175,10 +178,10 @@ function InterviewScheduleFrontend() {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
-        fields={fields}
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
         disabled={false}
+        fields={fields}
       />
     </div>
   );

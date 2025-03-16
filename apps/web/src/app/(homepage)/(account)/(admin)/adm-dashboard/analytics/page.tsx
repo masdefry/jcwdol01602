@@ -56,7 +56,6 @@ const AnalyticsDashboard: React.FC = () => {
                 setJobStats(fetchedJobStats);
                 setUserCounts(fetchedUserCounts);
             } catch (error: any) {
-                console.error('Error fetching data:', error);
                 const errorMessage = error.response?.data?.message || 'Failed to fetch analytics data.';
                 toast.error(errorMessage);
             } finally {
@@ -192,33 +191,33 @@ const AnalyticsDashboard: React.FC = () => {
                     <h2 className="text-lg font-semibold mb-2">Gender Demographics</h2>
                     <div style={{ maxWidth: '270px', margin: '0 auto' }}>
                         <Pie data={genderChartData} />
-</div>
-</div>
-<div className="mb-4">
-<h2 className="text-lg font-semibold mb-2">Age Demographics</h2>
-<Bar data={ageChartData} />
-</div>
-<div className="mb-4">
-<h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
-<Bar data={salaryTrendsChartData} />
-</div>
-<div className="mb-4">
-<h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
-<Bar data={jobStatsChartData} />
-</div>
-<div className="mb-4">
-<h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
-<div style={{ maxWidth: '270px', margin: '0 auto' }}>
+                    </div>
+                    </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Age Demographics</h2>
+                        <Bar data={ageChartData} />
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
+                        <Bar data={salaryTrendsChartData} />
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
+                        <Bar data={jobStatsChartData} />
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
+                    <div style={{ maxWidth: '270px', margin: '0 auto' }}>
 <Pie data={applicantInterestsChartData} />
-</div>
-</div>
-<div className="mb-4">
-<h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
-<Line data={userCountsChartData} />
-</div>
-</div>
-</div>
-);
+                    </div>
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
+                        <Line data={userCountsChartData} />
+                    </div>
+                </div>
+        </div>
+    );
 };
 
 export default AnalyticsDashboard;
