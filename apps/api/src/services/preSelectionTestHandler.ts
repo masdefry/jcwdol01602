@@ -200,7 +200,7 @@ export const submitPreSelectionTestResult = async (
     if (!questions || questions.length === 0) {
       throw new Error('No questions available for this test');
     }
-    // Build a map of questionId to correct answer.
+
     const answerMap = questions.reduce((acc, q) => {
       acc[q.id] = q.answer;
       return acc;
@@ -234,17 +234,34 @@ export const submitPreSelectionTestResult = async (
   }
 };
 
-/**
- * Retrieve all test results for a given test ID.
- */
+
 export const getPreSelectionTestResultsByTestId = async (testId: string) => {
   try {
-      const results = await prisma.preSelectionTestResult.findMany({
-          where: { testId: testId },
-      });
-      return results;
+    const results = await prisma.preSelectionTestResult.findMany({
+      where: { testId: testId },
+      include: {
+        applicant: {
+          include: {
+            subsData: {
+              include: {
+                accounts: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return results.map((result) => ({
+      ...result,
+      applicantName: result.applicant.subsData?.accounts?.name,
+    }));
   } catch (error: any) {
-      if (error.message) throw new Error(error.message);
-      throw new Error('Unexpected error - getPreSelectionTestResultsByTestId: ' + error);
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - getPreSelectionTestResultsByTestId: ' + error);
   }
 };

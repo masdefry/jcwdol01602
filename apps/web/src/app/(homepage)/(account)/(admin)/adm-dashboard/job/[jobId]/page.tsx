@@ -42,23 +42,41 @@ const JobApplicants = () => {
 
   const fetchApplicants = async () => {
     try {
-      const apiUrl = `/api/applicant/job/${jobId}`;
-      console.log("JobApplicants: Sending GET request to:", apiUrl);
-      const { data } = await axiosInstance.get(apiUrl);
-      console.log("JobApplicants: Fetched applicants:", data.applicants);
-      setApplicants(data.applicants);
+        const apiUrl = `/api/applicant/job/${jobId}`;
+        console.log("JobApplicants: Sending GET request to:", apiUrl);
+        const { data } = await axiosInstance.get(apiUrl);
+        console.log("JobApplicants: Fetched applicants:", data.applicants);
+
+
+        const applicantsWithPriority = data.applicants.map((applicant: Applicant) => ({
+            ...applicant,
+            subsData: {
+                ...applicant.subsData,
+                isPriority: applicant.subsData.subsCtgId === 'sc250206-03',
+            },
+        }));
+
+
+        setApplicants(applicantsWithPriority);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message;
-      toast.dismiss();
-      toast.error(errorMessage || "Failed to fetch applicants. Please try again.");
-      setError(errorMessage || "Failed to fetch applicants. Please try again.");
+        const errorMessage = error.response?.data?.message;
+        toast.dismiss();
+        toast.error(errorMessage || "Failed to fetch applicants. Please try again.");
+        setError(errorMessage || "Failed to fetch applicants. Please try again.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const applyFilters = () => {
     let filtered = [...applicants];
+
+    if (filterStatus) {
+      filtered = filtered.filter((applicant) => applicant.status === filterStatus);
+  }
+
+
+  filtered.sort((a, b) => (b.subsData.isPriority ? 1 : -1));
 
     if (filterEducation) {
       filtered = filtered.filter((applicant) =>
@@ -133,20 +151,28 @@ const JobApplicants = () => {
   const tableData: IApplicantData[] = filteredApplicants.map((applicant, index) => ({
     id: applicant.id,
     photo: (
-      <Image
-        src={applicant.subsData.accounts.avatar || '/avatar_default.jpg'}
-        alt="Applicant Avatar"
-        width={40}
-        height={40}
-        className="rounded-full"
-      />
-    ),
+      <div className="relative flex items-center">
+          <Image
+              src={applicant.subsData?.accounts?.avatar || '/avatar_default.jpg'}
+              alt="Applicant Avatar"
+              width={40}
+              height={40}
+              className="rounded-full"
+          />
+          {applicant.subsData?.isPriority && (
+              <span className="absolute bg-yellow-400 text-white text-[8px] px-0.5 py-0.25 rounded-full top-[-5px] left-[35px]">
+                  Priority
+              </span>
+          )}
+      </div>
+  ),
     name: applicant.subsData.accounts.name,
     email: applicant.subsData.accounts.email,
     education: applicant.subsData.userEdu[0]?.level || 'N/A',
     expectedSalary: applicant.expectedSalary,
     status: applicant.status,
   }));
+
 
   const handleRowClick = (applicant: Applicant, columnName: string) => {
     if (columnName !== 'Status') {

@@ -64,6 +64,7 @@ export const getApplicantWithUserAndJob = async (applicantId: string) => {
             userProfile: true,
             userEdu: true,
           },
+
         },
         job: true,
         InterviewSchedule: true,

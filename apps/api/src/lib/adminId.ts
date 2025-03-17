@@ -59,8 +59,8 @@ export const ApplicantIdMaker = async () => {
   return customId;
 };
 
-export const InterviewScheduleIdMaker = async (applicantId: string) => {
-  const customIdPrefix = `ins${createDate}-${applicantId}`;
+export const InterviewScheduleIdMaker = async () => {
+  const customIdPrefix = `ins${createDate}`;
   const lastInterviewSchedule = await prisma.interviewSchedule.findFirst({
     where: { id: { startsWith: customIdPrefix } },
     orderBy: { id: 'desc' },

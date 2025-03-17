@@ -17,6 +17,7 @@ export interface Applicant {
         cvPath: string | null;
         createdAt: Date;
         updatedAt: Date;
+        isPriority: boolean; // Add this line
         accounts: {
             id: string;
             role: string;
