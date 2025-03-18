@@ -1,3 +1,5 @@
+import { ICvData } from './interface2';
+
 export interface ISubsCtg {
   id: string;
   name: string;
@@ -71,7 +73,7 @@ export interface ISubsData {
   startDate: Date | null;
   endDate: Date | null;
   isSubActive: boolean;
-  cvPath: string;
+  cvId: string;
   createdAt: Date;
   updatedAt: Date;
   subsCtg: ISubsCtg | null;
@@ -80,6 +82,7 @@ export interface ISubsData {
   userSkill: IUserSkill[] | [];
   worker: IWorker[] | [];
   userEdu: IUserEdu[] | [];
+  selectedCv: ICvData | null;
 }
 
 export interface ISkill {
@@ -182,21 +185,4 @@ export interface ICompReviewForm {
   facility: number;
   career: number;
   desc: string;
-}
-
-export interface IEmployee {
-  id: string;
-  subsDataId: string;
-  companyId: string;
-  companyName: string;
-  position: string;
-  startDate: Date;
-  endDate: Date | null;
-  description: string | null;
-  isVerified: boolean;
-  subsData: {
-    accounts: {
-      name: string;
-    };
-  };
 }

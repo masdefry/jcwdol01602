@@ -35,6 +35,13 @@ export class CvRouter {
       userDevGuard,
       this.cvController.selectedCv,
     );
+
+    this.router.get(
+      '/my-datas',
+      verifyToken,
+      userDevGuard,
+      this.cvController.userCvDatas,
+    );
   }
 
   getRouter(): Router {

@@ -63,6 +63,7 @@ export const getSubsDataByUser = async (userId: string) => {
             compReview: true,
           },
         },
+        selectedCv: true,
       },
     });
     return data;

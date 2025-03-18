@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/lib/axios';
 import { ISubsData } from '@/lib/interface';
 import toast from 'react-hot-toast';
@@ -10,27 +10,27 @@ const useUserSubsData = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getUserSubsData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data } = await axiosInstance.get('/api/subscription/my-data');
+      setSubsData(data.subsData);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || 'Failed to fetch subscription data';
+      toast.dismiss();
+      toast.error(errorMessage);
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const getUserSubsData = async () => {
-      try {
-        setLoading(true);
-        const { data } = await axiosInstance.get('/api/subscription/my-data');
-        setSubsData(data.subsData);
-      } catch (error: any) {
-        const errorMessage =
-          error.response?.data?.message || 'Failed to fetch subscription data';
-        toast.dismiss();
-        toast.error(errorMessage);
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (account) getUserSubsData();
-  }, [account]);
+  }, [account, getUserSubsData]);
 
-  return { subsData, loading, error };
+  return { subsData, loading, error, refreshSubsData: getUserSubsData };
 };
 
 export default useUserSubsData;

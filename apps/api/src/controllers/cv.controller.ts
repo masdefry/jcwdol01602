@@ -1,5 +1,10 @@
 import { Account } from '@/custom';
-import { addCvHandler, delCVHandler, getCvById } from '@/services/cvHandler';
+import {
+  addCvHandler,
+  delCVHandler,
+  getCvById,
+  getCvByUser,
+} from '@/services/cvHandler';
 import {
   getSubsDataByUser,
   selectSubsDataCv,
@@ -51,6 +56,19 @@ export class CvController {
       return res.status(200).send({
         message: `CV selected successfully`,
         updateSubsData,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userCvDatas(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.account as Account;
+      const cvDatas = await getCvByUser(user.id);
+      return res.status(200).send({
+        message: `CV datas retrieved successfully`,
+        cvDatas,
       });
     } catch (error) {
       next(error);

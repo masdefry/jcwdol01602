@@ -1,6 +1,7 @@
 import prisma from '@/prisma';
 import { addCldCv, delCldCv } from './cloudinary';
 import { cvIdMaker } from '@/lib/cvIdMaker';
+import { getSubsDataByUser } from './subsDataHandler';
 
 export const addCvHandler = async (
   userId: string,
@@ -25,12 +26,22 @@ export const addCvHandler = async (
 
 export const delCVHandler = async (userId: string, cvId: string) => {
   try {
+    const subsData = await getSubsDataByUser(userId);
+    if (!subsData) throw new Error(`No subscription data found`);
     const cv = await prisma.cvData.findUnique({
       where: { id: cvId },
     });
     if (!cv) throw new Error(`No Cv data found!`);
     if (cv.accountId !== userId)
       throw new Error(`This CV is not belong to you!`);
+    if (subsData.selectedCv?.id === cv.id) {
+      await prisma.subsData.update({
+        where: { id: subsData.id },
+        data: {
+          cvId: null,
+        },
+      });
+    }
     await delCldCv(cv.cvPath);
     const deletedData = await prisma.cvData.delete({
       where: { id: cv.id },
