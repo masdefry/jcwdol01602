@@ -161,3 +161,18 @@ export const editSubsDataApproval = async (subsDataId: string) => {
     throw new Error('Failed to update subscription data : ' + error.message);
   }
 };
+
+export const selectSubsDataCv = async (subsDataId: string, cvId: string) => {
+  try {
+    const data = await prisma.subsData.update({
+      where: { id: subsDataId },
+      data: {
+        cvId,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - selectSubsDataCv ' + error);
+  }
+};

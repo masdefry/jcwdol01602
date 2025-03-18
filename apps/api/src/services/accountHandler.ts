@@ -4,7 +4,13 @@ import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { getSubsDataByUser } from './subsDataHandler';
 import { getPayBySubsData } from './paymentHandler';
-import { addCldAvatar, delCldAvatar, delCldPayProof } from './cloudinary';
+import {
+  addCldAvatar,
+  delCldAvatar,
+  delCldCv,
+  delCldPayProof,
+} from './cloudinary';
+import { getCvByUser } from './cvHandler';
 
 export const loginAccHandler = async (email: string, password: string) => {
   try {
@@ -70,16 +76,25 @@ export const delAccHandler = async (accountId: string) => {
     if (!findAccount) throw new Error('Account not found');
 
     let subsData = null;
+    let cvData = null;
 
     if (findAccount.role === 'user') {
-      // get subsData by user Id
       subsData = await getSubsDataByUser(accountId);
+      cvData = await getCvByUser(accountId);
 
       // delete payment proof in cloudinary
       if (subsData) {
         for (const payment of subsData.payment) {
           if (payment.proof) {
             await delCldPayProof(payment.proof);
+          }
+        }
+      }
+
+      if (cvData.length > 0) {
+        for (const cv of cvData) {
+          if (cv.cvPath) {
+            await delCldCv(cv.cvPath);
           }
         }
       }
