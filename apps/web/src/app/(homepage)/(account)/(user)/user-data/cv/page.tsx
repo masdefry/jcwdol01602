@@ -1,12 +1,13 @@
 'use client';
 import ButtonCustom from '@/components/button/btn';
-import { DeleteBtn } from '@/components/button/moreBtn';
+import { AddBtn, DeleteBtn } from '@/components/button/moreBtn';
 import PreviewCV from '@/components/cv/previewCV';
 import SelectedCV from '@/components/cv/selectedCV';
 import { Heading } from '@/components/heading';
 import useUserSubsData from '@/hooks/userSubsData';
 import axiosInstance from '@/lib/axios';
 import { ICvData } from '@/lib/interface2';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -16,6 +17,7 @@ const CV = () => {
   const [previewCV, setPreviewCv] = useState<ICvData>();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const router = useRouter();
 
   const getAllUserCv = async () => {
     try {
@@ -71,12 +73,28 @@ const CV = () => {
     }
   };
 
+  const handleCVGen = () => {
+    if (
+      subsData?.subsCtgId === 'sc250206-02' ||
+      subsData?.subsCtgId === 'sc250206-03'
+    ) {
+      router.push('/user-data/cv/generator');
+    } else {
+      toast.error('Please upgrade your subscription plan');
+    }
+  };
+
   return (
     <div className="p-2">
-      <Heading
-        title="My Curriculum Vitae Data"
-        description="Configure your cv here"
-      />
+      <div className="flex flex-row justify-between items-center">
+        <Heading
+          title="My Curriculum Vitae Data"
+          description="Configure your cv here"
+        />
+        <div>
+          <AddBtn title="CV Generator" runFunction={() => handleCVGen()} />
+        </div>
+      </div>
       {/* Selected CV */}
       <SelectedCV subsData={subsData} refreshCVs={getAllUserCv} />
 
