@@ -41,7 +41,7 @@ enum Role {
 }
 
 model UserProfile {
-  id             String      @id 
+  id             String      @id
   subsDataid     String   @unique
   SubsData       SubsData @relation(fields: [subsDataid], references: [id], onDelete: Cascade)
   gender         Gender
@@ -135,7 +135,7 @@ model Company {
 
 
 model Job {
-  id          String   @id @default(uuid())
+  id          String   @id
   companyId   String
   company     Company  @relation(fields: [companyId], references: [id])
   title       String
@@ -173,7 +173,7 @@ enum Categories {
 
 
 model Applicant {
-  id        String   @id @default(uuid())
+  id        String   @id
   subsDataId    String
   subsData      SubsData     @relation(fields: [subsDataId], references: [id])
   jobId     String
@@ -194,7 +194,7 @@ enum ApplicantStatus {
 }
 
 model InterviewSchedule {
-  id          String    @id @default(uuid())
+  id          String    @id
   applicantId String
   applicant   Applicant @relation(fields: [applicantId], references: [id])
   startTime   DateTime
@@ -296,7 +296,7 @@ model CompReview {
 
 
 model PreSelectionTest {
-  id         String                     @id @default(uuid())
+  id         String                     @id
   jobId      String                     @unique
   job        Job                        @relation(fields: [jobId], references: [id])
   isActive   Boolean                    @default(false)
@@ -308,7 +308,7 @@ model PreSelectionTest {
 }
 
 model PreSelectionQuestion {
-  id         String            @id @default(uuid())
+  id         String            @id
   testId     String
   test       PreSelectionTest  @relation(fields: [testId], references: [id])
   question   String
@@ -325,7 +325,7 @@ model PreSelectionQuestion {
 }
 
 model PreSelectionTestResult {
-  id          String                    @id @default(uuid())
+  id          String                    @id
   applicantId String
   applicant   Applicant                 @relation(fields: [applicantId], references: [id])
   testId      String
@@ -338,7 +338,7 @@ model PreSelectionTestResult {
 }
 
 model PreSelectionAnswer {
-  id             String                  @id @default(uuid())
+  id             String                  @id
   testResultId   String
   testResult     PreSelectionTestResult  @relation(fields: [testResultId], references: [id])
   questionId     String

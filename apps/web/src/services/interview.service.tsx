@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axios";
 
+
 interface InterviewSchedule {
   id: string;
   applicantId: string;
@@ -22,12 +23,15 @@ interface ApplicantSchedule {
       email: string;
       avatar?: string;
     };
-    userProfilie: any; // You might want to create a more specific interface
-    userEdu: any; // You might want to create a more specific interface
+    userProfilie: any;
+    userEdu: any;
     userSkill: {
       id: string;
       skill: string;
     }[];
+  };
+  job: {
+    title: string;
   };
 }
 

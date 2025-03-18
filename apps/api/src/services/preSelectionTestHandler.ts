@@ -12,7 +12,6 @@ interface QuestionInput {
 
 export const createPreSelectionTest = async (jobId: string) => {
   try {
-    // Validate jobId exists
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) {
       throw new Error('Job not found');
@@ -36,7 +35,6 @@ export const createPreSelectionQuestions = async (
   questions: QuestionInput[]
 ) => {
   try {
-    // Validate testId exists
     const test = await prisma.preSelectionTest.findUnique({where: {id: testId}})
     if(!test){
         throw new Error("Test not found");
@@ -60,9 +58,35 @@ export const createPreSelectionQuestions = async (
   }
 };
 
-/**
- * Delete a pre-selection test by ID.
- */
+
+export const editPreSelectionQuestion = async (
+  questionId: string,
+  questionData: QuestionInput
+) => {
+  try {
+    const existingQuestion = await prisma.preSelectionQuestion.findUnique({
+      where: { id: questionId },
+    });
+
+    if (!existingQuestion) {
+      throw new Error('Question not found');
+    }
+
+    const updatedQuestion = await prisma.preSelectionQuestion.update({
+      where: { id: questionId },
+      data: {
+        ...questionData,
+      },
+    });
+
+    return updatedQuestion;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - editPreSelectionQuestion: ' + error);
+  }
+};
+
+
 export const deletePreSelectionTest = async (testId: string) => {
   try {
     const test = await prisma.preSelectionTest.delete({
@@ -76,10 +100,7 @@ export const deletePreSelectionTest = async (testId: string) => {
   }
 };
 
-/**
- * Update an existing pre-selection test.
- * If new questions are provided, they will replace all existing ones.
- */
+
 export const updatePreSelectionTest = async (
   testId: string,
   isActive: boolean
@@ -101,9 +122,7 @@ export const updatePreSelectionTest = async (
   }
 };
 
-/**
- * Get a pre-selection test by jobId.
- */
+
 export const getPreSelectionTestByJobId = async (jobId: string) => {
   try {
     const test = await prisma.preSelectionTest.findUnique({
@@ -118,9 +137,7 @@ export const getPreSelectionTestByJobId = async (jobId: string) => {
   }
 };
 
-/**
- * Get a pre-selection test by ID.
- */
+
 export const getPreSelectionTestById = async (testId: string) => {
   try {
     const test = await prisma.preSelectionTest.findUnique({
@@ -135,9 +152,7 @@ export const getPreSelectionTestById = async (testId: string) => {
   }
 };
 
-/**
- * Get all pre-selection tests by company (accountId).
- */
+
 export const getAllPreSelectionTestsByCompany = async (accountId: string) => {
   try {
     const companies = await prisma.company.findMany({
@@ -153,9 +168,16 @@ export const getAllPreSelectionTestsByCompany = async (accountId: string) => {
       },
     });
 
-    // Flatten the results to get a list of all PreSelectionTests
+    // Flatten the results and include job title
     const preSelectionTests = companies.flatMap(company =>
-      company.jobs.flatMap(job => job.PreSelectionTest)
+      company.jobs.flatMap(job =>
+        job.PreSelectionTest
+          ? {
+              ...job.PreSelectionTest,
+              jobTitle: job.title, // Include job title here
+            }
+          : []
+      )
     );
 
     return preSelectionTests;
@@ -164,10 +186,8 @@ export const getAllPreSelectionTestsByCompany = async (accountId: string) => {
     throw new Error('Unexpected error - getAllPreSelectionTestsByCompany: ' + error);
   }
 };
-/**
- * Submit the test result for an applicant.
- * This function calculates the score based on the correct answers.
- */
+
+
 export const submitPreSelectionTestResult = async (
   applicantId: string,
   testId: string,

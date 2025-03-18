@@ -93,7 +93,7 @@ export class JobController {
   async togglePublish(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { accountId } = req.body; // Assuming accountId is passed in the request body
+      const { accountId } = req.body;
 
       if (!accountId || typeof accountId !== 'string') {
         return res.status(400).json({ error: 'AccountId is required in the request body' });

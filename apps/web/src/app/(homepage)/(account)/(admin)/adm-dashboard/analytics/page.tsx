@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '@/lib/axios';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import {
@@ -14,6 +13,7 @@ import {
 } from '@/types/analytics';
 import useAuthStore from '@/stores/authStores';
 import toast from 'react-hot-toast';
+import { fetchAnalyticsData } from '@/services/analytics.service';
 
 Chart.register(...registerables);
 
@@ -38,28 +38,24 @@ const AnalyticsDashboard: React.FC = () => {
                     return;
                 }
 
-                const dobsRes = await axiosInstance.get<DobData[]>('/api/analytics/dob');
-                setDobs(dobsRes.data);
+                const {
+                    dobs: fetchedDobs,
+                    genders: fetchedGenders,
+                    locations: fetchedLocations,
+                    salaryTrends: fetchedSalaryTrends,
+                    applicantInterests: fetchedApplicantInterests,
+                    jobStats: fetchedJobStats,
+                    userCounts: fetchedUserCounts,
+                } = await fetchAnalyticsData(account.id);
 
-                const gendersRes = await axiosInstance.get<GenderData[]>('/api/analytics/gender');
-                setGenders(gendersRes.data);
-
-                const locationsRes = await axiosInstance.get<LocationData[]>('/api/analytics/location');
-                setLocations(locationsRes.data);
-
-                const salaryTrendsRes = await axiosInstance.get<SalaryTrendsData[]>('/api/analytics/salary');
-                setSalaryTrends(salaryTrendsRes.data);
-
-                const applicantInterestsRes = await axiosInstance.get<ApplicantInterestsData[]>('/api/analytics/interests');
-                setApplicantInterests(applicantInterestsRes.data);
-
-                const jobStatsRes = await axiosInstance.get<JobStatsData[]>('/api/analytics/jobpost');
-                setJobStats(jobStatsRes.data);
-
-                const userCountsRes = await axiosInstance.get<UserCountsData[]>('/api/analytics/newuser');
-                setUserCounts(userCountsRes.data);
+                setDobs(fetchedDobs);
+                setGenders(fetchedGenders);
+                setLocations(fetchedLocations);
+                setSalaryTrends(fetchedSalaryTrends);
+                setApplicantInterests(fetchedApplicantInterests);
+                setJobStats(fetchedJobStats);
+                setUserCounts(fetchedUserCounts);
             } catch (error: any) {
-                console.error('Error fetching data:', error);
                 const errorMessage = error.response?.data?.message || 'Failed to fetch analytics data.';
                 toast.error(errorMessage);
             } finally {
@@ -75,7 +71,7 @@ const AnalyticsDashboard: React.FC = () => {
     }
 
     const genderChartData = {
-        labels: ['Male', 'Female'],
+        labels: ['Male', 'Female', 'Unknown'],
         datasets: [
             {
                 data: [
@@ -160,40 +156,11 @@ const AnalyticsDashboard: React.FC = () => {
         ],
     };
 
-    // const locationChartData = {
-    //     labels: [...new Set(locations.map((d) => d.location).filter(location => location))],
-    //     datasets: [
-    //         {
-    //             data: [...new Set(locations.map((d) => d.location).filter(location => location))].map((location) =>
-    //                 locations.filter((d) => d.location === location).length
-    //             ),
-    //             backgroundColor: [
-    //                 '#FF6384',
-    //                 '#36A2EB',
-    //                 '#FFCE56',
-    //                 '#2ecc71',
-    //                 '#9b59b6',
-    //                 '#e67e22',
-    //                 '#34495e',
-    //             ],
-    //             hoverBackgroundColor: [
-    //                 '#FF6384',
-    //                 '#36A2EB',
-    //                 '#FFCE56',
-    //                 '#2ecc71',
-    //                 '#9b59b6',
-    //                 '#e67e22',
-    //                 '#34495e',
-    //             ],
-    //         },
-    //     ],
-    // };
-
     const ageChartData = {
         labels: ['18-24', '25-34', '35-44', '45+'],
         datasets: [
             {
-              label: "Applicants' age",
+                label: "Applicants' age",
                 data: [
                     dobs.filter((d) => {
                         const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
@@ -203,70 +170,54 @@ const AnalyticsDashboard: React.FC = () => {
                         const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
                         return age >= 25 && age <= 34;
                     }).length,
-                    dobs.filter((d) => {const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
-                      return age >= 35 && age <= 44;
-                  }).length,
-                  dobs.filter((d) => {
-                      const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
-                      return age >= 45;
-                  }).length,
-              ],
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-          },
-      ],
-  };
+                    dobs.filter((d) => { const age = new Date().getFullYear() - new Date(d.dob).getFullYear(); return age >= 35 && age <= 44; }).length,
+                    dobs.filter((d) => {
+                        const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
+                        return age >= 45;
+                    }).length,
+                ],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
 
-  return (
-      <div className="p-4">
-          <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-2">Gender Demographics</h2>
-                  <div style={{ maxWidth: '270px', margin: '0 auto' }}>
-                  <Pie data={genderChartData} />
-                  </div>
-              </div>
-
-
-              <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-2">Age Demographics</h2>
-                  <Bar data={ageChartData} />
-              </div>
-
-              <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
-                  <Bar data={salaryTrendsChartData} />
-              </div>
-
-              <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
-                  <Bar data={jobStatsChartData} />
-              </div>
-
-              <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
-                  <div style={{ maxWidth: '270px', margin: '0 auto' }}>
-                      <Pie data={applicantInterestsChartData} />
-                  </div>
-              </div>
-
-              <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
-                  <Line data={userCountsChartData} />
-              </div>
-
-              {/* <div className="mb-4">
-                  <h2 className="text-lg font-semibold mb-2">Location Demographics</h2>
-                  <Pie data={locationChartData} />
-              </div> */}
-
-
-          </div>
-      </div>
-  );
+    return (
+        <div className="p-4">
+            <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Gender Demographics</h2>
+                    <div style={{ maxWidth: '270px', margin: '0 auto' }}>
+                        <Pie data={genderChartData} />
+                    </div>
+                    </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Age Demographics</h2>
+                        <Bar data={ageChartData} />
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
+                        <Bar data={salaryTrendsChartData} />
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
+                        <Bar data={jobStatsChartData} />
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
+                    <div style={{ maxWidth: '270px', margin: '0 auto' }}>
+<Pie data={applicantInterestsChartData} />
+                    </div>
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
+                        <Line data={userCountsChartData} />
+                    </div>
+                </div>
+        </div>
+    );
 };
 
 export default AnalyticsDashboard;
