@@ -1,6 +1,8 @@
 import { cloudinary } from '@/config';
 import { avatarIdMaker } from '@/lib/cldIdHandler';
+import { createDate } from '@/lib/createDate';
 import { paymentProofIdMaker, questImgNameMaker } from '@/lib/customId';
+import { cldCvIdMaker } from '@/lib/cvIdMaker';
 
 export const avatarUrl = cloudinary.url(
   'https://res.cloudinary.com/dnqgu6x1e/image/upload/avatar_default.jpg',
@@ -118,6 +120,41 @@ export const addCldAvatar = async (
         'Unexpected error while upload company logo, please try again later',
       );
     return imageUrl.secure_url;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addCldCv = async (
+  userId: string,
+  cvId: string,
+  file: Express.Multer.File,
+) => {
+  try {
+    const fileName = await cldCvIdMaker(userId, cvId);
+    const base64File = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+    const fileUrl = await cloudinary.uploader.upload(base64File, {
+      folder: 'final-project/cv',
+      public_id: fileName,
+      overwrite: true,
+    });
+    if (!fileUrl || !fileUrl.secure_url)
+      throw new Error(
+        'Unexpected error while upload company logo, please try again later',
+      );
+    return fileUrl.secure_url;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const delCldCv = async (url: string) => {
+  try {
+    const publicIdMatch = url.match(/final-project\/cv\/(.+)\.[a-z]+$/);
+    if (publicIdMatch) {
+      const publicId = `final-project/cv/${publicIdMatch[1]}`;
+      await cloudinary.uploader.destroy(publicId);
+    }
   } catch (error) {
     throw error;
   }

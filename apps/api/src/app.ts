@@ -24,6 +24,7 @@ import { ApplicantRouter } from './routers/applicant.router';
 import { InterviewScheduleRouter } from './routers/interviewSchedule.router';
 import { PreSelectionTestRouter } from './routers/preSelectionTest.router';
 import { AnalyticsRouter } from './routers/analytics.router';
+import { CvRouter } from './routers/cv.router';
 
 export default class App {
   private app: Express;
@@ -87,6 +88,7 @@ export default class App {
     const interviewScheduleRouter = new InterviewScheduleRouter();
     const preselectiontestRouter = new PreSelectionTestRouter();
     const analyticsRouter = new AnalyticsRouter();
+    const cvRouter = new CvRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -109,6 +111,7 @@ export default class App {
     this.app.use('/api/preselectiontest', preselectiontestRouter.getRouter());
     this.app.use('/api/job', jobRouter.getRouter());
     this.app.use('/api/analytics', analyticsRouter.getRouter());
+    this.app.use('/api/cv', cvRouter.getRouter());
   }
 
   public start(): void {

@@ -2,7 +2,7 @@
 import ButtonCustom from '@/components/button/btn';
 import ConfirmBox from '@/components/confirmBox';
 import axiosInstance from '@/lib/axios';
-import { ISubsData } from '@/lib/interface';
+import { ISubsCtg, ISubsData } from '@/lib/interface';
 import { capitalizeFirstLetter, rupiahFormat } from '@/lib/stringFormat';
 import useAuthStore from '@/stores/authStores';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ const confirmMessage = `You have an active subscription plan, if you choose to c
 
 const Plan = () => {
   const { account, clearAuth } = useAuthStore();
-  const [subsCtg, setSubsCtg] = useState<any[]>([]);
+  const [subsCtg, setSubsCtg] = useState<ISubsCtg[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const [subsData, setSubsData] = useState<ISubsData>();
@@ -122,7 +122,15 @@ const Plan = () => {
                     </div>
                     <hr className="my-3 border-gray-300" />
                     {/* Fitur tambahan berdasarkan kategori */}
-                    <ul className="text-gray-200 text-sm mt-3 list-disc pl-5">
+                    <ul className="text-gray-200 text-sm my-3 list-disc pl-5">
+                      {category.name === 'free' && (
+                        <>
+                          <li>Default plan after registration</li>
+                          <li>No CV Generator</li>
+                          <li>No Skill Assesstment</li>
+                          <li>No Priority when applying jobs</li>
+                        </>
+                      )}
                       {category.cvGenerator && (
                         <li>CV generator to help you create your CV</li>
                       )}

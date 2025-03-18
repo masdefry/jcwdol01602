@@ -31,6 +31,7 @@ model Account {
   updatedAt      DateTime  @updatedAt
   User           SubsData?
   Company        Company?
+  cvData         cvData[]
 }
 
 enum Role {
@@ -100,7 +101,8 @@ model SubsData {
   startDate         DateTime?
   endDate           DateTime?
   isSubActive       Boolean         @default(false)
-  cvPath            String?
+  cvId              String?
+  selectedCv        cvData?         @relation(fields: [cvId], references: [id])
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   payment           Payment[]
@@ -345,4 +347,13 @@ model PreSelectionAnswer {
   isCorrect      Boolean
   createdAt      DateTime                @default(now())
   updatedAt      DateTime                @updatedAt
+}
+
+model cvData {
+  id          String @id
+  cvPath      String
+  accountId  String
+  account    Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  selectedBy  SubsData[] 
+  uploadedAt  DateTime @default(now())
 }
