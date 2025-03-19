@@ -308,7 +308,7 @@ model PreSelectionTest {
 }
 
 model PreSelectionQuestion {
-  id         String            @id
+  id         String            @id @default(uuid())
   testId     String
   test       PreSelectionTest  @relation(fields: [testId], references: [id])
   question   String
@@ -325,7 +325,7 @@ model PreSelectionQuestion {
 }
 
 model PreSelectionTestResult {
-  id          String                    @id
+  id          String                    @id @default(uuid())
   applicantId String
   applicant   Applicant                 @relation(fields: [applicantId], references: [id])
   testId      String
@@ -338,7 +338,7 @@ model PreSelectionTestResult {
 }
 
 model PreSelectionAnswer {
-  id             String                  @id
+  id             String                  @id @default(uuid())
   testResultId   String
   testResult     PreSelectionTestResult  @relation(fields: [testResultId], references: [id])
   questionId     String
@@ -354,6 +354,6 @@ model cvData {
   cvPath      String
   accountId  String
   account    Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  selectedBy  SubsData[] 
+  selectedBy  SubsData[]
   uploadedAt  DateTime @default(now())
 }
