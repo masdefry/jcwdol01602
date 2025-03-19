@@ -63,6 +63,7 @@ export const getSubsDataByUser = async (userId: string) => {
             compReview: true,
           },
         },
+        selectedCv: true,
       },
     });
     return data;
@@ -159,5 +160,20 @@ export const editSubsDataApproval = async (subsDataId: string) => {
     return data;
   } catch (error: any) {
     throw new Error('Failed to update subscription data : ' + error.message);
+  }
+};
+
+export const selectSubsDataCv = async (subsDataId: string, cvId: string) => {
+  try {
+    const data = await prisma.subsData.update({
+      where: { id: subsDataId },
+      data: {
+        cvId,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - selectSubsDataCv ' + error);
   }
 };

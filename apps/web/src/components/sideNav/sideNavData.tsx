@@ -52,6 +52,11 @@ const UserSideNav = (): ISideNavItem[] => {
       href: '/user-data/score-test',
       active: pathname === '/user-data/score-test',
     },
+    {
+      label: 'My CV',
+      href: '/user-data/cv',
+      active: pathname === '/user-data/cv',
+    },
   ];
 };
 
