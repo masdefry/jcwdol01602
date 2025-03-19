@@ -3,8 +3,8 @@ import React from 'react';
 import { Categories } from '@/types/job';
 
 interface FilterSortControlsProps {
-  filterCategory: Categories | ''; // Update filterCategory type
-  setFilterCategory: (category: Categories | '') => void; // Update setFilterCategory type
+  filterCategory: Categories | '';
+  setFilterCategory: (category: Categories | '') => void;
   sortColumn: 'title' | 'deadline' | 'category' | null;
   setSortColumn: (column: 'title' | 'deadline' | 'category' | null) => void;
   sortDirection: 'asc' | 'desc';
@@ -20,15 +20,15 @@ const FilterSortControls: React.FC<FilterSortControlsProps> = ({
   setSortDirection,
 }) => {
   return (
-    <div className="flex space-x-4 mb-4">
+    <div className="flex flex-wrap gap-4 mb-4">
       <select
         value={filterCategory}
         onChange={(e) => setFilterCategory(e.target.value as Categories | '')}
-        className="border p-2 rounded"
+        className="px-4 py-2 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50 text-purple-800"
       >
         <option value="">Category</option>
         {Object.values(Categories).map((category) => (
-          <option key={category} value={category}>
+          <option key={category} value={category} className="text-gray-700">
             {category}
           </option>
         ))}
@@ -39,17 +39,17 @@ const FilterSortControls: React.FC<FilterSortControlsProps> = ({
           setSortColumn(e.target.value as 'title' | 'deadline' | 'category' | null);
           setSortDirection('asc');
         }}
-        className="border p-2 rounded"
+        className="px-4 py-2 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50 text-purple-800"
       >
         <option value="">Sort By</option>
-        <option value="title">Title</option>
-        <option value="deadline">Deadline</option>
-        <option value="category">Category</option>
+        <option value="title" className="text-gray-700">Title</option>
+        <option value="deadline" className="text-gray-700">Deadline</option>
+        <option value="category" className="text-gray-700">Category</option>
       </select>
       {sortColumn && (
         <button
           onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-          className="border p-2 rounded"
+          className="px-4 py-2 rounded-lg border border-purple-300 bg-purple-200 text-purple-700 hover:bg-purple-300 transition-colors duration-200"
         >
           {sortDirection === 'asc' ? 'Ascending' : 'Descending'}
         </button>

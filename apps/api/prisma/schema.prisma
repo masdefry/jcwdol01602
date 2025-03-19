@@ -180,6 +180,7 @@ model Applicant {
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())
   expectedSalary Int?
+  cvPath String?
   status      ApplicantStatus @default(pending)
   InterviewSchedule InterviewSchedule[]
   PreSelectionTestResult PreSelectionTestResult[]
@@ -308,7 +309,7 @@ model PreSelectionTest {
 }
 
 model PreSelectionQuestion {
-  id         String            @id
+  id         String            @id @default(uuid())
   testId     String
   test       PreSelectionTest  @relation(fields: [testId], references: [id])
   question   String
@@ -325,7 +326,7 @@ model PreSelectionQuestion {
 }
 
 model PreSelectionTestResult {
-  id          String                    @id
+  id          String                    @id @default(uuid())
   applicantId String
   applicant   Applicant                 @relation(fields: [applicantId], references: [id])
   testId      String
@@ -338,7 +339,7 @@ model PreSelectionTestResult {
 }
 
 model PreSelectionAnswer {
-  id             String                  @id
+  id             String                  @id @default(uuid())
   testResultId   String
   testResult     PreSelectionTestResult  @relation(fields: [testResultId], references: [id])
   questionId     String

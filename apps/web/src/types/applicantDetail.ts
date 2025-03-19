@@ -5,8 +5,9 @@ export interface Applicant {
     subsDataId: string;
     jobId: string;
     appliedAt: Date;
-    expectedSalary: number | null;
+    expectedSalary: number;
     status: ApplicantStatus;
+    cvPath: string;
     subsData: {
         id: string;
         accountId: string;
@@ -17,6 +18,7 @@ export interface Applicant {
         cvPath: string | null;
         createdAt: Date;
         updatedAt: Date;
+        isPriority: boolean; // Add this line
         accounts: {
             id: string;
             role: string;
@@ -84,6 +86,6 @@ export interface IApplicantData {
     email: string;
     education: string;
     status: string;
-    expectedSalary: number | null;
+    expectedSalary: number;
     id: string;
 }

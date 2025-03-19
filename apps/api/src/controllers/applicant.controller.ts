@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import {
-  getApplicantById,
-  getApplicantWithUserAndJob,
-  getApplicantsByJobId,
-  updateApplicantStatus,
+    getApplicantById,
+    getApplicantWithUserAndJob,
+    getApplicantsByJobId,
+    updateApplicantStatus,
+    applyJobService
 } from '@/services/applicantHandler';
+import { Account } from '@prisma/client';
+
 
 export class ApplicantController {
   async getApplicantsByJob(req: Request, res: Response, next: NextFunction) {
@@ -50,10 +53,25 @@ export class ApplicantController {
     }
   }
 
-  async getApplicantById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { applicantId } = req.params;
-      const applicant = await getApplicantById(applicantId);
+    async applyJob(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = req.account as Account;
+            const { jobId, expectedSalary } = req.body;
+            const data = await applyJobService(user, jobId, expectedSalary);
+            return res.status(201).send({
+                message: 'Successfully applied for job',
+                data,
+            });
+        } catch (error) {
+            console.error('Error in applyJob controller:', error);
+            next(error);
+        }
+    }
+
+    async getApplicantById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { applicantId } = req.params;
+            const applicant = await getApplicantById(applicantId);
 
       if (!applicant) {
         return res.status(404).json({ message: 'Applicant not found' });
