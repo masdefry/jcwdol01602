@@ -355,6 +355,6 @@ model cvData {
   cvPath      String
   accountId  String
   account    Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  selectedBy  SubsData[]
+  selectedBy  SubsData[] 
   uploadedAt  DateTime @default(now())
 }

@@ -9,7 +9,7 @@ import express, {
   Application,
 } from 'express';
 import cors from 'cors';
-import { PORT, WEB_URL } from './config';
+import { NGROK_URL, PORT, WEB_URL } from './config';
 import { SampleRouter } from './routers/sample.router';
 import { TestingRouter } from './routers/testing.router';
 import { AccountRouter } from './routers/account.router';
@@ -37,9 +37,20 @@ export default class App {
   }
 
   private configure(): void {
+    const allowedOrigins = [
+      process.env.BASE_WEB_URL || 'http://localhost:3000',
+      process.env.NGROK_URL, // Tambahkan URL Ngrok dari .env
+    ].filter(Boolean); // Menghapus undefined/null
+
     this.app.use(
       cors({
-        origin: WEB_URL || 'http//localhost:3000',
+        origin: function (origin, callback) {
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
+        },
         credentials: true,
       }),
     );
