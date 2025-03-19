@@ -4,7 +4,10 @@ import {
     getApplicantWithUserAndJob,
     getApplicantsByJobId,
     updateApplicantStatus,
+    applyJobService
 } from '@/services/applicantHandler';
+import { Account } from '@prisma/client';
+
 
 export class ApplicantController {
     async getApplicantsByJob(req: Request, res: Response, next: NextFunction) {
@@ -46,6 +49,21 @@ export class ApplicantController {
             });
         } catch (error) {
             console.error('Error in updateApplicantStatus controller:', error);
+            next(error);
+        }
+    }
+
+    async applyJob(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = req.account as Account;
+            const { jobId, expectedSalary } = req.body;
+            const data = await applyJobService(user, jobId, expectedSalary);
+            return res.status(201).send({
+                message: 'Successfully applied for job',
+                data,
+            });
+        } catch (error) {
+            console.error('Error in applyJob controller:', error);
             next(error);
         }
     }

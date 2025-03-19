@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
   createJobHandler,
   updateJobHandler,
@@ -6,6 +6,7 @@ import {
   getAllJobsHandler,
   getJobDetailsHandler,
   togglePublishHandler,
+  getJobsCompanyHandler
 } from '@/services/jobHandler';
 
 export class JobController {
@@ -69,6 +70,25 @@ export class JobController {
     }
   }
 
+
+  async getJobsCompany(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { accountId } = req.params;
+
+        if (!accountId) {
+            return res.status(400).json({ error: 'AccountId is required as a route parameter' }); // Corrected error message
+        }
+
+        const jobs = await getJobsCompanyHandler(accountId);
+        return res.json({jobs}); //It is better to keep the jobs inside an object, so the frontend can easily access jobs.jobs.
+
+    } catch (error: any) {
+        console.error('Error in getJobsCompany:', error); // Corrected error log
+        return res.status(500).json({ error: 'Failed to fetch jobs' });
+    }
+}
+
+
   async getJobDetails(req: Request, res: Response) {
     try {
       const { id } = req.params;
@@ -89,6 +109,7 @@ export class JobController {
       return res.status(500).json({ error: 'Failed to fetch job details' });
     }
   }
+
 
   async togglePublish(req: Request, res: Response) {
     try {

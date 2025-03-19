@@ -1,5 +1,5 @@
 import prisma from '@/prisma';
-import { ApplicantIdMaker } from '@/lib/adminId';
+import {InterviewScheduleIdMaker } from '@/lib/adminId';
 
 export const getInterviewApplicantsByCompanyAccountId = async (
   companyAccountId: string,
@@ -53,10 +53,11 @@ export const createInterviewSchedule = async (
   notes?: string,
 ) => {
   try {
-    const applicantId = await ApplicantIdMaker();
+    const interviewId = await InterviewScheduleIdMaker();
     const schedule = await prisma.interviewSchedule.create({
       data: {
-        applicantId: applicantId,
+        id: interviewId,
+        applicantId,
         startTime,
         endTime,
         location,

@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -12,6 +11,7 @@ import Modal from '@/components/adminDashboard/applicantModal';
 import { Applicant, IApplicantData } from '@/types/applicantDetail';
 import { format, differenceInYears } from 'date-fns';
 import FilterApplicant from '@/components/adminDashboard/filterApplicant';
+import { rupiahFormat } from '@/lib/stringFormat';
 
 const JobApplicants = () => {
   const router = useRouter();
@@ -46,7 +46,16 @@ const JobApplicants = () => {
       console.log("JobApplicants: Sending GET request to:", apiUrl);
       const { data } = await axiosInstance.get(apiUrl);
       console.log("JobApplicants: Fetched applicants:", data.applicants);
-      setApplicants(data.applicants);
+
+      const applicantsWithPriority = data.applicants.map((applicant: Applicant) => ({
+        ...applicant,
+        subsData: {
+          ...applicant.subsData,
+          isPriority: applicant.subsData.subsCtgId === 'sc250319-03',
+        },
+      }));
+
+      setApplicants(applicantsWithPriority);
     } catch (error: any) {
       const errorMessage = error.response?.data?.message;
       toast.dismiss();
@@ -59,6 +68,12 @@ const JobApplicants = () => {
 
   const applyFilters = () => {
     let filtered = [...applicants];
+
+    if (filterStatus) {
+      filtered = filtered.filter((applicant) => applicant.status === filterStatus);
+    }
+
+    filtered.sort((a, b) => (b.subsData.isPriority ? 1 : -1));
 
     if (filterEducation) {
       filtered = filtered.filter((applicant) =>
@@ -130,16 +145,23 @@ const JobApplicants = () => {
     }
   };
 
-  const tableData: IApplicantData[] = filteredApplicants.map((applicant, index) => ({
+  const tableData: IApplicantData[] = filteredApplicants.map((applicant) => ({
     id: applicant.id,
     photo: (
-      <Image
-        src={applicant.subsData.accounts.avatar || '/avatar_default.jpg'}
-        alt="Applicant Avatar"
-        width={40}
-        height={40}
-        className="rounded-full"
-      />
+      <div className="relative flex items-center">
+        <Image
+          src={applicant.subsData?.accounts?.avatar || '/avatar_default.jpg'}
+          alt="Applicant Avatar"
+          width={40}
+          height={40}
+          className="rounded-full"
+        />
+        {applicant.subsData?.isPriority && (
+          <span className="absolute bg-yellow-400 text-white text-[8px] px-0.5 py-0.25 rounded-full top-[-5px] left-[35px]">
+            Priority
+          </span>
+        )}
+      </div>
     ),
     name: applicant.subsData.accounts.name,
     email: applicant.subsData.accounts.email,
@@ -200,10 +222,10 @@ const JobApplicants = () => {
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <div className="p-4">
             <div className="flex flex-col md:flex-row">
-              {selectedApplicant.subsData.cvPath && (
+              {selectedApplicant.cvPath && (
                 <div className="md:w-1/2 md:pr-4 mb-4 md:mb-0">
                   <iframe
-                    src={selectedApplicant.subsData.cvPath}
+                    src={selectedApplicant.cvPath}
                     width="100%"
                     height="500px"
                   ></iframe>
@@ -254,7 +276,7 @@ const JobApplicants = () => {
                     </tr>
                     <tr>
                       <td className="font-semibold pr-4 py-2 text-left">Expected Salary:</td>
-                      <td className="py-2 text-left">{selectedApplicant.expectedSalary}</td>
+                      <td className="py-2 text-left">{rupiahFormat(selectedApplicant.expectedSalary)}</td>
                     </tr>
                     <tr>
                       <td className="font-semibold pr-4 py-2 text-left">Status:</td>

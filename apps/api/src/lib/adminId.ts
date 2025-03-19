@@ -59,8 +59,8 @@ export const ApplicantIdMaker = async () => {
   return customId;
 };
 
-export const InterviewScheduleIdMaker = async (applicantId: string) => {
-  const customIdPrefix = `ins${createDate}-${applicantId}`;
+export const InterviewScheduleIdMaker = async () => {
+  const customIdPrefix = `ins${createDate}`;
   const lastInterviewSchedule = await prisma.interviewSchedule.findFirst({
     where: { id: { startsWith: customIdPrefix } },
     orderBy: { id: 'desc' },
@@ -81,8 +81,8 @@ export const PreSelectionTestIdMaker = async (jobId: string) => {
   return customId;
 };
 
-export const PreSelectionQuestionIdMaker = async (testId: string) => {
-  const customIdPrefix = `psq${createDate}-${testId}`;
+export const PreSelectionQuestionIdMaker = async () => {
+  const customIdPrefix = `psq${createDate}`;
   const lastQuestion = await prisma.preSelectionQuestion.findFirst({
     where: { id: { startsWith: customIdPrefix } },
     orderBy: { id: 'desc' },
@@ -98,12 +98,12 @@ export const PreSelectionQuestionIdMaker = async (testId: string) => {
   return customId;
 };
 
-export const PreSelectionTestResultIdMaker = async (applicantId: string, testId: string) => {
-  const customId = `psr${createDate}-${applicantId}-${testId}`;
+export const PreSelectionTestResultIdMaker = async (testId: string) => {
+  const customId = `psr${createDate}-${testId}`;
   return customId;
 };
 
-export const PreSelectionAnswerIdMaker = async (testResultId: string, questionId: string) => {
-  const customId = `psa${createDate}-${testResultId}-${questionId}`;
+export const PreSelectionAnswerIdMaker = async (questionId: string) => {
+  const customId = `psa${createDate}-${questionId}`;
   return customId;
 };

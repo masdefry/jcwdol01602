@@ -12,11 +12,12 @@ interface IApplicantResult {
     score: number;
     total: number;
     createdAt: string;
+    applicantName?: string;
 }
 
 interface ITableData {
     id: string;
-    applicantId: string;
+    applicantName: string;
     score: number;
     total: number;
     createdAt: string;
@@ -46,7 +47,7 @@ const PreSelectionTestResults = () => {
 
     const tableData: ITableData[] = results.map((result) => ({
         id: result.id,
-        applicantId: result.applicantId,
+        applicantName: result.applicantName || 'Unknown', // Corrected line
         score: result.score,
         total: result.total,
         createdAt: new Date(result.createdAt).toLocaleDateString(),
@@ -54,9 +55,9 @@ const PreSelectionTestResults = () => {
 
     return (
         <>
-            <Heading title="Pre-Selection Test Results" description={`Results for test ID: ${testId}`} />
+            <Heading title="Pre-Selection Test Results" description={`Results for Pre-Selection Test`} />
             <TableDashboard
-                columns={['No', 'Applicant ID', 'Score', 'Total', 'Created At']}
+                columns={['No', 'Name', 'Score', 'Total', 'Submitted At']}
                 datas={tableData}
                 itemsPerPage={10}
             />

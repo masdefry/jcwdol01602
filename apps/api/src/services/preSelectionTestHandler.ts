@@ -1,3 +1,4 @@
+import { PreSelectionTestIdMaker } from '@/lib/adminId';
 import prisma from '@/prisma';
 
 interface QuestionInput {
@@ -16,9 +17,18 @@ export const createPreSelectionTest = async (jobId: string) => {
     if (!job) {
       throw new Error('Job not found');
     }
+    const existingTest = await prisma.preSelectionTest.findUnique({
+      where: { jobId: jobId },
+    });
+
+    if (existingTest) {
+      throw new Error('Pre-selection test already exists for this job');
+    }
+    const testId = await PreSelectionTestIdMaker(jobId);
 
     const test = await prisma.preSelectionTest.create({
       data: {
+        id: testId,
         jobId,
       },
     });
@@ -29,15 +39,14 @@ export const createPreSelectionTest = async (jobId: string) => {
   }
 };
 
-
 export const createPreSelectionQuestions = async (
   testId: string,
   questions: QuestionInput[]
 ) => {
   try {
-    const test = await prisma.preSelectionTest.findUnique({where: {id: testId}})
-    if(!test){
-        throw new Error("Test not found");
+    const test = await prisma.preSelectionTest.findUnique({ where: { id: testId } });
+    if (!test) {
+      throw new Error('Test not found');
     }
 
     if (questions.length !== 25) {
@@ -57,7 +66,6 @@ export const createPreSelectionQuestions = async (
     throw new Error('Unexpected error - createPreSelectionQuestions: ' + error);
   }
 };
-
 
 export const editPreSelectionQuestion = async (
   questionId: string,
@@ -86,7 +94,6 @@ export const editPreSelectionQuestion = async (
   }
 };
 
-
 export const deletePreSelectionTest = async (testId: string) => {
   try {
     const test = await prisma.preSelectionTest.delete({
@@ -100,15 +107,14 @@ export const deletePreSelectionTest = async (testId: string) => {
   }
 };
 
-
 export const updatePreSelectionTest = async (
   testId: string,
   isActive: boolean
 ) => {
   try {
-    const test = await prisma.preSelectionTest.findUnique({where: {id: testId}})
-    if(!test){
-        throw new Error("Test not found");
+    const test = await prisma.preSelectionTest.findUnique({ where: { id: testId } });
+    if (!test) {
+      throw new Error('Test not found');
     }
     const updatedTest = await prisma.preSelectionTest.update({
       where: { id: testId },
@@ -121,7 +127,6 @@ export const updatePreSelectionTest = async (
     throw new Error('Unexpected error - updatePreSelectionTest: ' + error);
   }
 };
-
 
 export const getPreSelectionTestByJobId = async (jobId: string) => {
   try {
@@ -137,7 +142,6 @@ export const getPreSelectionTestByJobId = async (jobId: string) => {
   }
 };
 
-
 export const getPreSelectionTestById = async (testId: string) => {
   try {
     const test = await prisma.preSelectionTest.findUnique({
@@ -151,7 +155,6 @@ export const getPreSelectionTestById = async (testId: string) => {
     throw new Error('Unexpected error - getPreSelectionTestById: ' + error);
   }
 };
-
 
 export const getAllPreSelectionTestsByCompany = async (accountId: string) => {
   try {
@@ -168,13 +171,12 @@ export const getAllPreSelectionTestsByCompany = async (accountId: string) => {
       },
     });
 
-    // Flatten the results and include job title
-    const preSelectionTests = companies.flatMap(company =>
-      company.jobs.flatMap(job =>
+    const preSelectionTests = companies.flatMap((company) =>
+      company.jobs.flatMap((job) =>
         job.PreSelectionTest
           ? {
               ...job.PreSelectionTest,
-              jobTitle: job.title, // Include job title here
+              jobTitle: job.title,
             }
           : []
       )
@@ -186,7 +188,6 @@ export const getAllPreSelectionTestsByCompany = async (accountId: string) => {
     throw new Error('Unexpected error - getAllPreSelectionTestsByCompany: ' + error);
   }
 };
-
 
 export const submitPreSelectionTestResult = async (
   applicantId: string,
@@ -200,7 +201,7 @@ export const submitPreSelectionTestResult = async (
     if (!questions || questions.length === 0) {
       throw new Error('No questions available for this test');
     }
-    // Build a map of questionId to correct answer.
+
     const answerMap = questions.reduce((acc, q) => {
       acc[q.id] = q.answer;
       return acc;
@@ -234,17 +235,14 @@ export const submitPreSelectionTestResult = async (
   }
 };
 
-/**
- * Retrieve all test results for a given test ID.
- */
 export const getPreSelectionTestResultsByTestId = async (testId: string) => {
   try {
-      const results = await prisma.preSelectionTestResult.findMany({
-          where: { testId: testId },
-      });
-      return results;
+    const results = await prisma.preSelectionTestResult.findMany({
+      where: { testId: testId },
+    });
+    return results;
   } catch (error: any) {
-      if (error.message) throw new Error(error.message);
-      throw new Error('Unexpected error - getPreSelectionTestResultsByTestId: ' + error);
+    if (error.message) throw new Error(error.message);
+    throw new Error('Unexpected error - getPreSelectionTestResultsByTestId: ' + error);
   }
 };

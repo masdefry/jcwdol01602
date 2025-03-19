@@ -10,6 +10,7 @@ import {
 import prisma from '@/prisma';
 import { transporter } from '@/lib/mail';
 
+
 export class InterviewScheduleController {
   async createSchedule(req: Request, res: Response, next: NextFunction) {
     try {
@@ -101,8 +102,17 @@ export class InterviewScheduleController {
 
       const mailOptions = {
         to: applicant.subsData.accounts.email,
-        subject: 'Jadwal Wawancara Anda',
-        text: `Anda telah dijadwalkan wawancara pada ${schedule.startTime}.`,
+        subject: 'Your Interview Schedule Details',
+        html: `
+          <p>Dear ${'Applicant'},</p>
+          <p>We are pleased to inform you that you have been scheduled for an interview.</p>
+          <p><strong>Date:</strong> ${schedule.startTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p><strong>Time:</strong> ${schedule.startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+          ${schedule.location ? `<p><strong>Location:</strong> ${schedule.location}</p>` : ''}
+          ${schedule.notes ? `<p><strong>Notes:</strong> ${schedule.notes}</p>` : ''}
+          <p>Please arrive on time. If you have any questions or need to reschedule, please contact us.</p>
+          <p>We look forward to meeting you!</p>
+        `,
       };
 
       await transporter.sendMail(mailOptions);

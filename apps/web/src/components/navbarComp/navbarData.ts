@@ -46,7 +46,7 @@ export const adminServices = [
   },
   {
     label: 'Company',
-    href: '/adm-dashboard/job',
+    href: '/adm-dashboard/company',
   },
   {
     label: 'Dashboard',

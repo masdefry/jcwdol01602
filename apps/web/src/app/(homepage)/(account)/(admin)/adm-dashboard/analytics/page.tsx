@@ -67,7 +67,7 @@ const AnalyticsDashboard: React.FC = () => {
     }, [account]);
 
     if (loading) {
-        return <div className="p-4">Loading...</div>;
+        return <div className="p-4 text-gray-700">Loading...</div>;
     }
 
     const genderChartData = {
@@ -79,8 +79,16 @@ const AnalyticsDashboard: React.FC = () => {
                     genders.filter((d) => d.gender === 'female').length,
                     genders.filter((d) => !d.gender).length,
                 ],
-                backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'],
-                hoverBackgroundColor: ['rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(255, 206, 86, 0.7)'],
+                backgroundColor: [
+                    'rgba(179, 157, 219, 0.5)',
+                    'rgba(255, 235, 59, 0.5)',
+                    'rgba(224, 224, 224, 0.5)',
+                ],
+                hoverBackgroundColor: [
+                    'rgba(179, 157, 219, 0.7)',
+                    'rgba(255, 235, 59, 0.7)',
+                    'rgba(224, 224, 224, 0.7)',
+                ],
             },
         ],
     };
@@ -91,8 +99,8 @@ const AnalyticsDashboard: React.FC = () => {
             {
                 label: 'Average Expected Salary',
                 data: [] as number[],
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(179, 157, 219, 0.2)',
+                borderColor: 'rgba(179, 157, 219, 1)',
                 borderWidth: 1,
             },
         ],
@@ -121,11 +129,25 @@ const AnalyticsDashboard: React.FC = () => {
             {
                 data: applicantInterests.map((interest) => interest.applicantCount),
                 backgroundColor: [
-                    'rgba(54, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'
-                ],
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(153, 102, 255, 0.5)',
+                    'rgba(255, 159, 64, 0.5)',
+                    'rgba(179, 157, 219, 0.5)',
+                    'rgba(224, 224, 224, 0.5)',
+                ].slice(0, applicantInterests.length), // Ensure enough colors
                 hoverBackgroundColor: [
-                    'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(255, 206, 86, 0.7)'
-                ],
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 159, 64, 0.7)',
+                    'rgba(179, 157, 219, 0.7)',
+                    'rgba(224, 224, 224, 0.7)',
+                ].slice(0, applicantInterests.length),
             },
         ],
     };
@@ -136,8 +158,8 @@ const AnalyticsDashboard: React.FC = () => {
             {
                 label: 'Applicant Count',
                 data: jobStats.map((job) => job.applicantCount),
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(255, 235, 59, 0.2)',
+                borderColor: 'rgba(255, 235, 59, 1)',
                 borderWidth: 1,
             },
         ],
@@ -150,7 +172,7 @@ const AnalyticsDashboard: React.FC = () => {
                 label: 'New Users',
                 data: userCounts.map((user) => user.userCount),
                 fill: false,
-                borderColor: 'rgb(75, 192, 192)',
+                borderColor: 'rgb(179, 157, 219)',
                 tension: 0.1,
             },
         ],
@@ -168,56 +190,58 @@ const AnalyticsDashboard: React.FC = () => {
                     }).length,
                     dobs.filter((d) => {
                         const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
-                        return age >= 25 && age <= 34;
-                    }).length,
-                    dobs.filter((d) => { const age = new Date().getFullYear() - new Date(d.dob).getFullYear(); return age >= 35 && age <= 44; }).length,
-                    dobs.filter((d) => {
-                        const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
-                        return age >= 45;
-                    }).length,
-                ],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-            },
-        ],
-    };
+                        return age >= 25 && age <= 34;}).length,
+                        dobs.filter((d) => {
+                            const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
+                            return age >= 35 && age <= 44;
+                        }).length,
+                        dobs.filter((d) => {
+                            const age = new Date().getFullYear() - new Date(d.dob).getFullYear();
+                            return age >= 45;
+                        }).length,
+                    ],
+                    backgroundColor: 'rgba(179, 157, 219, 0.2)',
+                    borderColor: 'rgba(179, 157, 219, 1)',
+                    borderWidth: 1,
+                },
+            ],
+        };
 
-    return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold mb-2">Gender Demographics</h2>
-                    <div style={{ maxWidth: '270px', margin: '0 auto' }}>
-                        <Pie data={genderChartData} />
+        return (
+            <div className="p-4 text-gray-700">
+                <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="mb-4">
+                        <h2 className="text-lg font-semibold mb-2">Gender Demographics</h2>
+                        <div style={{ maxWidth: '270px', margin: '0 auto' }}>
+                            <Pie data={genderChartData} />
+                        </div>
                     </div>
-                    </div>
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold mb-2">Age Demographics</h2>
+                    <div className="mb-4">
+                        <h2 className="text-lg font-semibold mb-2">Age Demographics</h2>
                         <Bar data={ageChartData} />
-                </div>
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
-                        <Bar data={salaryTrendsChartData} />
-                </div>
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
-                        <Bar data={jobStatsChartData} />
-                </div>
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
-                    <div style={{ maxWidth: '270px', margin: '0 auto' }}>
-<Pie data={applicantInterestsChartData} />
                     </div>
-                </div>
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
+                    <div className="mb-4">
+                        <h2 className="text-lg font-semibold mb-2">Salary Trends</h2>
+                        <Bar data={salaryTrendsChartData} />
+                    </div>
+                    <div className="mb-4">
+                        <h2 className="text-lg font-semibold mb-2">Job Post Statistics</h2>
+                        <Bar data={jobStatsChartData} />
+                    </div>
+                    <div className="mb-4">
+                        <h2 className="text-lg font-semibold mb-2">Applicant Interests</h2>
+                        <div style={{ maxWidth: '270px', margin: '0 auto' }}>
+                            <Pie data={applicantInterestsChartData} />
+                        </div>
+                    </div>
+                    <div className="mb-4">
+                        <h2 className="text-lg font-semibold mb-2">New Users Per Month</h2>
                         <Line data={userCountsChartData} />
                     </div>
                 </div>
-        </div>
-    );
-};
+            </div>
+        );
+    };
 
-export default AnalyticsDashboard;
+    export default AnalyticsDashboard;

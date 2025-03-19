@@ -11,6 +11,7 @@ import { Heading } from "@/components/heading";
 import toast from "react-hot-toast";
 import ModalCreate from "@/components/table/modalCreate";
 import * as Yup from "yup";
+import ButtonCustom from "@/components/button/btn";
 
 interface InterviewSchedule {
   id: string;
@@ -23,6 +24,7 @@ interface InterviewSchedule {
 
 interface ApplicantSchedule {
   id: string;
+  applicantId: string;
   jobId: string;
   InterviewSchedule: InterviewSchedule[] | undefined | null;
   subsData: {
@@ -102,12 +104,11 @@ function InterviewScheduleFrontend() {
             ? new Date(applicantSchedule.InterviewSchedule[0].startTime).toLocaleString()
             : "Not Scheduled",
         action: (
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          <ButtonCustom
             onClick={() => handleOpenModal(applicantSchedule.id)}
-          >
-            Create Schedule
-          </button>
+
+            btnName="Create Schedule"
+          />
         ),
       }))
     : [];
