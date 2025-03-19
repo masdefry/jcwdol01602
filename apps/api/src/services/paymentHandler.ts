@@ -1,7 +1,7 @@
 import prisma from '@/prisma';
 import { editSubsDataApproval, editSubsDataCtg } from './subsDataHandler';
 import { paymentMethod } from '@prisma/client';
-import { BANK_ACCOUNT } from '@/config';
+import { BANK_ACCOUNT, SECRET_MIDTRANS, snap } from '@/config';
 import { addCldPayProof, delCldPayProof } from './cloudinary';
 import { PaymentIdMaker } from '@/lib/customId';
 
@@ -28,6 +28,9 @@ export const getPayById = async (PaymentId: string) => {
   try {
     const payment = await prisma.payment.findUnique({
       where: { id: PaymentId },
+      include: {
+        subsCtg: true,
+      },
     });
     return payment;
   } catch (error) {
@@ -41,6 +44,31 @@ export const delPay = async (paymentId: string, userId: string) => {
     const findPayment = await getPayById(paymentId);
     if (!findPayment) {
       throw new Error('Invoice data not found');
+    }
+
+    if (findPayment.method === 'midtrans' && findPayment.id) {
+      try {
+        const midtransApi = `https://api.sandbox.midtrans.com/v2/${findPayment.id}/cancel`;
+
+        const response = await fetch(midtransApi, {
+          method: 'POST',
+          headers: {
+            Authorization:
+              'Basic ' + Buffer.from(SECRET_MIDTRANS + ':').toString('base64'),
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(
+            result.message || 'Failed to cancel transaction on Midtrans.',
+          );
+        }
+      } catch (error: any) {
+        console.error('Failed to cancel Midtrans order:', error.message);
+        throw new Error('Failed to cancel transaction on Midtrans.');
+      }
     }
 
     // Delete Payment from cloudinary if payment proof exist
@@ -111,10 +139,22 @@ export const editPayMethod = async (paymentId: string, method: string) => {
       );
     }
     let transferTo = null;
+    let token = null;
     if (method === 'transfer') {
       transferTo = `Please transfer to BCA - ${BANK_ACCOUNT} and please upload your transaction proof`;
     } else if (method === 'midtrans') {
-      transferTo = 'Please please proceed your payment to midtrans';
+      const parameter = {
+        transaction_details: {
+          order_id: payment.id,
+          gross_amount: payment.subsCtg.price,
+        },
+        item_details: {
+          name: `Payment for subscription plan '${payment.subsCtg.name}'`,
+          price: payment.subsCtg.price,
+          quantity: 1,
+        },
+      };
+      token = await snap.createTransactionToken(parameter);
     } else {
       throw new Error('Invalid payment method');
     }
@@ -125,8 +165,7 @@ export const editPayMethod = async (paymentId: string, method: string) => {
         method: checkMethod,
       },
     });
-    const result = { transferTo, data };
-    return result;
+    return method === 'transfer' ? { transferTo, data } : { token, data };
   } catch (error: any) {
     if (error.message) throw new Error(error.message);
     throw new Error('Failed to update payment method : ' + error);
@@ -192,5 +231,39 @@ export const editPayApproval = async (
       throw new Error(error.message);
     }
     throw new Error('Unexpected error occured in editPayApproval : ' + error);
+  }
+};
+
+export const approvePayByMidtrans = async (
+  paymentId: string,
+  transaction_status: string,
+) => {
+  try {
+    const findPayment = await getPayById(paymentId);
+    if (!findPayment) throw new Error(`Payment data doesn't exist`);
+    let payment = null;
+    let subsData = null;
+    if (
+      transaction_status === 'settlement' ||
+      transaction_status === 'capture'
+    ) {
+      payment = await prisma.payment.update({
+        where: { id: findPayment.id },
+        data: {
+          isApproved: true,
+        },
+      });
+      subsData = await editSubsDataApproval(findPayment.subsDataId);
+    } else {
+      throw new Error(`Payment doesn't complete`);
+    }
+    return { payment, subsData };
+  } catch (error: any) {
+    if (error.message) {
+      throw new Error(error.message);
+    }
+    throw new Error(
+      'Unexpected error occured in approvePayByMidtrans : ' + error,
+    );
   }
 };

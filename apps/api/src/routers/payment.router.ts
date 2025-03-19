@@ -76,6 +76,11 @@ export class PaymentRouter {
       userDevGuard,
       this.paymentController.paymentData,
     );
+
+    this.router.patch(
+      '/midtrans/success',
+      this.paymentController.midTransSuccess,
+    );
   }
 
   getRouter(): Router {

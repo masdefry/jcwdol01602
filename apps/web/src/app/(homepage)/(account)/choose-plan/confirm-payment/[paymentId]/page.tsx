@@ -18,6 +18,7 @@ const page = () => {
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [payOptions, setPayOptions] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [snapLoaded, setSnapLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchPayOptions = async () => {
@@ -31,6 +32,19 @@ const page = () => {
       }
     };
     fetchPayOptions();
+
+    const snapScript = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT || '';
+    // render midtrans snap token
+    const script = document.createElement('script');
+    script.src = snapScript;
+    script.setAttribute('data-client-key', clientKey);
+    script.async = true;
+    script.onload = () => setSnapLoaded(true); // Pastikan skrip telah dimuat
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   useEffect(() => {
@@ -80,16 +94,24 @@ const page = () => {
         `/api/payment/method/${paymentId}`,
         { method: selectedMethod },
       );
+      if (selectedMethod === 'midtrans') {
+        setTimeout(() => {
+          window.open(
+            `https://app.sandbox.midtrans.com/snap/v2/vtweb/${data.payment.token}`,
+            '_blank',
+          );
+        }, 1500);
+      }
       toast.success(data.message, { duration: 3000 });
       setTimeout(() => {
         router.push(`/`);
       }, 4000);
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || 'Something went wrong!';
+      const errorMessage = error.response?.data?.message;
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+      return;
     }
   };
 

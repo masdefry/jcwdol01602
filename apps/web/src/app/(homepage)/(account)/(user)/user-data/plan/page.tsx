@@ -75,22 +75,18 @@ const Plan = () => {
   };
 
   const deletePayment = async (paymentId: string) => {
-    const toastDelete = toast.loading('Deleting payment...');
-    if (selectedPayment)
-      try {
-        const { data } = await axiosInstance.delete(
-          `/api/payment/delete/${paymentId}`,
-        );
-        toast.dismiss(toastDelete);
-        toast.success(data.message, { duration: 2000 });
-        setPayments((prevPayments) =>
-          prevPayments.filter((payment) => payment.id !== paymentId),
-        );
-      } catch (error: any) {
-        toast.dismiss(toastDelete);
-        const errorMessage = error.response?.data?.message;
-        toast.error(errorMessage);
-      }
+    try {
+      const { data } = await axiosInstance.delete(
+        `/api/payment/delete/${paymentId}`,
+      );
+      toast.success(data.message, { duration: 2000 });
+      setPayments((prevPayments) =>
+        prevPayments.filter((payment) => payment.id !== paymentId),
+      );
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message;
+      toast.error(errorMessage);
+    }
   };
 
   return (

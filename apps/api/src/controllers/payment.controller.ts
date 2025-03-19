@@ -1,5 +1,6 @@
 import { Account } from '@/custom';
 import {
+  approvePayByMidtrans,
   delPay,
   editPayApproval,
   editPayMethod,
@@ -157,6 +158,19 @@ export class PaymentController {
       return res.status(200).send({
         message: 'Payments data retrieved successfully',
         payments,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async midTransSuccess(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { orderId, transactionStatus } = req.body;
+      const result = await approvePayByMidtrans(orderId, transactionStatus);
+      return res.status(200).send({
+        message: 'Payment approved, your subscription plan is active',
+        result,
       });
     } catch (error) {
       next(error);
