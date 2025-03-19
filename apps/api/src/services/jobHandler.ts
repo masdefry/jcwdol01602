@@ -144,3 +144,19 @@ export const togglePublishHandler = async (id: string, accountId: string) => {
     data: { isPublished: !jobToToggle.isPublished },
   });
 };
+
+export const getJobsCompanyHandler = async (accountId: string) => {
+  const company = await prisma.company.findUnique({
+    where: { accountId },
+    select: { id: true },
+  });
+
+  if (!company) {
+    throw new Error('Company not found');
+  }
+
+
+  return await prisma.job.findMany({
+    where: { companyId: company.id },
+  });
+};
