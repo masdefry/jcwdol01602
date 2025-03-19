@@ -20,7 +20,7 @@ export class JobRouter {
     this.router.get('/list', verifyToken, adminDevGuard, this.jobController.getAllJobs);
     this.router.get('/:id', verifyToken, adminDevGuard, this.jobController.getJobDetails);
     this.router.patch('/:id/publish', verifyToken, adminDevGuard, this.jobController.togglePublish);
-    this.router.get('/company/:id', verifyToken, adminDevGuard, this.jobController.getJobsCompany);
+    this.router.get('/company/:accountId', verifyToken, adminDevGuard, this.jobController.getJobsCompany);
 
   }
 

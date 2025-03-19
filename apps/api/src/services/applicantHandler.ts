@@ -1,5 +1,7 @@
+import { ApplicantIdMaker } from '@/lib/adminId';
 import prisma from '@/prisma';
-import { ApplicantStatus } from '@prisma/client';
+import { Account, ApplicantStatus } from '@prisma/client';
+import { getSubsDataById, getSubsDataByUser } from './subsDataHandler';
 
 
 export const getApplicantsByJobId = async (jobId: string) => {
@@ -92,4 +94,24 @@ export const updateApplicantStatus = async (
     console.error('Error updating applicant status:', error);
     throw error;
   }
+};
+
+export const applyJobService = async (user: Account, jobId: string, expectedSalary: number) => {
+  const applicantId = await ApplicantIdMaker();
+  if (!jobId) {
+      throw new Error('JobId required');
+  }
+  const subsData = await getSubsDataByUser(user.id);
+  if (!subsData) {
+      throw new Error("Subscription data doesn't exist");
+  }
+  return prisma.applicant.create({
+      data: {
+          id: applicantId,
+          jobId: jobId,
+          subsDataId: subsData.id,
+          expectedSalary: expectedSalary,
+          cvPath: subsData.selectedCv?.cvPath,
+      },
+  });
 };

@@ -64,7 +64,6 @@ const QuestionsPreSelectionTest = () => {
     const handleNewQuestion = async (values: Omit<IPreSelectionQuestion, 'id'>) => {
         try {
             if (editQuestion) {
-                console.log("Data sent for update:", values); // Added console.log
                 await axiosInstance.patch(`/api/preselectiontest/questions/${editQuestion.id}`, values);
                 setQuestions((prev) =>
                     prev.map((question) => (question.id === editQuestion.id ? { ...question, ...values } : question))
@@ -72,7 +71,7 @@ const QuestionsPreSelectionTest = () => {
                 console.log();
                 toast.success('Question updated successfully.');
             } else {
-                console.log("Data sent for creation:", { ...values, testId: testId }); // Added console.log
+
                 await axiosInstance.post(`/api/preselectiontest/questions`, { ...values, testId: testId });
                 getQuestionsByTest();
                 toast.success('Question created successfully.');
@@ -108,7 +107,7 @@ const QuestionsPreSelectionTest = () => {
         <div className="p-6">
             <div className="flex items-center justify-between">
                 <Heading title="Pre-Selection Question Management" description="Manage all questions" />
-                <AddBtn title="Add Question" runFunction={() => setAddModalOpen(true)} />
+                <AddBtn title="Add Question" runFunction={() => router.push(`/adm-dashboard/pre-selection-test/new-question/${testId}`)} />
             </div>
             {isLoading ? (
                 <p>Loading Questions...</p>

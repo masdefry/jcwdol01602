@@ -180,6 +180,7 @@ model Applicant {
   job       Job      @relation(fields: [jobId], references: [id])
   appliedAt DateTime @default(now())
   expectedSalary Int?
+  cvPath String?
   status      ApplicantStatus @default(pending)
   InterviewSchedule InterviewSchedule[]
   PreSelectionTestResult PreSelectionTestResult[]

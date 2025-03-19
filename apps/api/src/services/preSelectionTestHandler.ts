@@ -17,8 +17,6 @@ export const createPreSelectionTest = async (jobId: string) => {
     if (!job) {
       throw new Error('Job not found');
     }
-
-    // Check if a test already exists for the job
     const existingTest = await prisma.preSelectionTest.findUnique({
       where: { jobId: jobId },
     });
