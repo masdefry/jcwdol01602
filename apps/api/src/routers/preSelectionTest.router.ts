@@ -32,6 +32,9 @@ export class PreSelectionTestRouter {
         this.router.get('/company/:accountId', verifyToken, adminDevGuard, this.preSelectionTestController.getAllTestsByCompany);
         // Get test by test id
         this.router.get('/:testId', verifyToken, this.preSelectionTestController.getTestById);
+        // Edit question by question id
+        this.router.patch('/questions/:questionId', verifyToken, adminDevGuard, this.preSelectionTestController.editQuestion);
+
     }
 
     getRouter(): Router {
