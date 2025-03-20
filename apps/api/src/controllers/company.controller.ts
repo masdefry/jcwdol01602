@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '@/prisma';
 import { Account } from '@/custom';
-import { getCompanyById } from '@/services/companyHandler';
+import { getCompanyById, editCompany } from '@/services/companyHandler';
 
 export class CompanyController {
   async editCompany(req: Request, res: Response, next: NextFunction) {
     try {
-      // name, phone, address, website, description, logo
       const admin = req.account as Account;
       const { name, phone, address, website, desc } = req.body;
 
@@ -44,18 +43,16 @@ export class CompanyController {
           name: upName,
         },
       });
-      const updateCompany = await prisma.company.update({
-        where: { id: company.id },
-        data: {
-          phone: upPhone,
-          address: upAddress,
-          website: upWebsite,
-          description: upDesc,
-        },
+
+      const updateCompany = await editCompany(company.id, {
+        phone: upPhone,
+        address: upAddress === null ? undefined : upAddress,
+        website: upWebsite === null ? undefined : upWebsite,
+        description: upDesc === null ? undefined : upDesc,
       });
 
       return res.status(201).json({
-        message: 'Company created successfully',
+        message: 'Company updated successfully',
         editComp: { updateAccount, updateCompany },
       });
     } catch (error) {

@@ -56,3 +56,24 @@ export const getCompanyById = async (companyId: string) => {
     throw new Error(`Unexpected Error - getCompanyById : ` + error);
   }
 };
+
+export const editCompany = async (
+  companyId: string,
+  data: {
+    phone?: string;
+    address?: string;
+    website?: string;
+    description?: string;
+  }
+) => {
+  try {
+    const updatedCompany = await prisma.company.update({
+      where: { id: companyId },
+      data: data,
+    });
+    return updatedCompany;
+  } catch (error: any) {
+    if (error.message) throw new Error(error.message);
+    throw new Error(`Unexpected Error - editCompany: ` + error);
+  }
+};
