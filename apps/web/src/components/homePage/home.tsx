@@ -1,8 +1,5 @@
 'use client';
-import { capitalizeFirstLetter, rupiahFormat } from '@/lib/stringFormat';
-import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { MapPinIcon, TagIcon, BanknotesIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/lib/axios';
 import { IJobsData } from '@/lib/interface2';
@@ -17,7 +14,7 @@ const Home = () => {
     pagination: { currentPage: 1, totalPages: 1, totalJobs: 0 },
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const limit = 3;
+  const limit = 12;
   const router = useRouter();
   const [locations, setLocations] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
