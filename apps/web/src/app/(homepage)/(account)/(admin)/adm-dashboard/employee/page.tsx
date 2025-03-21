@@ -46,7 +46,7 @@ const Employee = () => {
     }
   };
 
-  // Action Button For Worker
+
   interface IActionButton {
     employee: IEmployee;
   }

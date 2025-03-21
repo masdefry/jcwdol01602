@@ -11,6 +11,8 @@ import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import ReviewSection from '@/components/compReview/compReview';
+import useJobsByCompanyId from '@/hooks/useCompanyJob';
+import JobCard from '@/components/company/JobCard';
 
 const CompanyPage = () => {
   const { account } = useAuthStore();
@@ -19,6 +21,7 @@ const CompanyPage = () => {
   const { company } = useCompanyProfileById(companyId);
   const { reviews, setReviews } = useShowCompReview(companyId);
   const [openNewReview, setOpenNewReview] = useState<boolean>(false);
+  const { jobs, loading: jobsLoading, error: jobsError } = useJobsByCompanyId(companyId);
 
   const handleAddReview = () => {
     if (!account) {
@@ -44,7 +47,6 @@ const CompanyPage = () => {
 
   const handleNewReview = async (values: ICompReviewForm) => {
     try {
-      // console.log(`Values : ${JSON.stringify(values)}`);
       const { data } = await axiosInstance.post(
         `/api/company/add-review/${companyId}`,
         values,
@@ -56,14 +58,17 @@ const CompanyPage = () => {
       toast.error(errorMessage);
     }
   };
+
   return (
     <>
       {!company ? (
-        <div>Loading data</div>
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
       ) : (
-        <div className="p-2">
-          <div className="flex gap-2">
-            <div className="relative bg-blue-400 border-2 border-black w-32 h-32 overflow-clip">
+        <div className="p-6 max-w-6xl mx-auto bg-white rounded-lg shadow-md">
+          <div className="flex gap-6 items-start">
+            <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-purple-300">
               <Image
                 src={company.account.avatar}
                 alt={`${company.account.name}' avatar`}
@@ -71,15 +76,34 @@ const CompanyPage = () => {
                 className="object-cover"
               />
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-xl font-semibold">{company.account.name}</h1>
-              <p className="text-slate-400">{company.account.email}</p>
-              <p>{company.phone}</p>
-              <p>{company.address ? company.address : ''}</p>
-              <p>{company.website ? company.website : ''}</p>
-              <p>{company.description ? company.description : ''}</p>
+            <div className="flex-1">
+              <div className="space-y-3">
+                <h1 className="text-2xl font-semibold text-purple-800">{company.account.name}</h1>
+                <p className="text-gray-600">{company.account.email}</p>
+                <p className="text-gray-700">{company.phone || 'No phone number provided'}</p>
+                <p className="text-gray-700">{company.address || 'No address provided'}</p>
+                <p className="text-gray-700">{company.website || 'No website provided'}</p>
+                <p className="text-gray-700">{company.description || 'No description provided'}</p>
+              </div>
             </div>
           </div>
+
+          {/* Job Card Section */}
+          <div className="mt-4">
+            <h2 className="text-xl font-semibold text-purple-800 mb-2">Jobs at {company.account.name}</h2>
+            {jobsLoading && <p className="text-gray-600">Loading jobs...</p>}
+            {jobsError && <p className="text-red-600">Error loading jobs: {jobsError}</p>}
+            {jobs && jobs.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {jobs.map((job) => (
+                  <JobCard key={job.id} job={job} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-600">No jobs available at this company.</p>
+            )}
+          </div>
+
           <ReviewSection reviews={reviews} handleAddReview={handleAddReview} />
         </div>
       )}

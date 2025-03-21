@@ -22,10 +22,9 @@ export class CompanyRouter {
 
   private initializeRoutes(): void {
     this.router.patch(
-      '/edit',
+      '/edit/:accountId',
       companyValidation,
       verifyToken,
-      adminDevGuard,
       this.companyController.editCompany,
     );
 
@@ -34,6 +33,10 @@ export class CompanyRouter {
       '/reviews/:companyId',
       this.compReviewController.showCompanyReview,
     );
+
+    this.router.get('/data/admin/:accountId', this.companyController.getCompanyDatabyAdminId);
+
+
 
     this.router.post(
       '/add-review/:companyId',

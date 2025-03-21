@@ -16,6 +16,7 @@ export const getApplicantsByJobId = async (jobId: string) => {
             accounts: true,
             userProfile: true,
             userEdu: true,
+            subsCtg: true,
           },
         },
         job: true,

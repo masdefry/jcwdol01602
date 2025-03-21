@@ -7,7 +7,7 @@ import TableDashboard2 from '@/components/table/table2';
 import { Heading } from '@/components/heading';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
-import Modal from '@/components/adminDashboard/applicantModal';
+import ApplicantDetailModal from '@/components/adminDashboard/applicantDetailModal';
 import { Applicant, IApplicantData } from '@/types/applicantDetail';
 import { format, differenceInYears } from 'date-fns';
 import FilterApplicant from '@/components/adminDashboard/filterApplicant';
@@ -26,6 +26,7 @@ const JobApplicants = () => {
   const [filterAgeRange, setFilterAgeRange] = useState<string | ''>('');
   const [filterSalaryRange, setFilterSalaryRange] = useState<string | ''>('');
   const [filterStatus, setFilterStatus] = useState<ApplicantStatus | ''>('');
+  const [filterPriority, setFilterPriority] = useState<boolean | ''>('');
 
   useEffect(() => {
     console.log('JobId from useParams:', jobId);
@@ -38,7 +39,7 @@ const JobApplicants = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [applicants, filterEducation, filterAgeRange, filterSalaryRange, filterStatus]);
+  }, [applicants, filterEducation, filterAgeRange, filterSalaryRange, filterStatus, filterPriority]);
 
   const fetchApplicants = async () => {
     try {
@@ -51,7 +52,7 @@ const JobApplicants = () => {
         ...applicant,
         subsData: {
           ...applicant.subsData,
-          isPriority: applicant.subsData.subsCtgId === 'sc250319-03',
+          isPriority: applicant.subsData.subsCtg?.priority,
         },
       }));
 
@@ -69,11 +70,9 @@ const JobApplicants = () => {
   const applyFilters = () => {
     let filtered = [...applicants];
 
-    if (filterStatus) {
-      filtered = filtered.filter((applicant) => applicant.status === filterStatus);
+    if (filterPriority !== '') {
+      filtered = filtered.filter((applicant) => applicant.subsData.subsCtg?.priority === filterPriority);
     }
-
-    filtered.sort((a, b) => (b.subsData.isPriority ? 1 : -1));
 
     if (filterEducation) {
       filtered = filtered.filter((applicant) =>
@@ -156,7 +155,7 @@ const JobApplicants = () => {
           height={40}
           className="rounded-full"
         />
-        {applicant.subsData?.isPriority && (
+        {applicant.subsData.subsCtg?.priority && (
           <span className="absolute bg-yellow-400 text-white text-[8px] px-0.5 py-0.25 rounded-full top-[-5px] left-[35px]">
             Priority
           </span>
@@ -166,7 +165,7 @@ const JobApplicants = () => {
     name: applicant.subsData.accounts.name,
     email: applicant.subsData.accounts.email,
     education: applicant.subsData.userEdu[0]?.level || 'N/A',
-    expectedSalary: applicant.expectedSalary,
+    expectedSalary: rupiahFormat(applicant.expectedSalary),
     status: applicant.status,
   }));
 
@@ -196,6 +195,8 @@ const JobApplicants = () => {
         setFilterSalaryRange={setFilterSalaryRange}
         filterStatus={filterStatus}
         setFilterStatus={setFilterStatus}
+        filterPriority={filterPriority}
+        setFilterPriority={setFilterPriority}
       />
       {loading ? (
         <p>Loading Applicants...</p>
@@ -203,7 +204,15 @@ const JobApplicants = () => {
         <p>Error: {error}</p>
       ) : (
         <TableDashboard2
-          columns={['No', 'Photo', 'Name', 'Email', 'Education', 'Expected Salary', 'Status']}
+          columns={[
+            'No',
+            'Photo',
+            'Name',
+            'Email',
+            'Education',
+            'Expected Salary',
+            'Status',
+          ]}
           datas={tableData}
           itemsPerPage={5}
           onStatusChange={(id, status) => handleUpdateStatus(id, status as ApplicantStatus)}
@@ -219,79 +228,11 @@ const JobApplicants = () => {
         />
       )}
       {selectedApplicant && (
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <div className="p-4">
-            <div className="flex flex-col md:flex-row">
-              {selectedApplicant.cvPath && (
-                <div className="md:w-1/2 md:pr-4 mb-4 md:mb-0">
-                  <iframe
-                    src={selectedApplicant.cvPath}
-                    width="100%"
-                    height="500px"
-                  ></iframe>
-                </div>
-              )}
-              <div className="md:w-1/2">
-                <table className="w-full table-auto">
-                  <tbody className="divide-y divide-gray-200">
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Name:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.accounts.name}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Email:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.accounts.email}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Gender:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.userProfile?.gender}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Birthdate:</td>
-                      <td className="py-2 text-left">
-                        {selectedApplicant.subsData.userProfile?.dob
-                          ? format(new Date(selectedApplicant.subsData.userProfile.dob), 'yyyy-MM-dd')
-                          : 'N/A'}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Place of Birth:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.userProfile?.pob}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Phone:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.userProfile?.phoneNumber}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Education:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.userEdu[0]?.level || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">University:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.userEdu[0]?.school || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Discipline:</td>
-                      <td className="py-2 text-left">{selectedApplicant.subsData.userEdu[0]?.discipline || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Expected Salary:</td>
-                      <td className="py-2 text-left">{rupiahFormat(selectedApplicant.expectedSalary)}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Status:</td>
-                      <td className="py-2 text-left">{selectedApplicant.status}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold pr-4 py-2 text-left">Preselection Test Result:</td>
-                      <td className="py-2 text-left">{selectedApplicant.PreSelectionTestResult && selectedApplicant.PreSelectionTestResult.length > 0 ? selectedApplicant.PreSelectionTestResult.score : 'N/A'}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </Modal>
+        <ApplicantDetailModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          applicant={selectedApplicant}
+        />
       )}
     </div>
   );
