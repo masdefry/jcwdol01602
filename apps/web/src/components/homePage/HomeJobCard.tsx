@@ -20,7 +20,6 @@ const HomeJobCard = ({
         </div>
         <div>
           <h1 className="font-semibold text-lg">{job.title}</h1>
-
           <p>{job.company.account.name}</p>
         </div>
       </div>

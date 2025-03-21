@@ -2,13 +2,16 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/lib/axios';
-import { IJobsData } from '@/lib/interface2';
+import { IJobHomePage, IJobsData } from '@/lib/interface2';
 import { useRouter } from 'next/navigation';
 import HomeJobCard from './HomeJobCard';
 import ButtonCustom from '../button/btn';
 import { ResetBtn } from '../button/moreBtn';
+import ApplyModal from '../applyModal';
+import useAuthStore from '@/stores/authStores';
 
 const Home = () => {
+  const { account } = useAuthStore();
   const [jobsData, setJobsData] = useState<IJobsData>({
     jobs: [],
     pagination: { currentPage: 1, totalPages: 1, totalJobs: 0 },
@@ -20,6 +23,8 @@ const Home = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string | ''>('');
   const [selectedCategory, setSelectedCategory] = useState<string | ''>('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<IJobHomePage>();
 
   useEffect(() => {
     const fetchEnums = async () => {
@@ -65,8 +70,27 @@ const Home = () => {
     }
   };
 
-  const handleApplyBtn = (jobId: string) => {
-    router.push(`/${jobId}`);
+  const handleApplyBtn = async (jobId: string, expectedSalary: number) => {
+    if (!account) {
+      toast.error('Please login first!');
+      return;
+    }
+    try {
+      const { data } = await axiosInstance.post('api/applicant/apply', {
+        jobId,
+        expectedSalary,
+      });
+      toast.success(data.message);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || 'Failed to apply for the job!';
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleOpenDetail = (job: IJobHomePage) => {
+    setIsModalOpen(true);
+    setSelectedJob(job);
   };
 
   const applyFilter = () => {
@@ -129,43 +153,11 @@ const Home = () => {
         <>
           <div className="grid grid-cols-1 md:grid-cols-3">
             {jobsData.jobs.map((job) => (
-              <HomeJobCard key={job.id} job={job} onApply={handleApplyBtn} />
-              //   <div
-              //     key={idx}
-              //     className="border-2 bg-white p-2 rounded-lg shadow-md mx-1 my-2"
-              //   >
-              //     <div className="flex flex-row gap-2">
-              //       <div className="w-14 h-14 relative bg-blue-200">
-              //         <Image
-              //           src={job.company.account.avatar}
-              //           fill
-              //           alt="company_avt.jpg"
-              //         />
-              //       </div>
-              //       <div>
-              //         <h1 className="font-semibold text-lg">{job.title}</h1>
-
-              //         <p>{job.company.account.name}</p>
-              //       </div>
-              //     </div>
-              //     <p className="text-slate-400 flex flex-row gap-1 items-center">
-              //       <TagIcon width={20} height={20} />
-              //       {capitalizeFirstLetter(job.category)}
-              //     </p>
-              //     <p className="flex flex-row gap-1 items-center">
-              //       <MapPinIcon width={20} height={20} /> {job.location}
-              //     </p>
-              //     <p className="flex flex-row gap-1 items-center">
-              //       <BanknotesIcon width={20} height={20} />±
-              //       {rupiahFormat(Number(job.salaryRange))}
-              //     </p>
-              //     <div className="w-full flex justify-end">
-              //       <ButtonCustom
-              //         btnName="Apply Now"
-              //         onClick={() => handleApplyBtn(job.id)}
-              //       />
-              //     </div>
-              //   </div>
+              <HomeJobCard
+                key={job.id}
+                job={job}
+                onApply={() => handleOpenDetail(job)}
+              />
             ))}
           </div>
           <div className="flex justify-center items-center gap-2 my-4">
@@ -189,6 +181,15 @@ const Home = () => {
             </button>
           </div>
         </>
+      )}
+      {isModalOpen && selectedJob && (
+        <ApplyModal
+          job={selectedJob}
+          setIsOpen={setIsModalOpen}
+          runFunction={(expectedSalary) =>
+            handleApplyBtn(selectedJob.id, expectedSalary)
+          }
+        />
       )}
     </div>
   );
