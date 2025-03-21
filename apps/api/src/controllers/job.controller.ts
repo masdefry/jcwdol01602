@@ -78,17 +78,16 @@ export class JobController {
 
   async getJobsCompany(req: Request, res: Response, next: NextFunction) {
     try {
-        const { accountId } = req.params;
+      const { accountId } = req.params;
 
-        if (!accountId) {
-            return res.status(400).json({ error: 'AccountId is required as a route parameter' });
-        }
-
-        const jobs = await getJobsCompanyHandler(accountId);
-        return res.json({jobs});
+      if (!accountId) {
+        return res
+          .status(400)
+          .json({ error: 'AccountId is required as a route parameter' });
+      }
 
       const jobs = await getJobsCompanyHandler(accountId);
-      return res.json({ jobs }); //It is better to keep the jobs inside an object, so the frontend can easily access jobs.jobs.
+      return res.json({ jobs });
     } catch (error: any) {
       console.error('Error in getJobsCompany:', error); // Corrected error log
       return res.status(500).json({ error: 'Failed to fetch jobs' });
@@ -118,13 +117,14 @@ export class JobController {
     }
   }
 
-
   async getJobsByCompanyId(req: Request, res: Response) {
     try {
       const { companyId } = req.params;
 
       if (!companyId || typeof companyId !== 'string') {
-        return res.status(400).json({ error: 'CompanyId is required as a route parameter' });
+        return res
+          .status(400)
+          .json({ error: 'CompanyId is required as a route parameter' });
       }
 
       const jobs = await getJobsByCompanyIdHandler(companyId);
@@ -133,7 +133,6 @@ export class JobController {
       return res.status(500).json({ error: 'Failed to fetch jobs' });
     }
   }
-
 
   async togglePublish(req: Request, res: Response) {
     try {
