@@ -6,7 +6,7 @@ import {
   getAllJobsHandler,
   getJobDetailsHandler,
   togglePublishHandler,
-  getJobsCompanyHandler
+  getJobsCompanyHandler,
 } from '@/services/jobHandler';
 
 export class JobController {
@@ -14,7 +14,9 @@ export class JobController {
     try {
       const { accountId } = req.body; // Assuming accountId is passed in the request body
       if (!accountId || typeof accountId !== 'string') {
-        return res.status(400).json({ error: 'AccountId is required in the request body' });
+        return res
+          .status(400)
+          .json({ error: 'AccountId is required in the request body' });
       }
 
       const job = await createJobHandler(req.body, accountId);
@@ -29,7 +31,6 @@ export class JobController {
     try {
       const { id } = req.params;
 
-
       const updatedJob = await updateJobHandler(id, req.body);
       return res.json({ message: 'Job updated successfully', updatedJob });
     } catch (error: any) {
@@ -43,7 +44,9 @@ export class JobController {
       const { accountId } = req.body; // Assuming accountId is passed in the request body
 
       if (!accountId || typeof accountId !== 'string') {
-        return res.status(400).json({ error: 'AccountId is required in the request body' });
+        return res
+          .status(400)
+          .json({ error: 'AccountId is required in the request body' });
       }
 
       await deleteJobHandler(id, accountId);
@@ -59,7 +62,9 @@ export class JobController {
 
       const { accountId } = req.query;
       if (!accountId || typeof accountId !== 'string') {
-        return res.status(400).json({ error: 'AccountId is required as a query parameter' });
+        return res
+          .status(400)
+          .json({ error: 'AccountId is required as a query parameter' });
       }
 
       const jobs = await getAllJobsHandler(accountId);
@@ -70,24 +75,23 @@ export class JobController {
     }
   }
 
-
   async getJobsCompany(req: Request, res: Response, next: NextFunction) {
     try {
-        const { accountId } = req.params;
+      const { accountId } = req.params;
 
-        if (!accountId) {
-            return res.status(400).json({ error: 'AccountId is required as a route parameter' }); // Corrected error message
-        }
+      if (!accountId) {
+        return res
+          .status(400)
+          .json({ error: 'AccountId is required as a route parameter' }); // Corrected error message
+      }
 
-        const jobs = await getJobsCompanyHandler(accountId);
-        return res.json({jobs}); //It is better to keep the jobs inside an object, so the frontend can easily access jobs.jobs.
-
+      const jobs = await getJobsCompanyHandler(accountId);
+      return res.json({ jobs }); //It is better to keep the jobs inside an object, so the frontend can easily access jobs.jobs.
     } catch (error: any) {
-        console.error('Error in getJobsCompany:', error); // Corrected error log
-        return res.status(500).json({ error: 'Failed to fetch jobs' });
+      console.error('Error in getJobsCompany:', error); // Corrected error log
+      return res.status(500).json({ error: 'Failed to fetch jobs' });
     }
-}
-
+  }
 
   async getJobDetails(req: Request, res: Response) {
     try {
@@ -95,7 +99,9 @@ export class JobController {
       const { accountId } = req.query;
 
       if (!accountId || typeof accountId !== 'string') {
-          return res.status(400).json({error: "AccountId is required as a query parameter."})
+        return res
+          .status(400)
+          .json({ error: 'AccountId is required as a query parameter.' });
       }
 
       const job = await getJobDetailsHandler(id, accountId);
@@ -110,14 +116,15 @@ export class JobController {
     }
   }
 
-
   async togglePublish(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const { accountId } = req.body;
 
       if (!accountId || typeof accountId !== 'string') {
-        return res.status(400).json({ error: 'AccountId is required in the request body' });
+        return res
+          .status(400)
+          .json({ error: 'AccountId is required in the request body' });
       }
 
       const updatedJob = await togglePublishHandler(id, accountId);
