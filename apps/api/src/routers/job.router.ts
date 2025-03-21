@@ -64,6 +64,7 @@ export class JobRouter {
       adminDevGuard,
       this.jobController.getJobsCompany,
     );
+    this.router.get('/user/:companyId', this.jobController.getJobsByCompanyId);
   }
 
   getRouter(): Router {

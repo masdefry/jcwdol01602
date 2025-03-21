@@ -1,8 +1,8 @@
-// components/adminDashboard/JobModal.tsx
 'use client';
 import React from 'react';
 import ModalCreate from '@/components/table/modalCreate';
 import { Job, Categories, Locations } from '@/types/job';
+import * as Yup from 'yup';
 
 interface JobModalProps {
     editJob: Job | null;
@@ -31,6 +31,21 @@ const JobModal: React.FC<JobModalProps> = ({
         id: loc,
         name: loc,
     }));
+
+    const validationSchema = Yup.object().shape({
+        title: Yup.string().required('Title is required'),
+        description: Yup.string().required('Description is required'),
+        deadline: Yup.string().required('Deadline is required'),
+        category: Yup.string().required('Category is required'),
+        location: Yup.string().required('Location is required'),
+        salaryRange: Yup.string(),
+        companyId: Yup.string(),
+        isPublished: Yup.boolean(),
+        createdAt: Yup.string(),
+        updatedAt: Yup.string(),
+        applicants: Yup.array(),
+        PreSelectionTest: Yup.array()
+    });
 
     return (
         addModalOpen && (
@@ -82,7 +97,7 @@ const JobModal: React.FC<JobModalProps> = ({
                     { name: 'salaryRange', label: 'Salary Range', type: 'text' as const },
                     { name: 'deadline', label: 'Deadline', type: 'date' as const },
                 ]}
-                validationSchema={undefined}
+                validationSchema={validationSchema}
             />
         )
     );

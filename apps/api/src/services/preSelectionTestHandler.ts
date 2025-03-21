@@ -210,7 +210,7 @@ export const submitPreSelectionTestResult = async (
     let score = 0;
     const detailedAnswers = answers.map((ans) => {
       const isCorrect = answerMap[ans.questionId] === ans.selectedOption;
-      if (isCorrect) score++;
+      if (isCorrect) score += 4;
       return {
         questionId: ans.questionId,
         selectedOption: ans.selectedOption,
@@ -223,7 +223,7 @@ export const submitPreSelectionTestResult = async (
         applicant: { connect: { id: applicantId } },
         test: { connect: { id: testId } },
         score,
-        total: questions.length,
+        total: questions.length * 4,
         answers: { create: detailedAnswers },
       },
       include: { answers: true },
@@ -239,8 +239,23 @@ export const getPreSelectionTestResultsByTestId = async (testId: string) => {
   try {
     const results = await prisma.preSelectionTestResult.findMany({
       where: { testId: testId },
+      include: {
+        applicant: {
+          include: {
+            subsData: {
+              include: {
+                accounts: true,
+              },
+            },
+          },
+        },
+      },
     });
-    return results;
+
+    return results.map((result) => ({
+      ...result,
+      applicantName: result.applicant.subsData.accounts.name,
+    }));
   } catch (error: any) {
     if (error.message) throw new Error(error.message);
     throw new Error('Unexpected error - getPreSelectionTestResultsByTestId: ' + error);
