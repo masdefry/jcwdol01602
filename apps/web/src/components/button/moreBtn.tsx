@@ -114,3 +114,16 @@ export const ReturnBtn = ({ title, runFunction }: IMoreBtn) => {
     </div>
   );
 };
+
+export const ResetBtn = ({ title, runFunction }: IMoreBtn) => {
+  return (
+    <div className="flex items-center">
+      <button
+        className="bg-gray-200 text-slate-500 hover:text-red-800 px-2 py-2 flex items-center gap-1 rounded-full hover:bg-red-400 duration-150 ease-in-out"
+        onClick={() => runFunction()}
+      >
+        <p className="font-semibold ">{title}</p>
+      </button>
+    </div>
+  );
+};

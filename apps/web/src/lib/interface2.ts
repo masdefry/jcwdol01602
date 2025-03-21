@@ -36,3 +36,42 @@ export interface ICvData {
   accountId: string;
   uploadedAt: Date;
 }
+
+export interface IJobHomePage {
+  id: string;
+  companyId: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  salaryRange: string;
+  deadline: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+  company: {
+    id: string;
+    accountId: string;
+    phone: string;
+    address: string | null;
+    website: string | null;
+    description: string | null;
+    createdAt: string;
+    updatedAt: string;
+    account: {
+      name: string;
+      avatar: string;
+    };
+  };
+}
+
+export interface IPaginationHomePage {
+  currentPage: number;
+  totalPages: number;
+  totalJobs: number;
+}
+
+export interface IJobsData {
+  jobs: IJobHomePage[];
+  pagination: IPaginationHomePage;
+}
