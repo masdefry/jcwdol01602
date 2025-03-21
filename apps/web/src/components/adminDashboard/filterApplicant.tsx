@@ -11,6 +11,8 @@ interface FilterSortControlsProps {
   setFilterSalaryRange: (salaryRange: string | '') => void;
   filterStatus: ApplicantStatus | '';
   setFilterStatus: (status: ApplicantStatus | '') => void;
+  filterPriority: boolean | '';
+  setFilterPriority: (status: boolean | '') => void;
 }
 
 const FilterApplicant: React.FC<FilterSortControlsProps> = ({
@@ -22,6 +24,8 @@ const FilterApplicant: React.FC<FilterSortControlsProps> = ({
   setFilterSalaryRange,
   filterStatus,
   setFilterStatus,
+  filterPriority,
+  setFilterPriority,
 }) => {
   return (
     <div className="flex flex-wrap gap-4 mb-4">
@@ -71,6 +75,15 @@ const FilterApplicant: React.FC<FilterSortControlsProps> = ({
         <option value="interview" className="text-gray-700">Interview</option>
         <option value="accepted" className="text-gray-700">Accepted</option>
         <option value="rejected" className="text-gray-700">Rejected</option>
+      </select>
+      <select
+        value={filterPriority === true ? 'true' : filterPriority === false ? 'false' : ''}
+        onChange={(e) => setFilterPriority(e.target.value === 'true' ? true : e.target.value === 'false' ? false : '')}
+        className="px-4 py-2 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50 text-purple-800"
+      >
+        <option value="" className="text-gray-700">Priority</option>
+        <option value="true" className="text-gray-700">Priority</option>
+        <option value="false" className="text-gray-700">Not Priority</option>
       </select>
     </div>
   );

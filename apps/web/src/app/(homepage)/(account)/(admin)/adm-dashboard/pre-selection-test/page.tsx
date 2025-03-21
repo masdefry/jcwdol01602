@@ -67,18 +67,12 @@ const PreSelectionTestList = () => {
     setLoadingJobs(true);
     try {
         const { data } = await axiosInstance.get(`/api/job/company/${account.id}`);
-        console.log(`/api/job/list?accountId=${account?.id}`);
-        console.log("API Jobs Data:", data.jobs); // Log the API response
         setJobs(data.jobs);
-        toast.success(data.message);
-        console.log("Jobs State:", jobs); // Log the jobs state after setting
     } catch (error: any) {
         const errorMessage = error.response?.data?.message;
         toast.error(errorMessage);
-        console.error("Error fetching jobs:", error);
     } finally {
         setLoadingJobs(false);
-        console.log("Loading Jobs State:", loadingJobs) //log the loading state.
     }
 };
 

@@ -97,7 +97,7 @@ function InterviewScheduleFrontend() {
         id: applicantSchedule.id,
         name: applicantSchedule.subsData.accounts.name,
         email: applicantSchedule.subsData.accounts.email,
-        jobTitle: applicantSchedule.job.title, // Use job.title
+        jobTitle: applicantSchedule.job.title,
         schedule:
           applicantSchedule.InterviewSchedule &&
           applicantSchedule.InterviewSchedule.length > 0

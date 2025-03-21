@@ -2,6 +2,8 @@ import axiosInstance from '@/lib/axios';
 import { Applicant, ApplicantStatus } from '@prisma/client';
 import toast from 'react-hot-toast';
 
+
+
 export const fetchApplicants = async (jobId: string): Promise<Applicant[]> => {
     try {
         const apiUrl = `/api/applicant/job/${jobId}`;
@@ -16,6 +18,8 @@ export const fetchApplicants = async (jobId: string): Promise<Applicant[]> => {
         throw new Error(errorMessage || "Failed to fetch applicants. Please try again.");
     }
 };
+
+
 
 
 export const fetchapplicantbyid = async (applicantId: string): Promise<Applicant[]> => {

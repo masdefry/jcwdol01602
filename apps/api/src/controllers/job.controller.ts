@@ -7,12 +7,13 @@ import {
   getJobDetailsHandler,
   togglePublishHandler,
   getJobsCompanyHandler,
+  getJobsByCompanyIdHandler,
 } from '@/services/jobHandler';
 
 export class JobController {
   async createJob(req: Request, res: Response) {
     try {
-      const { accountId } = req.body; // Assuming accountId is passed in the request body
+      const { accountId } = req.body;
       if (!accountId || typeof accountId !== 'string') {
         return res
           .status(400)
@@ -41,7 +42,7 @@ export class JobController {
   async deleteJob(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { accountId } = req.body; // Assuming accountId is passed in the request body
+      const { accountId } = req.body;
 
       if (!accountId || typeof accountId !== 'string') {
         return res
@@ -77,13 +78,14 @@ export class JobController {
 
   async getJobsCompany(req: Request, res: Response, next: NextFunction) {
     try {
-      const { accountId } = req.params;
+        const { accountId } = req.params;
 
-      if (!accountId) {
-        return res
-          .status(400)
-          .json({ error: 'AccountId is required as a route parameter' }); // Corrected error message
-      }
+        if (!accountId) {
+            return res.status(400).json({ error: 'AccountId is required as a route parameter' });
+        }
+
+        const jobs = await getJobsCompanyHandler(accountId);
+        return res.json({jobs});
 
       const jobs = await getJobsCompanyHandler(accountId);
       return res.json({ jobs }); //It is better to keep the jobs inside an object, so the frontend can easily access jobs.jobs.
@@ -115,6 +117,23 @@ export class JobController {
       return res.status(500).json({ error: 'Failed to fetch job details' });
     }
   }
+
+
+  async getJobsByCompanyId(req: Request, res: Response) {
+    try {
+      const { companyId } = req.params;
+
+      if (!companyId || typeof companyId !== 'string') {
+        return res.status(400).json({ error: 'CompanyId is required as a route parameter' });
+      }
+
+      const jobs = await getJobsByCompanyIdHandler(companyId);
+      return res.json(jobs);
+    } catch (error: any) {
+      return res.status(500).json({ error: 'Failed to fetch jobs' });
+    }
+  }
+
 
   async togglePublish(req: Request, res: Response) {
     try {

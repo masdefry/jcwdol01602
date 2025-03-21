@@ -20,50 +20,16 @@ export class JobRouter {
     this.router.get('/all-jobs', this.jobGetController.jobsPerPage);
     this.router.get('/locations-data', this.jobGetController.jobLocation);
     this.router.get('/categories-data', this.jobGetController.jobCategory);
-    this.router.post(
-      '/create',
-      verifyToken,
-      adminDevGuard,
-      JobValidation,
-      this.jobController.createJob,
-    );
-    this.router.put(
-      '/:id',
-      verifyToken,
-      adminDevGuard,
-      JobValidation,
-      this.jobController.updateJob,
-    );
-    this.router.delete(
-      '/:id',
-      verifyToken,
-      adminDevGuard,
-      this.jobController.deleteJob,
-    );
-    this.router.get(
-      '/list',
-      verifyToken,
-      adminDevGuard,
-      this.jobController.getAllJobs,
-    );
-    this.router.get(
-      '/:id',
-      verifyToken,
-      adminDevGuard,
-      this.jobController.getJobDetails,
-    );
-    this.router.patch(
-      '/:id/publish',
-      verifyToken,
-      adminDevGuard,
-      this.jobController.togglePublish,
-    );
-    this.router.get(
-      '/company/:accountId',
-      verifyToken,
-      adminDevGuard,
-      this.jobController.getJobsCompany,
-    );
+    this.router.post('/create', verifyToken, adminDevGuard, JobValidation, this.jobController.createJob);
+    this.router.put('/:id', verifyToken, adminDevGuard, JobValidation, this.jobController.updateJob);
+    this.router.delete('/:id', verifyToken, adminDevGuard, this.jobController.deleteJob);
+    this.router.get('/list', verifyToken, adminDevGuard, this.jobController.getAllJobs);
+    this.router.get('/:id', verifyToken, adminDevGuard, this.jobController.getJobDetails);
+    this.router.patch('/:id/publish', verifyToken, adminDevGuard, this.jobController.togglePublish);
+    this.router.get('/company/:accountId', verifyToken, adminDevGuard, this.jobController.getJobsCompany);
+    this.router.get('/user/:companyId', this.jobController.getJobsByCompanyId);
+
+
   }
 
   getRouter(): Router {

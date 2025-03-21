@@ -13,14 +13,48 @@ export class InterviewScheduleRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.post('/', verifyToken, adminDevGuard, (req, res, next) => this.interviewScheduleController.createSchedule(req, res, next));
-    this.router.get('/:scheduleId', verifyToken, adminDevGuard, (req, res, next) => this.interviewScheduleController.getSchedule(req, res, next));
-    this.router.patch('/:scheduleId', verifyToken, adminDevGuard, (req, res, next) => this.interviewScheduleController.updateSchedule(req, res, next));
-    this.router.delete('/:scheduleId', verifyToken, adminDevGuard, (req, res, next) => this.interviewScheduleController.deleteSchedule(req, res, next));
-    this.router.get('/applicant/:applicantId', verifyToken, adminDevGuard, (req, res, next) => this.interviewScheduleController.getApplicantSchedules(req, res, next));
-    this.router.get('/company/:companyAccountId', verifyToken, adminDevGuard, (req, res, next) =>
-    this.interviewScheduleController.getApplicantsByCompany(req, res, next)
+    this.router.post(
+      '/',
+      verifyToken,
+      adminDevGuard,
+      this.interviewScheduleController.createSchedule.bind(this.interviewScheduleController)
     );
+
+    this.router.get(
+      '/:scheduleId',
+      verifyToken,
+      adminDevGuard,
+      this.interviewScheduleController.getSchedule.bind(this.interviewScheduleController)
+    );
+
+    this.router.patch(
+      '/:scheduleId',
+      verifyToken,
+      adminDevGuard,
+      this.interviewScheduleController.updateSchedule.bind(this.interviewScheduleController)
+    );
+
+    this.router.delete(
+      '/:scheduleId',
+      verifyToken,
+      adminDevGuard,
+      this.interviewScheduleController.deleteSchedule.bind(this.interviewScheduleController)
+    );
+
+    this.router.get(
+      '/applicant/:applicantId',
+      verifyToken,
+      adminDevGuard,
+      this.interviewScheduleController.getApplicantSchedules.bind(this.interviewScheduleController)
+    );
+
+    this.router.get(
+      '/company/:companyAccountId',
+      verifyToken,
+      adminDevGuard,
+      this.interviewScheduleController.getApplicantsByCompany.bind(this.interviewScheduleController)
+    );
+
   }
 
   getRouter(): Router {
