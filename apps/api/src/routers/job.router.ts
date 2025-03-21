@@ -21,6 +21,7 @@ export class JobRouter {
     this.router.get('/:id', verifyToken, adminDevGuard, this.jobController.getJobDetails);
     this.router.patch('/:id/publish', verifyToken, adminDevGuard, this.jobController.togglePublish);
     this.router.get('/company/:accountId', verifyToken, adminDevGuard, this.jobController.getJobsCompany);
+    this.router.get('/user/:companyId', this.jobController.getJobsByCompanyId);
 
   }
 

@@ -1,3 +1,4 @@
+import { ISubsCtg } from '@/lib/interface';
 import { ApplicantStatus } from '@prisma/client';
 
 export interface Applicant {
@@ -18,7 +19,6 @@ export interface Applicant {
         cvPath: string | null;
         createdAt: Date;
         updatedAt: Date;
-        isPriority: boolean;
         accounts: {
             id: string;
             role: string;
@@ -39,6 +39,7 @@ export interface Applicant {
             createdAt: Date;
             updatedAt: Date;
         };
+        subsCtg: ISubsCtg | null;
         userEdu: {
             level: string;
             school: string;
@@ -86,6 +87,6 @@ export interface IApplicantData {
     email: string;
     education: string;
     status: string;
-    expectedSalary: number;
+    expectedSalary: string | number;
     id: string;
 }

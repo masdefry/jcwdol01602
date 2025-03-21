@@ -9,11 +9,43 @@ import toast from 'react-hot-toast';
 interface IApplicantResult {
     id: string;
     applicantId: string;
+    testId: string;
     score: number;
     total: number;
     createdAt: string;
-    applicantName?: string;
-}
+    updatedAt: string;
+    applicant: {
+      id: string;
+      subsDataId: string;
+      jobId: string;
+      appliedAt: string;
+      expectedSalary: number;
+      cvPath: string;
+      status: string;
+      subsData: {
+        id: string;
+        accountId: string;
+        subsCtgId: string;
+        startDate: string;
+        endDate: string;
+        isSubActive: boolean;
+        cvId: string;
+        createdAt: string;
+        updatedAt: string;
+        accounts: {
+          id: string;
+          role: string;
+          email: string;
+          password: string;
+          isVerified: boolean;
+          name: string;
+          avatar: string;
+          createdAt: string;
+          updatedAt: string;
+        };
+      };
+    };
+  }
 
 interface ITableData {
     id: string;
@@ -47,7 +79,7 @@ const PreSelectionTestResults = () => {
 
     const tableData: ITableData[] = results.map((result) => ({
         id: result.id,
-        applicantName: result.applicantName || 'Unknown', // Corrected line
+        applicantName: result.applicant.subsData.accounts.name || 'Unknown',
         score: result.score,
         total: result.total,
         createdAt: new Date(result.createdAt).toLocaleDateString(),

@@ -3,7 +3,6 @@ import prisma from '@/prisma';
 
 export const newCompany = async (adminId: string, compPhone: string) => {
   try {
-    // Check if company name already exist
     const companyId = await companyIdMaker(adminId);
     const company = await prisma.company.create({
       data: {
@@ -19,10 +18,20 @@ export const newCompany = async (adminId: string, compPhone: string) => {
   }
 };
 
-export const getCompanyByAdmin = async (adminId: string) => {
+export const getCompanyByAdmin = async (accountId: string) => {
   try {
     const company = await prisma.company.findUnique({
-      where: { accountId: adminId },
+      where: { accountId },
+      include: {
+        account: {
+          select: {
+            name: true,
+            avatar: true,
+            email: true,
+            isVerified: true,
+          },
+        },
+      },
     });
     return company;
   } catch (error: any) {
@@ -58,7 +67,7 @@ export const getCompanyById = async (companyId: string) => {
 };
 
 export const editCompany = async (
-  companyId: string,
+  accountId: string,
   data: {
     phone?: string;
     address?: string;
@@ -67,10 +76,19 @@ export const editCompany = async (
   }
 ) => {
   try {
+    const company = await prisma.company.findUnique({
+      where: { accountId: accountId },
+    });
+
+    if (!company) {
+      throw new Error(`Company not found for accountId: ${accountId}`);
+    }
+
     const updatedCompany = await prisma.company.update({
-      where: { id: companyId },
+      where: { id: company.id },
       data: data,
     });
+
     return updatedCompany;
   } catch (error: any) {
     if (error.message) throw new Error(error.message);

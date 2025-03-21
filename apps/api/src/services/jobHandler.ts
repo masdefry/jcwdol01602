@@ -117,6 +117,12 @@ export const getJobDetailsHandler = async (id: string, accountId: string) => {
   });
 };
 
+export const getJobsByCompanyIdHandler = async (companyId: string) => {
+  return await prisma.job.findMany({
+    where: { companyId: companyId },
+  });
+};
+
 export const togglePublishHandler = async (id: string, accountId: string) => {
     const company = await prisma.company.findUnique({
       where: { accountId },
